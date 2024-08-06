@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+import { ResponseStatus } from "@/constants/response_status_enum";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
 import { onMounted, reactive } from "vue";
@@ -61,7 +62,7 @@ const customerForm = reactive({
 const updateCustomer = async () => {
   if (customerForm.customer_name !== "") {
     await customerStore.updateCustomer({ ...customerForm, customer_id: props.customer_id }).then(() => {
-      if (statusCode.value === 200) {
+      if (statusCode.value === ResponseStatus.SUCCESS) {
         toast.success("Müşteri bilgileri güncellendi!", {
           timeout: 2000,
         });

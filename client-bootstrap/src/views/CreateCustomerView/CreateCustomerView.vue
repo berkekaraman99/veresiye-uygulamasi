@@ -1,21 +1,9 @@
 <template>
   <div class="row">
-    <div class="col-12 col-md-10 offset-md-1 col-lg-6 offset-lg-3">
-      <h1 class="text-center my-4">Müşteri Oluşturma</h1>
-      <div class="card card-body py-5 my-5">
-        <FormKit
-          type="form"
-          id="customer-registration"
-          @submit="createCustomer"
-          :actions="false"
-          :config="{
-            classes: {
-              outer: 'mx-auto',
-              wrapper: 'mx-auto w-100 py-2',
-              messages: 'text-center',
-            },
-          }"
-        >
+    <div class="col-12 offset-sm-1 col-sm-10 offset-lg-3 col-lg-6">
+      <div class="">
+        <h1 class="text-center my-4 fw-bold">Müşteri Oluşturma</h1>
+        <FormKit type="form" id="customer-registration" @submit="createCustomer" :actions="false">
           <FormKit
             type="text"
             name="customer_name"
@@ -23,17 +11,11 @@
             placeholder="Müşteri adı"
             validation="required"
             v-model="customerForm.customer_name"
+            autofocus
           />
-          <FormKit
-            type="text"
-            name="customer_address"
-            label="Müşteri Adresi"
-            placeholder="Müşteri Adresi"
-            validation="required"
-            v-model="customerForm.customer_address"
-          />
+          <FormKit type="text" name="customer_address" label="Müşteri Adresi" placeholder="Müşteri Adresi" v-model="customerForm.customer_address" />
 
-          <FormKit type="submit" label="Oluştur" wrapper-class="d-flex align-items-center justify-content-center" />
+          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'd-flex justify-content-center': true }" />
         </FormKit>
       </div>
     </div>
@@ -48,12 +30,13 @@ import { useCustomerStore } from "@/stores/customer";
 import { useToast } from "vue-toastification";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
+import { ResponseStatus } from "@/constants/response_status_enum";
 
 const toast = useToast();
 const router = useRouter();
 const customerStore = useCustomerStore();
 
-const { customer, statusCode } = storeToRefs(customerStore);
+const { statusCode } = storeToRefs(customerStore);
 
 const customerForm = reactive({
   customer_name: "",
@@ -72,7 +55,7 @@ const createCustomer = async () => {
         created_date: created_date,
       })
       .then(() => {
-        if (statusCode.value === 201) {
+        if (statusCode.value === ResponseStatus.SUCCESS) {
           toast.success("Müşteri oluşturuldu!", {
             timeout: 2000,
           });

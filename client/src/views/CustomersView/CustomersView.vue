@@ -3,7 +3,7 @@
     <div class="col-span-12 sm:col-span-12 lg:col-start-3 lg:col-span-8 xl:col-start-4 xl:col-span-6">
       <div class="py-6 px-0 sm:px-4 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 bg-white border rounded-lg">
         <h1 class="text-center mb-12 font-bold text-2xl">Müşteriler</h1>
-        <table class="table-auto w-full border-collapse border" v-if="customers.length !== 0">
+        <table id="customersTable" class="table-auto w-full border-collapse border" v-if="customers.length !== 0">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th scope="col" class="px-6 py-3" @click="sortTable(0)">Müşteri</th>
@@ -27,7 +27,7 @@
                     <MenuButton
                       class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                     >
-                      Options
+                      Seçenekler
                       <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
                     </MenuButton>
                   </div>

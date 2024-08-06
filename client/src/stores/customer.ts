@@ -8,6 +8,7 @@ export const useCustomerStore = defineStore("customer", () => {
   const customers = ref<Array<ICustomer>>([]);
   const statusCode = ref<number>(0);
   const searchedCustomers = ref<Array<ICustomer>>([]);
+  const customerReceipts = ref<Array<ICustomerReceipt>>([]);
 
   //ACTIONS
   const createCustomer = async (customerForm: any) => {
@@ -83,10 +84,10 @@ export const useCustomerStore = defineStore("customer", () => {
 
   const searchCustomers = async (searchValue: string) => {
     try {
-      const response = await instance.get(`/customer/search-customers?text=${searchValue}`);
-      statusCode.value = response.data.statusCode;
-      searchedCustomers.value = response.data.data;
-      console.log(response.data);
+      const res = await instance.get(`/customer/search-customers?text=${searchValue}`);
+      statusCode.value = res.data.statusCode;
+      searchedCustomers.value = res.data.data;
+      console.log(res.data);
     } catch (error: any) {
       console.error(error.response);
     } finally {
@@ -96,16 +97,33 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
+  const getCustomerReceipts = async (customer_id: string) => {
+    try {
+      const res = await instance.get(`/customer/get-customer-receipts?customer_id=${customer_id}`);
+      statusCode.value = res.data.statusCode;
+      customerReceipts.value = res.data.data;
+      console.log(res.data);
+    } catch (error: any) {
+      console.error(error.response);
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
+    }
+  }
+
   return {
     customer,
     customers,
     searchedCustomers,
     statusCode,
+    customerReceipts,
     createCustomer,
     deleteCustomer,
     updateCustomer,
     getCustomers,
     getCustomerById,
     searchCustomers,
+    getCustomerReceipts
   };
 });

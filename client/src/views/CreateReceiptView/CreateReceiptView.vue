@@ -60,6 +60,7 @@ import { useToast } from "vue-toastification";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
+import { ResponseStatus } from "@/constants/response_status_enum";
 
 const props = defineProps({
   receipt_type: {
@@ -97,7 +98,7 @@ const createReceipt = async () => {
         created_date: created_date,
       })
       .then(() => {
-        if (statusCode.value === 201) {
+        if (statusCode.value === ResponseStatus.SUCCESS) {
           toast.success("Dekont oluşturuldu!", {
             timeout: 2000,
           });

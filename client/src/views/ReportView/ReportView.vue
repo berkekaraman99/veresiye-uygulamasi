@@ -18,6 +18,9 @@
             }"
           >
             <FormKit type="submit" label="Raporu Oluştur" :wrapper-class="{ 'flex justify-center': true }" />
+            <FormKit type="button" :wrapper-class="{ 'flex justify-center': true }">
+              <a  :href="download">Excel Formatında İndir</a>
+            </FormKit>
           </FormKit>
         </div>
       </div>
@@ -60,6 +63,7 @@
 
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
+import { instance } from "@/utils/network_manager";
 import { storeToRefs } from "pinia";
 
 const receiptStore = useReceiptStore();
@@ -68,6 +72,12 @@ const { report } = storeToRefs(receiptStore);
 const getReceiptReport = async () => {
   await receiptStore.getReceiptReport();
 };
+
+const downloadReport = async () => {
+  await receiptStore.downloadReceipt();
+};
+
+const download = instance.defaults.baseURL + "/receipt/download-report";
 
 const sortTable = (n: number) => {
   let table: HTMLTableElement,

@@ -1,62 +1,96 @@
+<script setup lang="ts">
+import { reactive } from "vue";
+import { RouterLink } from "vue-router";
+import { UserPlusIcon, DocumentPlusIcon, UsersIcon, DocumentMinusIcon, DocumentDuplicateIcon } from "@heroicons/vue/24/solid";
+
+const routerReceiptType = reactive({
+  alacak: 1,
+  borc: 0,
+});
+</script>
+
 <template>
-  <div class="row row-cols-1 row-cols-sm-1 row-cols-lg-2 py-5">
-    <div class="col-6">
-      <RouterLink :to="{ name: 'receivable' }">
-        <div class="interactive-card">
-          <h1>Alacak Ekle</h1>
-          <div class="text-center"><DocumentPlusIcon class="w-50"></DocumentPlusIcon></div>
+  <div>
+    <h1 class="fw-bold ps-2 mb-3">Hızlı İşlemler</h1>
+    <div class="row gy-2 row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4">
+      <RouterLink class="col" :to="{ name: 'create-receipt', params: { receipt_type: routerReceiptType.alacak } }">
+        <div class="interactive-card bg-body text-body">
+          <h1 class="mb-0 mb-md-4">Alacak Ekle</h1>
+          <div class="text-center"><DocumentPlusIcon class="action-icon" /></div>
         </div>
       </RouterLink>
-    </div>
-    <div class="">
-      <RouterLink :to="{ name: 'debt' }">
-        <div class="interactive-card">
-          <h1>Borç Ekle</h1>
-          <div class="text-center"><DocumentMinusIcon class="w-50"></DocumentMinusIcon></div>
+      <RouterLink class="col" :to="{ name: 'create-receipt', params: { receipt_type: routerReceiptType.borc } }">
+        <div class="interactive-card bg-body text-body">
+          <h1 class="mb-0 mb-md-4">Borç Ekle</h1>
+          <div class="text-center"><DocumentMinusIcon class="action-icon" /></div>
         </div>
       </RouterLink>
-    </div>
-    <div class="">
-      <RouterLink :to="{ name: 'add-customer' }">
-        <div class="interactive-card">
-          <h1>Müşteri Ekle</h1>
-          <!-- <div><i class="fa-solid fa-user-plus fa-6x"></i></div> -->
-          <div class="text-center"><UserPlusIcon class="w-50"></UserPlusIcon></div>
+      <RouterLink class="col" :to="{ name: 'create-customer' }">
+        <div class="interactive-card bg-body text-body">
+          <h1 class="mb-0 mb-md-4">Müşteri Ekle</h1>
+          <div class="text-center"><UserPlusIcon class="action-icon" /></div>
         </div>
       </RouterLink>
-    </div>
-    <div class="">
-      <RouterLink :to="{ name: 'report' }">
-        <div class="interactive-card">
-          <h1>Rapor Al</h1>
-          <div class="text-center"><DocumentDuplicateIcon class="w-50"></DocumentDuplicateIcon></div>
+      <RouterLink class="col" :to="{ name: 'customers' }">
+        <div class="interactive-card bg-body text-body">
+          <h1 class="mb-0 mb-md-4">Müşteriler</h1>
+          <div class="text-center"><UsersIcon class="action-icon" /></div>
+        </div>
+      </RouterLink>
+      <RouterLink class="col" :to="{ name: 'report' }">
+        <div class="interactive-card bg-body text-body">
+          <h1 class="mb-0 mb-md-4">Rapor Al</h1>
+          <div class="text-center"><DocumentDuplicateIcon class="action-icon" /></div>
         </div>
       </RouterLink>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { RouterLink } from "vue-router";
-import { UserPlusIcon, DocumentPlusIcon, DocumentMinusIcon, DocumentDuplicateIcon } from "@heroicons/vue/24/solid";
-</script>
-
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .interactive-card {
-  min-height: 400px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  margin: 0.5rem 0rem;
-  cursor: pointer;
-  background-color: lightgray;
-  border-radius: 1rem;
-  transition: 0.3s ease-in-out;
+  // height: 400px;
+  & {
+    display: flex;
+    margin: 0.5rem 0rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border-radius: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+
+    @media screen and (max-width: 768px) {
+      align-items: center;
+      justify-content: flex-end;
+      flex-direction: row-reverse;
+      height: 100px;
+      padding: 1rem 1.25rem;
+    }
+
+    @media screen and (min-width: 768px) {
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 400px;
+    }
+  }
 
   &:hover {
-    background-color: dimgray;
-    color: whitesmoke;
+    // background-color: #eeeeee !important;
+    transform: scale(1.01) translateY(-8px);
+    box-shadow: 0px 4px 1rem -6px black;
+  }
+}
+
+.action-icon {
+  & {
+    @media only screen and (max-width: 768px) {
+      width: 4rem;
+      margin-right: 0.75rem;
+    }
+    @media only screen and (min-width: 768px) {
+      width: 10rem;
+      margin-right: 0.75rem;
+    }
   }
 }
 </style>

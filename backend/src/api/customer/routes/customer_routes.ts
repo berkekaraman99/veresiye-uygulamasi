@@ -2,8 +2,8 @@ import { Router } from "express";
 import {
   createCustomer,
   deleteCustomer,
-  fetchCustomerReceipts,
   getCustomerById,
+  getCustomerReceipts,
   getCustomers,
   searchCustomers,
   updateCustomer,
@@ -17,6 +17,6 @@ CustomerRoutes.post("/update-customer", updateCustomer);
 CustomerRoutes.get("/get-customers", getCustomers);
 CustomerRoutes.get("/get-customer-by-id", getCustomerById);
 CustomerRoutes.get("/search-customers", searchCustomers);
-CustomerRoutes.get("/get-customer-receipts", fetchCustomerReceipts);
+CustomerRoutes.get("/get-customer-receipts", getCustomerReceipts);
 
 export default CustomerRoutes;

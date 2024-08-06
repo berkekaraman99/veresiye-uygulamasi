@@ -1,18 +1,23 @@
-export default class BaseResponse {
-  data: any;
+export default class BaseResponse<T> {
+  data: T;
   isSuccess: boolean;
   statusCode: number;
-  errors: any;
+  errors: Array<string>;
 
-  constructor(data: any, isSuccess: boolean, statusCode: number, errors: any) {
+  constructor(
+    data: T,
+    isSuccess: boolean,
+    statusCode: number,
+    errors: Array<string>
+  ) {
     this.data = data;
     this.isSuccess = isSuccess;
     this.statusCode = statusCode;
-    this.errors = errors;
+    this.errors = errors || [];
   }
 
-  static success(data: any, statusCode = 200) {
-    return new BaseResponse(data, true, statusCode, null);
+  static success<T>(data: T, statusCode: number = 200): BaseResponse<T> {
+    return new BaseResponse(data, true, statusCode, []);
   }
 
   static fail(errors: any, statusCode = 500) {

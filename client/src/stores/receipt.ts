@@ -24,6 +24,34 @@ export const useReceiptStore = defineStore("receipt", () => {
     }
   };
 
+  const deleteReceipt = async (receipt_id: string) => {
+    try {
+      const res = await instance.post("/receipt/delete-receipt", {receipt_id});
+      console.log(res.data);
+      statusCode.value = res.data.statusCode
+    } catch (error: any) {
+      console.error(error.response);
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
+    }
+  }
+
+  const updateReceipt = async (receiptForm: any) => {
+    try {
+      const res = await instance.post("/receipt/update-receipt", receiptForm)
+      console.log(res.data);
+      statusCode.value = res.data.statusCode
+    } catch (error: any) {
+      console.error(error.response);
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
+    }
+  }
+
   const fetchReceipts = async () => {
     try {
       const res = await instance.get("/receipt/get-receipts");
@@ -43,7 +71,7 @@ export const useReceiptStore = defineStore("receipt", () => {
     try {
       const res = await instance.get(`/receipt/get-receipt-by-id?receipt_id=${id}`);
       console.log(res.data);
-      receipt.value = res.data.data[0];
+      receipt.value = res.data.data;
     } catch (error: any) {
       console.error(error.response);
     } finally {
@@ -67,5 +95,19 @@ export const useReceiptStore = defineStore("receipt", () => {
     }
   };
 
-  return { receipt, receipts, statusCode, report, createReceipt, fetchReceipts, getReceiptById, getReceiptReport };
+  const downloadReceipt = async () => {
+    try {
+        const res = await instance.get("/receipt/download-report");
+        console.log(res);
+
+    } catch (error: any) {
+        console.error(error.response);
+      } finally {
+        setTimeout(() => {
+          statusCode.value = 0;
+        }, 2000);
+      }
+  }
+
+  return { receipt, receipts, statusCode, report, createReceipt, updateReceipt, deleteReceipt, fetchReceipts, getReceiptById, getReceiptReport, downloadReceipt };
 });

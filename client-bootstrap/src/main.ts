@@ -1,5 +1,6 @@
 import "./assets/main.scss";
 import "./assets/transition.scss";
+import "vue-toastification/dist/index.css";
 
 import { createApp } from "vue";
 import { createPinia } from "pinia";
@@ -11,8 +12,9 @@ import App from "./App.vue";
 import router from "./router";
 
 const options: PluginOptions = {
-  position: POSITION.TOP_RIGHT,
+  position: POSITION.BOTTOM_RIGHT,
 };
+
 const app = createApp(App);
 
 app.use(createPinia());

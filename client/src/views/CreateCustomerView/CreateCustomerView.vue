@@ -42,6 +42,7 @@ import { useCustomerStore } from "@/stores/customer";
 import { useToast } from "vue-toastification";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
+import { ResponseStatus } from "@/constants/response_status_enum";
 
 const toast = useToast();
 const router = useRouter();
@@ -66,7 +67,7 @@ const createCustomer = async () => {
         created_date: created_date,
       })
       .then(() => {
-        if (statusCode.value === 201) {
+        if (statusCode.value === ResponseStatus.SUCCESS) {
           toast.success("Müşteri oluşturuldu!", {
             timeout: 2000,
           });

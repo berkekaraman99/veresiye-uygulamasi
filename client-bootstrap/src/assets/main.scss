@@ -1,5 +1,42 @@
+@import "./style.scss";
+
+$primary-color: rgb(124 58 237);
+
+@import "bootstrap/scss/_functions";
+@import "bootstrap/scss/_variables";
+
+$primary: $primary-color;
+
+$theme-colors: map-merge(
+  $theme-colors,
+  (
+    "primary": $primary-color,
+  )
+);
+
+@import "bootstrap";
+
 a {
   text-decoration: none;
   transition: 0.3s ease;
-  color: #060606;
+  color: #fff;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  appearance: none;
+  -moz-appearance: textfield;
+}
+
+.dropdown-item {
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  transition: 0.25s ease;
 }
