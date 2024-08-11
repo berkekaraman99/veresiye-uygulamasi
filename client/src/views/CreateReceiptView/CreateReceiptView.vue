@@ -1,21 +1,9 @@
 <template>
-  <div class="grid grid-cols-12">
-    <div class="col-span-12 sm:col-start-2 sm:col-span-10 lg:col-start-4 lg:col-span-6 xl:col-start-4 xl:col-span-6">
-      <div class="bg-white py-6 border rounded-lg">
-        <h1 class="text-center mb-12 font-bold text-2xl">{{ receiptForm.receipt_type === 0 ? "Borç Oluştur" : "Alacak Oluştur" }}</h1>
-        <FormKit
-          type="form"
-          id="debt-form"
-          @submit="createReceipt"
-          :actions="false"
-          :config="{
-            classes: {
-              outer: 'mx-auto',
-              wrapper: 'mx-auto',
-              messages: 'text-center',
-            },
-          }"
-        >
+  <div class="row">
+    <div class="col-12 offset-sm-1 col-sm-10 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+      <div class="">
+        <h1 class="text-center mb-4 fw-bold">{{ receiptForm.receipt_type === 0 ? "Borç Oluştur" : "Alacak Oluştur" }}</h1>
+        <FormKit type="form" id="receipt-form" @submit="createReceipt" :actions="false">
           <FormKit
             type="select"
             name="receipt_type"
@@ -26,6 +14,7 @@
               { label: 'Alacak', value: 1 },
             ]"
             v-model="receiptForm.receipt_type"
+            input-class="form-select"
           />
 
           <FormKit
@@ -44,7 +33,7 @@
           <FormKit type="number" name="price" label="Fiyat" placeholder="Fiyat" min="0" validation="required" v-model="receiptForm.price" />
           <FormKit type="textarea" name="description" label="Açıklama" placeholder="Açıklama" v-model="receiptForm.description" />
 
-          <FormKit type="submit" label="Oluştur" :wrapper-class="{ 'flex justify-center': true }" />
+          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'd-flex justify-content-center': true }" />
         </FormKit>
       </div>
     </div>
@@ -82,8 +71,10 @@ const receiptForm = reactive({
   customer_id: "",
   price: 0,
   description: "",
-  receipt_type: props.receipt_type ?? 0,
+  receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
 });
+
+// console.log(props.receipt_type);
 
 const createReceipt = async () => {
   if (customerName.value !== "") {

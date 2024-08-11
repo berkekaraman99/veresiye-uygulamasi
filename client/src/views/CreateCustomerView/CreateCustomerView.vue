@@ -1,21 +1,9 @@
 <template>
-  <div class="grid grid-cols-12">
-    <div class="col-span-12 sm:col-start-2 sm:col-span-10 lg:col-start-4 lg:col-span-6 xl:col-start-4 xl:col-span-6">
-      <div class="bg-white py-6 border rounded-lg">
-        <h1 class="text-center mb-12 font-bold text-2xl">Müşteri Oluşturma</h1>
-        <FormKit
-          type="form"
-          id="customer-registration"
-          @submit="createCustomer"
-          :actions="false"
-          :config="{
-            classes: {
-              outer: 'mx-auto',
-              wrapper: 'mx-auto',
-              messages: 'text-center',
-            },
-          }"
-        >
+  <div class="row">
+    <div class="col-12 offset-sm-1 col-sm-10 offset-lg-3 col-lg-6">
+      <div class="">
+        <h1 class="text-center my-4 fw-bold">Müşteri Oluşturma</h1>
+        <FormKit type="form" id="customer-registration" @submit="createCustomer" :actions="false">
           <FormKit
             type="text"
             name="customer_name"
@@ -27,7 +15,7 @@
           />
           <FormKit type="text" name="customer_address" label="Müşteri Adresi" placeholder="Müşteri Adresi" v-model="customerForm.customer_address" />
 
-          <FormKit type="submit" label="Oluştur" :wrapper-class="{ 'flex justify-center': true }" />
+          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'd-flex justify-content-center': true }" />
         </FormKit>
       </div>
     </div>

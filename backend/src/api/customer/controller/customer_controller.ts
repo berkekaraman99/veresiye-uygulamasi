@@ -73,7 +73,7 @@ export const getCustomers = async (req: Request, res: Response, next: NextFuncti
       sql: `SELECT * FROM customers WHERE is_deleted = ? ORDER BY customer_name`,
       values: [0],
     });
-    console.log(customers);
+    // console.log(customers);
     res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
@@ -87,7 +87,7 @@ export const getCustomerById = async (req: Request, res: Response, next: NextFun
       sql: `SELECT * FROM customers WHERE customer_id = ?`,
       values: [customer_id],
     });
-    console.log(customer);
+    // console.log(customer);
     res.status(200).json(BaseResponse.success(customer, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
@@ -111,12 +111,12 @@ export const getCustomerReceipts = async (req: Request, res: Response, next: Nex
   try {
     const { customer_id } = req.query;
     const [receipts] = await db.query<RowDataPacket[]>({
-      sql:"SELECT receipt_id, description, price, receipt_type, created_date FROM receipts WHERE is_deleted = 0 AND customer_id = ?",
-      values: [customer_id]
-    })
+      sql: "SELECT receipt_id, description, price, receipt_type, created_date FROM receipts WHERE is_deleted = 0 AND customer_id = ?",
+      values: [customer_id],
+    });
 
     res.status(200).json(BaseResponse.success(receipts, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
   }
-}
+};

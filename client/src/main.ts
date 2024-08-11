@@ -1,6 +1,4 @@
-import "./assets/main.scss";
-import "./assets/transition.scss";
-import "./index.css";
+import "./assets/css/main.scss";
 import "vue-toastification/dist/index.css";
 
 import { createApp } from "vue";

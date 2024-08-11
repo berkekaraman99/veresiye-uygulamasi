@@ -1,0 +1,41 @@
+th {
+  cursor: pointer;
+
+  &:first-child {
+    border-top-left-radius: 0.5rem;
+  }
+  &:last-child {
+    border-top-right-radius: 0.5rem;
+  }
+}
+
+tr {
+  &:last-child td {
+    &:first-child {
+      border-bottom-left-radius: 0.5rem;
+    }
+    &:last-child {
+      border-bottom-right-radius: 0.5rem;
+    }
+  }
+}
+
+thead tr,
+thead tr th {
+  background-color: transparent;
+}
+
+td {
+  align-content: center;
+}
+
+li svg {
+  width: 24px;
+}
+
+a {
+  background-color: transparent !important;
+  text-decoration: none !important;
+  transition: 0.3s ease !important;
+  color: #fff;
+}

@@ -60,7 +60,7 @@ export const deleteReceipt = async (req: Request, res: Response, next: NextFunct
 
 export const updateReceipt = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {receipt_id, price, description, receipt_type} = req.body
+    const { receipt_id, price, description, receipt_type } = req.body;
 
     await db.query<RowDataPacket[]>({
       sql: "UPDATE receipts SET price = ?, description = ?, receipt_type = ? WHERE  receipt_id = ?",
@@ -71,7 +71,7 @@ export const updateReceipt = async (req: Request, res: Response, next: NextFunct
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
   }
-}
+};
 
 export const getReceiptById = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -122,7 +122,7 @@ export const downloadReportExcel = async (req: Request, res: Response, next: Nex
     });
 
     const report = _report;
-    console.log(report);
+    // console.log(report);
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Report");
@@ -151,15 +151,15 @@ export const downloadReportExcel = async (req: Request, res: Response, next: Nex
     colE.numFmt = "₺#,##0.00";
 
     for (let i = 0; i < report.length; i++) {
-        if (report[i]["Net Bakiye"] !== 0) {
-            worksheet.addRow({
-                customer: report[i]["Müşteri"],
-                // alacak: report[i]["Alacak"],
-                // borc: report[i]["Borç"],
-                tarih: report[i]["Son Fatura Tarihi"].slice(0, 10),
-                bakiye: report[i]["Net Bakiye"],
-              });
-        }
+      if (report[i]["Net Bakiye"] !== 0) {
+        worksheet.addRow({
+          customer: report[i]["Müşteri"],
+          // alacak: report[i]["Alacak"],
+          // borc: report[i]["Borç"],
+          tarih: report[i]["Son Fatura Tarihi"].slice(0, 10),
+          bakiye: report[i]["Net Bakiye"],
+        });
+      }
     }
 
     cols.forEach((col) => {
