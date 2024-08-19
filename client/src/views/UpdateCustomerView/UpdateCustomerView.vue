@@ -30,24 +30,21 @@ import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
-const props = defineProps({
-  customer_id: {
-    type: String,
-    required: true,
-  },
-});
-
+interface Props {
+  customer_id: string;
+}
+//STATES
+const props = defineProps<Props>();
 const toast = useToast();
 const router = useRouter();
 const customerStore = useCustomerStore();
-
 const { customer, statusCode } = storeToRefs(customerStore);
-
 const customerForm = reactive({
   customer_name: "",
   customer_address: "",
 });
 
+//FUNCTIONS
 const updateCustomer = async () => {
   if (customerForm.customer_name !== "") {
     await customerStore.updateCustomer({ ...customerForm, customer_id: props.customer_id }).then(() => {

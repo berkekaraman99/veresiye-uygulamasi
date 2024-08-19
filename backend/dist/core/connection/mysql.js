@@ -14,7 +14,8 @@ const connectionConfig = {
     password: (_e = process.env.DATABASE) !== null && _e !== void 0 ? _e : "Skodal9901*",
 };
 const connection = mysql2_1.default.createConnection(connectionConfig);
-const createDatabaseQuery = (_f = "CREATE DATABASE IF NOT EXISTS " + process.env.DATABASE) !== null && _f !== void 0 ? _f : "veresiyedb";
+const mainDb = (_f = process.env.DATABASE) !== null && _f !== void 0 ? _f : "veresiyedb";
+const createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS " + mainDb;
 connection.connect((err) => {
     if (err) {
         console.error("Error connecting to MySQL: " + err.stack);
@@ -48,8 +49,8 @@ CREATE TABLE IF NOT EXISTS users (
   created_at varchar(255) NOT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY id_UNIQUE (id),
-  UNIQUE KEY user_name_UNIQUE (user_name),
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY user_name_UNIQUE (user_name)
+);
 `;
 const createTableCustomersQuery = `
   CREATE TABLE IF NOT EXISTS customers (
@@ -57,15 +58,15 @@ const createTableCustomersQuery = `
   customer_name varchar(255) NOT NULL,
   created_at varchar(255) NOT NULL,
   is_deleted tinyint unsigned NOT NULL DEFAULT '0',
+  customer_address varchar(255) DEFAULT NULL,
   PRIMARY KEY(customer_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 `;
 const createTableReceiptsQuery = `
 CREATE TABLE IF NOT EXISTS receipts (
   receipt_id varchar(255) NOT NULL,
   customer_id varchar(255) NOT NULL,
   description varchar(1024) NOT NULL,
-  document_no varchar(255) NOT NULL,
   price float unsigned NOT NULL,
   receipt_type tinyint unsigned NOT NULL,
   created_date varchar(255) NOT NULL,
@@ -73,7 +74,7 @@ CREATE TABLE IF NOT EXISTS receipts (
   PRIMARY KEY (receipt_id),
   UNIQUE KEY receipt_id_UNIQUE (receipt_id),
   UNIQUE KEY document_no_UNIQUE (document_no)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+);
 `;
 createTableConnection.connect((err) => {
     if (err) {

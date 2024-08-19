@@ -40,20 +40,17 @@ import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 
-const props = defineProps({
-  receipt_id: {
-    type: String,
-    required: true,
-  },
-});
+interface Props {
+  receipt_id: string;
+}
 
+//STATES
+const props = defineProps<Props>();
 const toast = useToast();
 const router = useRouter();
-
 const receiptStore = useReceiptStore();
-
 const { statusCode, receipt } = storeToRefs(receiptStore);
-
+const customerName = ref("");
 const receiptForm = reactive({
   receipt_id: "",
   price: 0,
@@ -61,8 +58,7 @@ const receiptForm = reactive({
   receipt_type: 0,
 });
 
-const customerName = ref("");
-
+//FUNCTIONS
 const updateReceipt = async () => {
   await receiptStore.updateReceipt(receiptForm).then(() => {
     if (statusCode.value === ResponseStatus.SUCCESS) {

@@ -8,7 +8,6 @@ import { ResponseStatus } from "../../../core/constants/response_status_enum";
 export const createCustomer = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { customer_name, customer_address, customer_id, created_date } = req.body;
-
     await createCustomerValidator
       .validate({
         customer_name,
@@ -16,12 +15,10 @@ export const createCustomer = async (req: Request, res: Response, next: NextFunc
       .catch((_) => {
         throw new Error("Validation Error");
       });
-
     const checkIsCustomerUnique = await db.query<RowDataPacket[]>({
       sql: "SELECT * FROM customers WHERE customer_id = ?",
       values: [customer_id],
     });
-
     if (checkIsCustomerUnique[0].length !== 0) {
       return res.status(200).json(BaseResponse.fail("Customer is already exists", 1013));
     }
@@ -30,7 +27,6 @@ export const createCustomer = async (req: Request, res: Response, next: NextFunc
       sql: "INSERT INTO customers (customer_id, customer_name, customer_address, created_at) VALUES (?, ?, ?, ?)",
       values: [customer_id, customer_name, customer_address, created_date],
     });
-
     res.status(200).json(BaseResponse.success("Customer created successfully", ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
@@ -40,10 +36,9 @@ export const createCustomer = async (req: Request, res: Response, next: NextFunc
 export const deleteCustomer = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { customer_id } = req.body;
-
     await db.query<RowDataPacket[]>({
-      sql: "UPDATE customers SET is_deleted = ? WHERE customer_id = ?",
-      values: [1, customer_id],
+      sql: "UPDATE customers SET is_deleted = 1 WHERE customer_id = ?",
+      values: [customer_id],
     });
     res.status(200).json(BaseResponse.success("Customer deleted successfully!", ResponseStatus.SUCCESS));
   } catch (error: any) {
@@ -54,12 +49,10 @@ export const deleteCustomer = async (req: Request, res: Response, next: NextFunc
 export const updateCustomer = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { customer_name, customer_address, customer_id } = req.body;
-
     await db.query<RowDataPacket[]>({
       sql: "UPDATE customers SET customer_name = ?, customer_address = ? WHERE customer_id = ?",
       values: [customer_name, customer_address, customer_id],
     });
-
     res.status(200).json(BaseResponse.success("Customer updated successfully!", ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
@@ -70,11 +63,33 @@ export const getCustomers = async (req: Request, res: Response, next: NextFuncti
   try {
     const { offset } = req.query;
     const [customers] = await db.query<RowDataPacket[]>({
-      sql: `SELECT * FROM customers WHERE is_deleted = ? ORDER BY customer_name`,
-      values: [0],
+      sql: `SELECT * FROM customers WHERE is_deleted = 0 ORDER BY customer_name LIMIT 15 OFFSET ${offset}`,
     });
-    // console.log(customers);
     res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
+  } catch (error: any) {
+    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+  }
+};
+
+export const getCustomerPageCount = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const [page_count] = await db.query<RowDataPacket[]>({
+      sql: "SELECT CEIL(COUNT(*) / 15) AS count FROM customers",
+    });
+    res.status(200).json(BaseResponse.success(page_count, ResponseStatus.SUCCESS));
+  } catch (error: any) {
+    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+  }
+};
+
+export const getCustomerReceiptsPageCount = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.query;
+    const [page_count] = await db.query<RowDataPacket[]>({
+      sql: "SELECT CEIL(COUNT(*) / 15) AS count FROM receipts WHERE customer_id = ?",
+      values: [id],
+    });
+    res.status(200).json(BaseResponse.success(page_count, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
   }
@@ -87,7 +102,6 @@ export const getCustomerById = async (req: Request, res: Response, next: NextFun
       sql: `SELECT * FROM customers WHERE customer_id = ?`,
       values: [customer_id],
     });
-    // console.log(customer);
     res.status(200).json(BaseResponse.success(customer, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
@@ -97,9 +111,10 @@ export const getCustomerById = async (req: Request, res: Response, next: NextFun
 export const searchCustomers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { text } = req.query;
+    const textQuery = "%" + text + "%";
     const [customers] = await db.query<RowDataPacket[]>({
-      sql: "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 10 OFFSET 0",
-      values: ["%" + text + "%"],
+      sql: "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 5 OFFSET 0",
+      values: [textQuery],
     });
     res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
   } catch (error: any) {
@@ -109,12 +124,11 @@ export const searchCustomers = async (req: Request, res: Response, next: NextFun
 
 export const getCustomerReceipts = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { customer_id } = req.query;
+    const { customer_id, offset } = req.query;
     const [receipts] = await db.query<RowDataPacket[]>({
-      sql: "SELECT receipt_id, description, price, receipt_type, created_date FROM receipts WHERE is_deleted = 0 AND customer_id = ?",
+      sql: `SELECT receipt_id, description, price, receipt_type, created_date FROM receipts WHERE is_deleted = 0 AND customer_id = ? LIMIT 15 OFFSET ${offset}`,
       values: [customer_id],
     });
-
     res.status(200).json(BaseResponse.success(receipts, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));

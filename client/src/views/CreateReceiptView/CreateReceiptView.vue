@@ -51,31 +51,30 @@ import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
 import { ResponseStatus } from "@/constants/response_status_enum";
 
-const props = defineProps({
-  receipt_type: {
-    type: Number,
-    required: false,
-  },
-});
+interface Props {
+  receipt_type?: number;
+}
 
+//STATES
+const props = withDefaults(defineProps<Props>(), {
+  receipt_type: 0,
+});
 const toast = useToast();
 const router = useRouter();
-
 const customerStore = useCustomerStore();
 const receiptStore = useReceiptStore();
-
 const { statusCode } = storeToRefs(receiptStore);
 const { searchedCustomers } = storeToRefs(customerStore);
-
 const receiptForm = reactive({
   customer_id: "",
   price: 0,
   description: "",
   receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
 });
+let timer: any = null;
+const customerName = ref("");
 
-// console.log(props.receipt_type);
-
+//FUNCTIONS
 const createReceipt = async () => {
   if (customerName.value !== "") {
     receiptForm.customer_id = searchedCustomers.value[0].customer_id;
@@ -107,9 +106,6 @@ const createReceipt = async () => {
       });
   }
 };
-
-let timer: any = null;
-const customerName = ref("");
 
 const searchCustomer = async () => {
   if (timer != null) {

@@ -40,14 +40,12 @@ import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
 let body: HTMLBodyElement | null;
-
 const products = [
   { name: "Müşteriler", href: "customers", icon: UsersIcon },
   { name: "Müşteri Oluştur", href: "create-customer", icon: UserPlusIcon },
   { name: "Dekont Oluştur", href: "create-receipt", icon: DocumentPlusIcon },
   { name: "Rapor", href: "report", icon: DocumentDuplicateIcon },
 ];
-
 const theme = ref();
 const changeTheme = () => {
   if (theme.value === "dark") {

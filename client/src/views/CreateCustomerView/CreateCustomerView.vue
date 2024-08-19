@@ -32,17 +32,17 @@ import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { ResponseStatus } from "@/constants/response_status_enum";
 
+//STATES
 const toast = useToast();
 const router = useRouter();
 const customerStore = useCustomerStore();
-
 const { statusCode } = storeToRefs(customerStore);
-
 const customerForm = reactive({
   customer_name: "",
   customer_address: "",
 });
 
+//FUNCTIONS
 const createCustomer = async () => {
   if (customerForm.customer_name !== "") {
     const customer_id = uuidv4();

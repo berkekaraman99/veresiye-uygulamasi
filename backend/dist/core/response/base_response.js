@@ -5,10 +5,10 @@ class BaseResponse {
         this.data = data;
         this.isSuccess = isSuccess;
         this.statusCode = statusCode;
-        this.errors = errors;
+        this.errors = errors || [];
     }
     static success(data, statusCode = 200) {
-        return new BaseResponse(data, true, statusCode, null);
+        return new BaseResponse(data, true, statusCode, []);
     }
     static fail(errors, statusCode = 500) {
         return new BaseResponse(null, false, statusCode, errors);

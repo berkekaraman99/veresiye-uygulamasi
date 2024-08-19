@@ -3,12 +3,12 @@
     <div class="col-12 col-sm-12 offset-lg-2 col-lg-8">
       <div class="text-sm">
         <h1 class="text-center fw-bold my-3">Müşteriler</h1>
+        <button class="btn btn-primary create-btn">
+          <RouterLink :to="{ name: 'create-customer' }" class="text-white"><PlusIcon /></RouterLink>
+        </button>
+
         <div class="mx-auto mb-3 position-relative">
           <MagnifyingGlassIcon class="search-icon" />
-          <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 search-icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-          </svg> -->
-
           <input class="form-control form-control-lg px-5" placeholder="Müşteri ara" type="search" v-model="searchQuery" @input="searchCustomer()" />
         </div>
 
@@ -61,6 +61,17 @@
             </tr>
           </tbody>
         </table>
+        <div class="d-flex align-items-center justify-content-center mt-4">
+          <div
+            v-for="page in pages"
+            v-bind:key="page"
+            :class="{ 'fw-bold text-decoration-underline ': offset / 15 + 1 === page }"
+            class="mx-1 fs-6"
+            @click="selectPage(page)"
+          >
+            {{ page }}
+          </div>
+        </div>
       </div>
     </div>
     <Teleport to="body">
@@ -90,27 +101,36 @@
 </template>
 
 <script setup lang="ts">
-import { UserIcon, UserMinusIcon, PencilIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/solid";
+import { UserIcon, UserMinusIcon, PencilIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 import { RouterLink } from "vue-router";
 
+//STATES
 const toast = useToast();
 const customerStore = useCustomerStore();
 const isHaveAddress = ref(false);
 const selectedCustomer = ref<ICustomer>();
+const offset = ref(0);
+const pages = ref<Array<number>>([]);
+const { customers, searchedCustomers, customersPageCount } = storeToRefs(customerStore);
+const searchQuery = ref("");
 
-const { customers, searchedCustomers } = storeToRefs(customerStore);
-
+//FUNCTIONS
+const selectPage = async (no: number) => {
+  offset.value = (no - 1) * 15;
+  if (offset.value / 15 - 1 !== no) {
+    await customerStore.getCustomers(offset.value);
+  }
+};
 const selCustomer = (customer: any) => {
   selectedCustomer.value = customer;
 };
 
-const searchQuery = ref("");
 const searchCustomer = () => {
-  customerStore.searchCustomers(searchQuery.value);
+  customerStore.searchCustomersList(searchQuery.value);
 };
 
 const removeCustomer = async (customer_id: string) => {
@@ -119,16 +139,6 @@ const removeCustomer = async (customer_id: string) => {
     await customerStore.getCustomers();
   });
 };
-
-onMounted(async () => {
-  await customerStore.getCustomers().then(() => {
-    customers.value.forEach((element) => {
-      if (element.customer_address !== "") {
-        isHaveAddress.value = true;
-      }
-    });
-  });
-});
 
 const sortTable = (n: number) => {
   let table: HTMLTableElement,
@@ -177,6 +187,31 @@ const sortTable = (n: number) => {
     }
   }
 };
+
+onMounted(async () => {
+  await customerStore.getCustomers(offset.value).then(async () => {
+    customers.value.forEach((element) => {
+      if (element.customer_address !== "") {
+        isHaveAddress.value = true;
+      }
+    });
+  });
+  await customerStore.getCustomersPageCount().then(() => {
+    for (let i = 1; i <= customersPageCount.value; i++) {
+      pages.value.push(i);
+    }
+  });
+});
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.create-btn {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  border-radius: 4rem;
+  height: 4rem;
+  width: 4rem;
+  padding: 1rem;
+}
+</style>

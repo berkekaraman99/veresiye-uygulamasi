@@ -3,7 +3,9 @@ import {
   createCustomer,
   deleteCustomer,
   getCustomerById,
+  getCustomerPageCount,
   getCustomerReceipts,
+  getCustomerReceiptsPageCount,
   getCustomers,
   searchCustomers,
   updateCustomer,
@@ -18,5 +20,7 @@ CustomerRoutes.get("/get-customers", getCustomers);
 CustomerRoutes.get("/get-customer-by-id", getCustomerById);
 CustomerRoutes.get("/search-customers", searchCustomers);
 CustomerRoutes.get("/get-customer-receipts", getCustomerReceipts);
+CustomerRoutes.get("/get-customer-page-count", getCustomerPageCount);
+CustomerRoutes.get("/get-customer-receipts-page-count", getCustomerReceiptsPageCount);
 
 export default CustomerRoutes;

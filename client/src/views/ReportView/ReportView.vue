@@ -49,14 +49,15 @@ import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
+//STATES
 const receiptStore = useReceiptStore();
 const { report } = storeToRefs(receiptStore);
+const download = ref();
 
+//FUNCTIONS
 const getReceiptReport = async () => {
   await receiptStore.getReceiptReport();
 };
-
-const download = ref();
 
 const sortTable = (n: number) => {
   let table: HTMLTableElement,
@@ -117,9 +118,4 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped lang="scss">
-// thead tr,
-// thead tr th {
-//   background-color: transparent;
-// }
-</style>
+<style scoped lang="scss"></style>

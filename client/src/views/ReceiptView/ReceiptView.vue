@@ -44,12 +44,10 @@ import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 import { reformatReceiptType } from "@/utils/receipt_helper";
 
-const props = defineProps({
-  receipt_id: {
-    type: String,
-    required: true,
-  },
-});
+interface Props {
+  receipt_id: string;
+}
+const props = defineProps<Props>();
 
 const receiptStore = useReceiptStore();
 const { receipt } = storeToRefs(receiptStore);

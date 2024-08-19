@@ -95,35 +95,23 @@ import { RouterLink } from "vue-router";
 import { reformatReceiptType } from "@/utils/receipt_helper";
 import { DocumentTextIcon, TrashIcon, PencilIcon } from "@heroicons/vue/24/solid";
 
-const props = defineProps({
-  customer_id: {
-    type: String,
-    required: true,
-  },
-});
+interface Props {
+  customer_id: string;
+}
 
-const isHaveDescription = ref(false);
-
+//STATES
+const props = defineProps<Props>();
+const isHaveDescription = ref<boolean>(false);
 const receiptStore = useReceiptStore();
 const customerStore = useCustomerStore();
 const { customer, customerReceipts } = storeToRefs(customerStore);
 
+//FUNCTIONS
 const removeReceipt = async (receipt_id: string) => {
   await receiptStore.deleteReceipt(receipt_id).then(async () => {
     await customerStore.getCustomerReceipts(props.customer_id);
   });
 };
-
-onMounted(async () => {
-  await customerStore.getCustomerById(props.customer_id);
-  await customerStore.getCustomerReceipts(props.customer_id).then(() => {
-    customerReceipts.value.forEach((element) => {
-      if (element.description !== "") {
-        isHaveDescription.value = true;
-      }
-    });
-  });
-});
 
 const sortTable = (n: number) => {
   let table: HTMLTableElement,
@@ -172,6 +160,17 @@ const sortTable = (n: number) => {
     }
   }
 };
+
+onMounted(async () => {
+  await customerStore.getCustomerById(props.customer_id);
+  await customerStore.getCustomerReceipts(props.customer_id).then(() => {
+    customerReceipts.value.forEach((element) => {
+      if (element.description !== "") {
+        isHaveDescription.value = true;
+      }
+    });
+  });
+});
 </script>
 
 <style scoped lang="scss">

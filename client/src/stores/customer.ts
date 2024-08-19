@@ -9,6 +9,8 @@ export const useCustomerStore = defineStore("customer", () => {
   const statusCode = ref<number>(0);
   const searchedCustomers = ref<Array<ICustomer>>([]);
   const customerReceipts = ref<Array<ICustomerReceipt>>([]);
+  const customersPageCount = ref<number>(0);
+  const customerReceiptsPageCount = ref<number>(0);
 
   //ACTIONS
   const createCustomer = async (customerForm: any) => {
@@ -53,9 +55,9 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
-  const getCustomers = async () => {
+  const getCustomers = async (offset: number = 0) => {
     try {
-      const res = await instance.get("/customer/get-customers?offset=0");
+      const res = await instance.get(`/customer/get-customers?offset=${offset}`);
       // console.log(res.data);
       customers.value = res.data.data;
       searchedCustomers.value = res.data.data;
@@ -83,7 +85,32 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
+  const getCustomersPageCount = async () => {
+    try {
+      const res = await instance.get(`/customer/get-customer-page-count`);
+      console.log(res.data);
+      customersPageCount.value = Number(res.data.data[0].count);
+    } catch (error: any) {
+      console.error(error.response);
+    }
+  };
+
   const searchCustomers = async (searchValue: string) => {
+    try {
+      const res = await instance.get(`/customer/search-customers?text=${searchValue}`);
+      statusCode.value = res.data.statusCode;
+      searchedCustomers.value = res.data.data;
+      console.log(res.data);
+    } catch (error: any) {
+      console.error(error.response);
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
+    }
+  };
+
+  const searchCustomersList = async (searchValue: string) => {
     try {
       if (searchValue === "") {
         searchedCustomers.value = customers.value;
@@ -95,9 +122,9 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
-  const getCustomerReceipts = async (customer_id: string) => {
+  const getCustomerReceipts = async (customer_id: string, offset: number = 0) => {
     try {
-      const res = await instance.get(`/customer/get-customer-receipts?customer_id=${customer_id}`);
+      const res = await instance.get(`/customer/get-customer-receipts?customer_id=${customer_id}&offset=${offset}`);
       statusCode.value = res.data.statusCode;
       customerReceipts.value = res.data.data;
       // console.log(res.data);
@@ -110,12 +137,24 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
+  const getCustomerReceiptsPageCount = async (customer_id: string) => {
+    try {
+      const res = await instance.get(`/customer/get-customer-receipts-page-count?id=${customer_id}`);
+      customerReceiptsPageCount.value = Number(res.data.data[0].count);
+      //   console.log(res.data);
+    } catch (error: any) {
+      console.error(error.response);
+    }
+  };
+
   return {
     customer,
     customers,
     searchedCustomers,
     statusCode,
     customerReceipts,
+    customersPageCount,
+    customerReceiptsPageCount,
     createCustomer,
     deleteCustomer,
     updateCustomer,
@@ -123,5 +162,8 @@ export const useCustomerStore = defineStore("customer", () => {
     getCustomerById,
     searchCustomers,
     getCustomerReceipts,
+    searchCustomersList,
+    getCustomerReceiptsPageCount,
+    getCustomersPageCount,
   };
 });
