@@ -58,7 +58,7 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomers = async (offset: number = 0) => {
     try {
       const res = await instance.get(`/customer/get-customers?offset=${offset}`);
-      // console.log(res.data);
+      console.log(res.data);
       customers.value = res.data.data;
       searchedCustomers.value = res.data.data;
       statusCode.value = res.data.statusCode;
@@ -110,7 +110,7 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
-  const searchCustomersList = async (searchValue: string) => {
+  const searchCustomersList = (searchValue: string) => {
     try {
       if (searchValue === "") {
         searchedCustomers.value = customers.value;

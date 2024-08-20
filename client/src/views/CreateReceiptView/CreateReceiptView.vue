@@ -27,9 +27,13 @@
             list="customers"
             @input="searchCustomer()"
           />
-          <datalist id="customers">
+          <datalist id="customer">
             <option v-for="customer in searchedCustomers" :value="customer.customer_name"></option>
           </datalist>
+
+          <select v-show="showSelect" ref="customerSelect" class="form-select" aria-label="Default select example">
+            <option v-for="customer in searchedCustomers" :value="customer.customer_id">{{ customer.customer_name }}</option>
+          </select>
           <FormKit type="number" name="price" label="Fiyat" placeholder="Fiyat" min="0" validation="required" v-model="receiptForm.price" />
           <FormKit type="textarea" name="description" label="Açıklama" placeholder="Açıklama" v-model="receiptForm.description" />
 
@@ -43,7 +47,7 @@
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { reactive, ref } from "vue";
+import { nextTick, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import moment from "moment";
@@ -67,12 +71,32 @@ const { statusCode } = storeToRefs(receiptStore);
 const { searchedCustomers } = storeToRefs(customerStore);
 const receiptForm = reactive({
   customer_id: "",
-  price: 0,
+  price: "0",
   description: "",
   receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
 });
 let timer: any = null;
 const customerName = ref("");
+const showSelect = ref<boolean>(false);
+const customerSelect = ref(null);
+let watchTimer: any = null;
+
+watch(customerName, (val) => {
+  if (watchTimer != null) {
+    clearTimeout(watchTimer);
+  }
+  timer = setTimeout(() => {
+    if (val) {
+      showSelect.value = true;
+      nextTick(() => {
+        customerSelect.value.focus();
+        customerSelect.value.click();
+      });
+    } else {
+      showSelect.value = false;
+    }
+  }, 600);
+});
 
 //FUNCTIONS
 const createReceipt = async () => {

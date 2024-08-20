@@ -20,7 +20,7 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"> İşlemler </a>
-            <ul class="dropdown-menu dropdown-menu-end">
+            <ul class="dropdown-menu dropdown-menu-end text-start">
               <li v-for="item in products" v-bind:key="item.name">
                 <RouterLink :to="{ name: item.href }" class="dropdown-item" href="#"
                   ><component :is="item.icon" class="icon" /> <span>{{ item.name }}</span></RouterLink
@@ -35,7 +35,16 @@
 </template>
 
 <script setup lang="ts">
-import { DocumentDuplicateIcon, Bars3Icon, UsersIcon, UserPlusIcon, DocumentPlusIcon, SunIcon, MoonIcon } from "@heroicons/vue/24/solid";
+import {
+  DocumentDuplicateIcon,
+  Bars3Icon,
+  UsersIcon,
+  UserPlusIcon,
+  DocumentPlusIcon,
+  MagnifyingGlassIcon,
+  SunIcon,
+  MoonIcon,
+} from "@heroicons/vue/24/solid";
 import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 
@@ -45,6 +54,7 @@ const products = [
   { name: "Müşteri Oluştur", href: "create-customer", icon: UserPlusIcon },
   { name: "Dekont Oluştur", href: "create-receipt", icon: DocumentPlusIcon },
   { name: "Rapor", href: "report", icon: DocumentDuplicateIcon },
+  { name: "Arama", href: "search-customer", icon: MagnifyingGlassIcon },
 ];
 const theme = ref();
 const changeTheme = () => {

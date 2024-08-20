@@ -7,11 +7,6 @@
           <RouterLink :to="{ name: 'create-customer' }" class="text-white"><PlusIcon /></RouterLink>
         </button>
 
-        <div class="mx-auto mb-3 position-relative">
-          <MagnifyingGlassIcon class="search-icon" />
-          <input class="form-control form-control-lg px-5" placeholder="Müşteri ara" type="search" v-model="searchQuery" @input="searchCustomer()" />
-        </div>
-
         <table id="customersTable" class="table table-striped table-hover table-borderless" v-if="searchedCustomers.length !== 0">
           <thead class="text-xs text-secondary bg-body">
             <tr>
@@ -101,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { UserIcon, UserMinusIcon, PencilIcon, MagnifyingGlassIcon, PlusIcon } from "@heroicons/vue/24/solid";
+import { UserIcon, UserMinusIcon, PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";
@@ -116,7 +111,6 @@ const selectedCustomer = ref<ICustomer>();
 const offset = ref(0);
 const pages = ref<Array<number>>([]);
 const { customers, searchedCustomers, customersPageCount } = storeToRefs(customerStore);
-const searchQuery = ref("");
 
 //FUNCTIONS
 const selectPage = async (no: number) => {
@@ -127,10 +121,6 @@ const selectPage = async (no: number) => {
 };
 const selCustomer = (customer: any) => {
   selectedCustomer.value = customer;
-};
-
-const searchCustomer = () => {
-  customerStore.searchCustomersList(searchQuery.value);
 };
 
 const removeCustomer = async (customer_id: string) => {

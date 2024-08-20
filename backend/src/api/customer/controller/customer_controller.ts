@@ -113,7 +113,7 @@ export const searchCustomers = async (req: Request, res: Response, next: NextFun
     const { text } = req.query;
     const textQuery = "%" + text + "%";
     const [customers] = await db.query<RowDataPacket[]>({
-      sql: "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 5 OFFSET 0",
+      sql: "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 8",
       values: [textQuery],
     });
     res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { RouterLink } from "vue-router";
-import { UserPlusIcon, DocumentPlusIcon, UsersIcon, DocumentMinusIcon, DocumentDuplicateIcon } from "@heroicons/vue/24/solid";
+import { UserPlusIcon, DocumentPlusIcon, UsersIcon, MagnifyingGlassIcon, DocumentMinusIcon, DocumentDuplicateIcon } from "@heroicons/vue/24/solid";
 
 const routerReceiptType = reactive({
   alacak: 1,
@@ -41,6 +41,12 @@ const routerReceiptType = reactive({
         <div class="interactive-card bg-body text-body">
           <h1 class="mb-0 mb-md-4">Rapor Al</h1>
           <div class="text-center"><DocumentDuplicateIcon class="action-icon" /></div>
+        </div>
+      </RouterLink>
+      <RouterLink class="col" :to="{ name: 'search-customer' }">
+        <div class="interactive-card bg-body text-body">
+          <h1 class="mb-0 mb-md-4">Müşteri Ara</h1>
+          <div class="text-center"><MagnifyingGlassIcon class="action-icon" /></div>
         </div>
       </RouterLink>
     </div>

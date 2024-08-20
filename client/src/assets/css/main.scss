@@ -1,26 +1,4 @@
-@layer reset, theme, layout, content, components, utility;
-
-@layer reset {
-  @import "./reset.scss";
-}
-@layer theme {
-  @import "./theme.scss";
-}
-@layer layout {
-  @import "./layout.scss";
-}
-@layer content {
-  @import "./content.scss";
-}
-@layer components {
-  @import "./components.scss";
-}
-@layer utility {
-  @import "./utils.scss";
-}
-@layer {
-  @import "./transition.scss";
-}
+// @layer reset, theme, layout, content, components, utility;
 
 $primary-color: rgb(124 58 237);
 
@@ -37,3 +15,25 @@ $theme-colors: map-merge(
 );
 
 @import "bootstrap";
+@import "./reset.scss";
+@import "./theme.scss";
+@import "./layout.scss";
+@import "./content.scss";
+@import "./components.scss";
+@import "./utils.scss";
+@import "./transition.scss";
+
+// @layer reset {
+// }
+// @layer theme {
+// }
+// @layer layout {
+// }
+// @layer content {
+// }
+// @layer components {
+// }
+// @layer utility {
+// }
+// @layer {
+// }

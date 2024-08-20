@@ -14,7 +14,6 @@
 import { RouterView } from "vue-router";
 import TheHeader from "@/components/layouts/TheHeader.vue";
 import TheSidebar from "@/components/layouts/TheSidebar.vue";
-import { onMounted, watchEffect } from "vue";
 </script>
 
 <style lang="scss">

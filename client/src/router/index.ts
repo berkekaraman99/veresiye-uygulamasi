@@ -43,13 +43,18 @@ const routes = [
     path: "/edit-receipt/:receipt_id",
     name: "edit-receipt",
     component: () => import("@/views/EditReceiptView/EditReceiptView.vue"),
-    props: (route: any) => ({ receipt_id: route.params.receipt_id})
+    props: (route: any) => ({ receipt_id: route.params.receipt_id }),
+  },
+  {
+    path: "/search-customer",
+    name: "search-customer",
+    component: () => import("@/views/SearchCustomerView/SearchCustomerView.vue"),
   },
   {
     path: "/receipt/:receipt_id",
     name: "receipt",
     component: () => import("@/views/ReceiptView/ReceiptView.vue"),
-    props: (route: any) => ({receipt_id: route.params.receipt_id})
+    props: (route: any) => ({ receipt_id: route.params.receipt_id }),
   },
   {
     path: "/report",
