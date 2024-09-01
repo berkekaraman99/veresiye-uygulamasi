@@ -1,6 +1,6 @@
 import mysql, { ConnectionOptions, PoolOptions, RowDataPacket } from "mysql2";
 
-const connectionConfig: ConnectionOptions = {
+let connectionConfig: ConnectionOptions = {
   host: process.env.HOST ?? "localhost",
   port: Number(process.env.DB_PORT) ?? 3306,
   user: process.env.USER ?? "root",
@@ -9,9 +9,7 @@ const connectionConfig: ConnectionOptions = {
 };
 
 const connection = mysql.createConnection(connectionConfig);
-
 const mainDb = process.env.DATABASE ?? "veresiyedb";
-
 const createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS " + mainDb;
 
 connection.connect((err) => {
@@ -32,18 +30,12 @@ connection.connect((err) => {
   });
 });
 
-const tableConfig: ConnectionOptions = {
-  host: process.env.HOST ?? "localhost",
-  port: Number(process.env.DB_PORT) ?? 3306,
-  user: process.env.ROOT ?? "root",
+connectionConfig = { ...connectionConfig,
   database: process.env.DATABASE ?? "veresiyedb",
-  password: process.env.PASSWORD ?? "Skodal9901*",
 };
 
-const createTableConnection = mysql.createConnection(tableConfig);
-
-// Tablo oluşturma sorguları
-const createTableUsersQuery = `
+// Tablo oluşturma sorgusu
+const createTableUsers = `
 CREATE TABLE IF NOT EXISTS users (
   id varchar(255) NOT NULL,
   company_name varchar(255) NOT NULL,
@@ -56,8 +48,8 @@ CREATE TABLE IF NOT EXISTS users (
 );
 `;
 
-const createTableCustomersQuery = `
-  CREATE TABLE IF NOT EXISTS customers (
+const createTableCustomers = `
+CREATE TABLE IF NOT EXISTS customers (
   customer_id varchar(255) NOT NULL,
   customer_name varchar(255) NOT NULL,
   created_at varchar(255) NOT NULL,
@@ -65,9 +57,8 @@ const createTableCustomersQuery = `
   customer_address varchar(255) DEFAULT NULL,
   PRIMARY KEY(customer_id)
 );
-`;
-
-const createTableReceiptsQuery = `
+`
+const createTableReceipts =`
 CREATE TABLE IF NOT EXISTS receipts (
   receipt_id varchar(255) NOT NULL,
   customer_id varchar(255) NOT NULL,
@@ -77,51 +68,44 @@ CREATE TABLE IF NOT EXISTS receipts (
   created_date varchar(255) NOT NULL,
   is_deleted tinyint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (receipt_id),
-  UNIQUE KEY receipt_id_UNIQUE (receipt_id),
-  UNIQUE KEY document_no_UNIQUE (document_no)
-);
-`;
+  UNIQUE KEY receipt_id_UNIQUE (receipt_id)
+);`
 
-createTableConnection.connect((err) => {
+connection.connect((err) => {
   if (err) {
     console.error("Error connecting to MySQL: " + err.stack);
     return;
   }
-  console.log("Connected to MySQL as id " + createTableConnection.threadId);
+  console.log("Connected to MySQL as id " + connection.threadId);
 
-  createTableConnection.query<RowDataPacket[]>(createTableUsersQuery, (err, results, fields) => {
+  connection.query<RowDataPacket[]>((createTableUsers), (err, results, fields) => {
     if (err) {
       console.error("Error creating table: " + err.stack);
       return;
     }
-    console.log("Table created successfully");
+    console.log("Users table created successfully");
   });
 
-  createTableConnection.query<RowDataPacket[]>(createTableCustomersQuery, (err, results, fields) => {
+  connection.query<RowDataPacket[]>(createTableCustomers, (err, results, fields) => {
     if (err) {
-      console.error("Error creating table: " + err.stack);
-      return;
+        console.error("Error creating table: " + err.stack);
+        return;
     }
-    console.log("Table created successfully");
+    console.log("Customers table created successfully");
   });
 
-  createTableConnection.query<RowDataPacket[]>(createTableReceiptsQuery, (err, results, fields) => {
+  connection.query<RowDataPacket[]>(createTableReceipts, (err, results, fields) => {
     if (err) {
-      console.error("Error creating table: " + err.stack);
-      return;
+        console.error("Error creating table: " + err.stack);
+        return;
     }
-    console.log("Table created successfully");
+    console.log("Receipts table created successfully");
+  })
 
-    createTableConnection.end();
-  });
 });
 
 const dbConfig: PoolOptions = {
-  host: process.env.HOST ?? "localhost",
-  port: Number(process.env.DB_PORT) ?? "3306",
-  user: process.env.ROOT ?? "root",
-  database: process.env.DATABASE ?? "veresiyedb",
-  password: process.env.DATABASE ?? "Skodal9901*",
+ ...connectionConfig,
   waitForConnections: true,
   connectionLimit: 10,
   maxIdle: 10,
