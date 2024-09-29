@@ -65,6 +65,8 @@ export const getCustomers = async (req: Request, res: Response, next: NextFuncti
     const [customers] = await db.query<RowDataPacket[]>({
       sql: `SELECT * FROM customers WHERE is_deleted = 0 ORDER BY customer_name LIMIT 15 OFFSET ${offset}`,
     });
+    console.log(customers);
+
     res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));

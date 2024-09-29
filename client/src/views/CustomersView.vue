@@ -1,76 +1,93 @@
 <template>
-  <div class="row">
-    <div class="col-12 col-sm-12 offset-lg-2 col-lg-8">
-      <div class="text-sm">
-        <h1 class="text-center fw-bold my-3">Müşteriler</h1>
-        <button class="btn btn-primary create-btn">
-          <RouterLink :to="{ name: 'create-customer' }" class="text-white"><PlusIcon /></RouterLink>
-        </button>
+  <div class="grid grid-cols-12">
+    <div class="col-start-2 col-span-10">
+      <h1 class="text-center font-semibold text-3xl mb-8">Müşteriler</h1>
 
-        <table id="customersTable" class="table table-striped table-hover table-borderless" v-if="searchedCustomers.length !== 0">
-          <thead class="text-xs text-secondary bg-body">
-            <tr>
-              <th scope="col" class="px-3 py-2" @click="sortTable(0)">Müşteri</th>
-              <th v-if="isHaveAddress" scope="col" class="px-3 py-2" @click="sortTable(1)">Müşteri Adresi</th>
-              <th scope="col" class="px-3 py-2" @click="sortTable(2)">Oluşturulma Tarihi</th>
-              <th scope="col" class="px-3 py-2">İşlem</th>
-            </tr>
-          </thead>
+      <RouterLink :to="{ name: 'create-customer' }">
+        <div class="bg-purple-800 hover:bg-purple-600 create-btn text-white"><PlusIcon /></div>
+      </RouterLink>
 
-          <tbody>
-            <tr v-for="customer in searchedCustomers" v-bind:key="customer.customer_id">
-              <td class="px-3 py-2">{{ customer.customer_name }}</td>
-              <td v-if="isHaveAddress" class="px-3 py-2">{{ customer.customer_address }}</td>
-              <td class="px-3 py-2">{{ customer.created_at.slice(0, 10) }}</td>
-              <td class="px-3 py-2">
-                <div class="dropdown">
-                  <a
-                    class="btn border dropdown-toggle shadow-sm fw-semibold text-sm"
-                    href="#"
-                    role="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
+      <table id="customersTable" class="table w-full shadow" v-if="searchedCustomers.length !== 0">
+        <thead class="text-xs bg-gray-200">
+          <tr>
+            <th scope="col" class="px-3 py-2" @click="sortTable(0)">Müşteri</th>
+            <th v-if="isHaveAddress" scope="col" class="px-3 py-2" @click="sortTable(1)">Müşteri Adresi</th>
+            <th scope="col" class="px-3 py-2" @click="sortTable(2)">Oluşturulma Tarihi</th>
+            <th scope="col" class="px-3 py-2">İşlem</th>
+          </tr>
+        </thead>
+
+        <tbody class="text-sm bg-white">
+          <tr v-for="customer in searchedCustomers" v-bind:key="customer.customer_id">
+            <td class="px-5 py-2">{{ customer.customer_name }}</td>
+            <td v-if="isHaveAddress" class="px-3 py-2">{{ customer.customer_address }}</td>
+            <td class="px-5 py-2 text-center">{{ customer.created_at.slice(0, 10) }}</td>
+            <td class="px-5 py-3 text-center">
+              <Menu as="div" class="relative inline-block text-left">
+                <div>
+                  <MenuButton
+                    class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                   >
                     Seçenekler
-                  </a>
-
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                      <RouterLink :to="{ name: 'customer', params: { customer_id: customer.customer_id } }" class="dropdown-item"
-                        ><UserIcon /> Müşteri Bilgileri</RouterLink
-                      >
-                    </li>
-                    <li>
-                      <RouterLink :to="{ name: 'edit-customer', params: { customer_id: customer.customer_id } }" class="dropdown-item"
-                        ><PencilIcon /> Müşteri Güncelle</RouterLink
-                      >
-                    </li>
-                    <li>
-                      <a class="dropdown-item text-danger" @click="selCustomer(customer)" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                        ><UserMinusIcon /> Müşteriyi Sil</a
-                      >
-                    </li>
-                  </ul>
+                    <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+                  </MenuButton>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="d-flex align-items-center justify-content-center mt-4">
-          <div
-            v-for="page in pages"
-            v-bind:key="page"
-            :class="{ 'fw-bold text-decoration-underline ': offset / 15 + 1 === page }"
-            class="mx-1 fs-6"
-            @click="selectPage(page)"
-          >
-            {{ page }}
-          </div>
+
+                <transition
+                  enter-active-class="transition ease-out duration-100"
+                  enter-from-class="transform opacity-0 scale-95"
+                  enter-to-class="transform opacity-100 scale-100"
+                  leave-active-class="transition ease-in duration-75"
+                  leave-from-class="transform opacity-100 scale-100"
+                  leave-to-class="transform opacity-0 scale-95"
+                >
+                  <MenuItems
+                    class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  >
+                    <div class="py-2">
+                      <RouterLink :to="{ name: 'customer', params: { customer_id: customer.customer_id } }">
+                        <MenuItem v-slot="{ active }">
+                          <a class="flex items-center" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                            <span class="dropdown-icon"><UserIcon /></span> <span class="ps-3">Müşteri Bilgileri</span>
+                          </a>
+                        </MenuItem>
+                      </RouterLink>
+                      <RouterLink :to="{ name: 'edit-customer', params: { customer_id: customer.customer_id } }">
+                        <MenuItem v-slot="{ active }">
+                          <a class="flex items-center" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                            <span class="dropdown-icon"><PencilIcon /></span> <span class="ps-3">Müşteri Güncelle</span>
+                          </a>
+                        </MenuItem>
+                      </RouterLink>
+                      <MenuItem v-slot="{ active }" @click="selCustomer(customer), openModal()">
+                        <a
+                          class="flex items-center text-red-500"
+                          :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                        >
+                          <span class="dropdown-icon"><UserMinusIcon /></span> <span class="ps-3">Müşteriyi Sil</span>
+                        </a>
+                      </MenuItem>
+                    </div>
+                  </MenuItems>
+                </transition>
+              </Menu>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="flex items-center justify-center mt-8">
+        <div
+          v-for="page in pages"
+          v-bind:key="page"
+          :class="{ 'font-bold underline ': offset / 15 + 1 === page }"
+          class="mx-1 fs-6"
+          @click="selectPage(page)"
+        >
+          {{ page }}
         </div>
       </div>
     </div>
-    <Teleport to="body">
-      <!-- Modal -->
+    <!-- <Teleport to="body">
       <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
           <div class="modal-content">
@@ -91,6 +108,27 @@
           </div>
         </div>
       </div>
+    </Teleport> -->
+    <Teleport to="body">
+      <ModalVue>
+        <template #header>
+          <h2 class="text-xl">Silme Onayı</h2>
+          <span id="close-btn" class="close" @click="closeModal">&times;</span>
+        </template>
+        <template #default>
+          <p class="text-base">'{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek istediğinizden emin misiniz?</p>
+          <p class="text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
+        </template>
+        <template #footer>
+          <button class="bg-gray-500 hover:bg-gray-600 text-sm text-white px-3 py-2 mx-4 rounded-lg" @click="closeModal()">Vazgeç</button>
+          <button
+            class="bg-green-600 hover:bg-green-700 px-3 py-2 text-sm text-white rounded-lg"
+            @click="removeCustomer(selectedCustomer?.customer_id), closeModal()"
+          >
+            Onayla
+          </button>
+        </template>
+      </ModalVue>
     </Teleport>
   </div>
 </template>
@@ -102,6 +140,9 @@ import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 import { RouterLink } from "vue-router";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import ModalVue from "@/components/common/ModalVue.vue";
 
 //STATES
 const toast = useToast();
@@ -111,6 +152,7 @@ const selectedCustomer = ref<ICustomer>();
 const offset = ref(0);
 const pages = ref<Array<number>>([]);
 const { customers, searchedCustomers, customersPageCount } = storeToRefs(customerStore);
+let modal: HTMLElement | null;
 
 //FUNCTIONS
 const selectPage = async (no: number) => {
@@ -178,6 +220,18 @@ const sortTable = (n: number) => {
   }
 };
 
+const openModal = () => {
+  if (modal) {
+    modal.style.display = "block";
+  }
+};
+
+const closeModal = () => {
+  if (modal) {
+    modal.style.display = "none";
+  }
+};
+
 onMounted(async () => {
   await customerStore.getCustomers(offset.value).then(async () => {
     customers.value.forEach((element) => {
@@ -191,6 +245,7 @@ onMounted(async () => {
       pages.value.push(i);
     }
   });
+  modal = document.getElementById("modal-dialog");
 });
 </script>
 
@@ -203,5 +258,9 @@ onMounted(async () => {
   height: 4rem;
   width: 4rem;
   padding: 1rem;
+}
+
+.dropdown-icon {
+  width: 24px;
 }
 </style>

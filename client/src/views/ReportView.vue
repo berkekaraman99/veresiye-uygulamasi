@@ -1,22 +1,34 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col-12 offset-sm-1 col-sm-10 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
-        <h1 class="text-center mb-4 fw-bold">Rapor Görünümü</h1>
-        <FormKit type="form" id="report-form" @submit="getReceiptReport" :actions="false">
-          <FormKit type="submit" label="Raporu Oluştur" :wrapper-class="{ 'd-flex justify-content-center': true }" />
-          <FormKit type="button" :wrapper-class="{ 'd-flex justify-content-center': true }" @click="downloadReport"> Excel Formatında İndir </FormKit>
-        </FormKit>
+    <div class="grid grid-cols-12">
+      <div class="col-start-4 col-span-6">
+        <h1 class="text-center mb-8 font-semibold text-3xl">Rapor Görünümü</h1>
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <FormKit
+            type="form"
+            id="report-form"
+            @submit="getReceiptReport"
+            :actions="false"
+            :config="{
+              classes: {
+                outer: 'mx-auto',
+              },
+            }"
+          >
+            <FormKit type="submit" label="Raporu Oluştur" :wrapper-class="report_btn" />
+            <FormKit type="button" :wrapper-class="report_btn" @click="downloadReport"> Excel Formatında İndir </FormKit>
+          </FormKit>
+        </div>
       </div>
     </div>
 
     <the-loading v-if="isLoading" />
-    <div class="row my-3" v-if="report.length !== 0">
-      <div class="col-12 col-sm-12 offset-md-1 col-md-10 offset-lg-2 col-lg-8">
-        <div class="text-sm">
-          <h1 class="text-center my-3 fw-bold">Rapor</h1>
-          <table id="reportTable" class="table table-hover table-striped table-borderless">
-            <thead class="text-xs text-secondary bg-body">
+    <div class="grid grid-cols-12 my-3" v-if="report.length !== 0">
+      <div class="col-span-12">
+        <div>
+          <h1 class="text-center my-5 font-semibold text-2xl">Rapor</h1>
+          <table id="reportTable" class="table w-full">
+            <thead class="text-xs bg-gray-200">
               <tr>
                 <th scope="col" class="px-3 py-2" @click="sortTable(0)">Müşteri</th>
                 <th scope="col" class="px-3 py-2" @click="sortTable(1)">Alacak</th>
@@ -25,14 +37,14 @@
                 <th scope="col" class="px-3 py-2" @click="sortTable(4)">Net Bakiye</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="text-sm bg-white">
               <template v-for="customer in report" v-bind:key="customer['Müşteri']">
-                <tr v-if="customer['Net Bakiye'] !== 0">
-                  <td class="px-3 py-3">{{ customer["Müşteri"] }}</td>
-                  <td class="px-3 py-3">{{ customer["Alacak"] }}</td>
-                  <td class="px-3 py-3">{{ customer["Borç"] }}</td>
-                  <td class="px-3 py-3">{{ customer["Son Fatura Tarihi"].slice(0, 10) }}</td>
-                  <td class="px-3 py-3">{{ customer["Net Bakiye"] + " ₺" }}</td>
+                <tr v-if="customer['Net Bakiye'] !== 0" class="hover:bg-slate-100">
+                  <td class="px-4 py-3">{{ customer["Müşteri"] }}</td>
+                  <td class="px-3 py-3 text-center">{{ customer["Alacak"].toFixed(2) }}</td>
+                  <td class="px-3 py-3 text-center">{{ customer["Borç"].toFixed(2) }}</td>
+                  <td class="px-3 py-3 text-center">{{ customer["Son Fatura Tarihi"].slice(0, 10) }}</td>
+                  <td class="px-3 py-3 text-center">{{ customer["Net Bakiye"].toFixed(2) + " ₺" }}</td>
                 </tr>
               </template>
             </tbody>
@@ -129,6 +141,8 @@ onBeforeUnmount(() => {
     report: [],
   });
 });
+
+const report_btn = "flex justify-center";
 </script>
 
 <style scoped lang="scss"></style>

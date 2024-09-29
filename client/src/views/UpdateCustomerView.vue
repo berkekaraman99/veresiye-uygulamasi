@@ -1,9 +1,19 @@
 <template>
-  <div class="row">
-    <div class="col-12 offset-sm-1 col-sm-10 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
-      <div class="">
-        <h1 class="text-center my-4 fw-bold">Müşteri Bilgileri Güncelleme</h1>
-        <FormKit type="form" id="customer-updating" @submit="updateCustomer" :actions="false">
+  <div class="grid grid-cols-12">
+    <div class="col-start-4 col-span-6">
+      <h1 class="text-center mb-8 font-semibold text-3xl">Müşteri Bilgileri Güncelleme</h1>
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <FormKit
+          type="form"
+          id="customer-updating"
+          @submit="updateCustomer"
+          :actions="false"
+          :config="{
+            classes: {
+              outer: 'mx-auto',
+            },
+          }"
+        >
           <FormKit
             type="text"
             name="customer_name"
@@ -15,7 +25,7 @@
           />
           <FormKit type="text" name="customer_address" label="Müşteri Adresi" placeholder="Müşteri Adresi" v-model="customerForm.customer_address" />
 
-          <FormKit type="submit" label="Güncelle" :disabled="statusCode === 200" :wrapper-class="{ 'd-flex justify-content-center': true }" />
+          <FormKit type="submit" label="Güncelle" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
         </FormKit>
       </div>
     </div>

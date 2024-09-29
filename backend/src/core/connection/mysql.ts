@@ -1,6 +1,6 @@
 import mysql, { ConnectionOptions, PoolOptions, RowDataPacket } from "mysql2";
 
-let connectionConfig: ConnectionOptions = {
+const connectionConfig: ConnectionOptions = {
   host: process.env.HOST ?? "localhost",
   port: Number(process.env.DB_PORT) ?? 3306,
   user: process.env.USER ?? "root",
@@ -8,33 +8,14 @@ let connectionConfig: ConnectionOptions = {
   password: process.env.DATABASE ?? "Skodal9901*",
 };
 
-const connection = mysql.createConnection(connectionConfig);
-const mainDb = process.env.DATABASE ?? "veresiyedb";
-const createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS " + mainDb;
-
-connection.connect((err) => {
-  if (err) {
-    console.error("Error connecting to MySQL: " + err.stack);
-    return;
-  }
-  console.log("Connected to MySQL as id " + connection.threadId);
-
-  connection.query(createDatabaseQuery, (err, results, fields) => {
-    if (err) {
-      console.error("Error creating database: " + err.stack);
-      return;
-    }
-    console.log("New database created successfully");
-
-    connection.end();
-  });
-});
-
-connectionConfig = { ...connectionConfig,
-  database: process.env.DATABASE ?? "veresiyedb",
+const createTableConnectionConfig: ConnectionOptions = {
+  host: process.env.HOST ?? "localhost",
+  port: Number(process.env.DB_PORT) ?? 3306,
+  user: process.env.USER ?? "root",
+  database: process.env.SYS_DATABASE ?? "veresiyedb",
+  password: process.env.DATABASE ?? "Skodal9901*",
 };
 
-// Tablo oluşturma sorgusu
 const createTableUsers = `
 CREATE TABLE IF NOT EXISTS users (
   id varchar(255) NOT NULL,
@@ -57,8 +38,8 @@ CREATE TABLE IF NOT EXISTS customers (
   customer_address varchar(255) DEFAULT NULL,
   PRIMARY KEY(customer_id)
 );
-`
-const createTableReceipts =`
+`;
+const createTableReceipts = `
 CREATE TABLE IF NOT EXISTS receipts (
   receipt_id varchar(255) NOT NULL,
   customer_id varchar(255) NOT NULL,
@@ -69,7 +50,12 @@ CREATE TABLE IF NOT EXISTS receipts (
   is_deleted tinyint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (receipt_id),
   UNIQUE KEY receipt_id_UNIQUE (receipt_id)
-);`
+);`;
+
+const connection = mysql.createConnection(connectionConfig);
+let createTableConnection;
+const mainDb = process.env.DATABASE ?? "veresiyedb";
+const createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS " + mainDb;
 
 connection.connect((err) => {
   if (err) {
@@ -78,7 +64,27 @@ connection.connect((err) => {
   }
   console.log("Connected to MySQL as id " + connection.threadId);
 
-  connection.query<RowDataPacket[]>((createTableUsers), (err, results, fields) => {
+  connection.query(createDatabaseQuery, (err, results, fields) => {
+    if (err) {
+      console.error("Error creating database: " + err.stack);
+      return;
+    }
+    console.log("New database created successfully");
+
+    connection.end();
+  });
+});
+
+createTableConnection = mysql.createConnection(createTableConnectionConfig);
+
+createTableConnection.connect((err) => {
+  if (err) {
+    console.error("Error connecting to MySQL: " + err.stack);
+    return;
+  }
+  console.log("Connected to MySQL as id " + connection.threadId);
+
+  createTableConnection.query<RowDataPacket[]>(createTableUsers, (err, results, fields) => {
     if (err) {
       console.error("Error creating table: " + err.stack);
       return;
@@ -86,26 +92,25 @@ connection.connect((err) => {
     console.log("Users table created successfully");
   });
 
-  connection.query<RowDataPacket[]>(createTableCustomers, (err, results, fields) => {
+  createTableConnection.query<RowDataPacket[]>(createTableCustomers, (err, results, fields) => {
     if (err) {
-        console.error("Error creating table: " + err.stack);
-        return;
+      console.error("Error creating table: " + err.stack);
+      return;
     }
     console.log("Customers table created successfully");
   });
 
-  connection.query<RowDataPacket[]>(createTableReceipts, (err, results, fields) => {
+  createTableConnection.query<RowDataPacket[]>(createTableReceipts, (err, results, fields) => {
     if (err) {
-        console.error("Error creating table: " + err.stack);
-        return;
+      console.error("Error creating table: " + err.stack);
+      return;
     }
     console.log("Receipts table created successfully");
-  })
-
+  });
 });
 
 const dbConfig: PoolOptions = {
- ...connectionConfig,
+  ...createTableConnectionConfig,
   waitForConnections: true,
   connectionLimit: 10,
   maxIdle: 10,

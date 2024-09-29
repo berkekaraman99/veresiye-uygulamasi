@@ -1,20 +1,29 @@
 <template>
-  <div class="row">
-    <div class="col-12 offset-sm-1 col-sm-10 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
-      <div class="">
-        <h1 class="text-center mb-4 fw-bold">{{ receiptForm.receipt_type === 0 ? "Borç Oluştur" : "Alacak Oluştur" }}</h1>
-        <FormKit type="form" id="receipt-form" @submit="createReceipt" :actions="false">
+  <div class="grid grid-cols-12">
+    <div class="col-start-4 col-span-6">
+      <h1 class="text-center mb-8 font-semibold text-3xl">{{ receiptTypeReturn }}</h1>
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <FormKit
+          type="form"
+          id="receipt-form"
+          @submit="createReceipt"
+          :actions="false"
+          :config="{
+            classes: {
+              outer: 'mx-auto',
+            },
+          }"
+        >
           <FormKit
             type="select"
             name="receipt_type"
             label="Dekont Türü"
             placeholder="Dekont türünü seçiniz"
             :options="[
-              { label: 'Borç', value: 0 },
+              { label: 'Ödeme', value: 0 },
               { label: 'Alacak', value: 1 },
             ]"
             v-model="receiptForm.receipt_type"
-            input-class="form-select"
           />
 
           <FormKit
@@ -26,6 +35,7 @@
             v-model="customerName"
             list="customers"
             @input="searchCustomer()"
+            autofocus
           />
           <datalist id="customers">
             <option v-for="customer in searchedCustomers" :value="customer.customer_name"></option>
@@ -34,10 +44,20 @@
           <!-- <select v-show="showSelect" ref="customerSelect" class="form-select" aria-label="Default select example">
             <option v-for="customer in searchedCustomers" :value="customer.customer_id">{{ customer.customer_name }}</option>
           </select> -->
-          <FormKit type="number" name="price" label="Fiyat" placeholder="Fiyat" min="0" validation="required" v-model="receiptForm.price" />
+          <FormKit
+            type="number"
+            name="price"
+            label="Fiyat"
+            placeholder="Fiyat"
+            min="0"
+            step="0.1"
+            validation="required"
+            v-model="receiptForm.price"
+          />
+          <FormKit type="datetime-local" label="Tarih" :validation="'required|date_before' + maxDate" v-model="receiptForm.created_date" />
           <FormKit type="textarea" name="description" label="Açıklama" placeholder="Açıklama" v-model="receiptForm.description" />
 
-          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'd-flex justify-content-center': true }" />
+          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
         </FormKit>
       </div>
     </div>
@@ -47,7 +67,7 @@
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { nextTick, reactive, ref, watch } from "vue";
+import { computed, nextTick, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toastification";
 import moment from "moment";
@@ -58,6 +78,10 @@ import { ResponseStatus } from "@/constants/response_status_enum";
 interface Props {
   receipt_type?: number;
 }
+
+const receiptTypeReturn = computed(() => {
+  return receiptForm.receipt_type === 0 ? "Ödeme Oluştur" : "Alacak Oluştur";
+});
 
 //STATES
 const props = withDefaults(defineProps<Props>(), {
@@ -73,43 +97,26 @@ const receiptForm = reactive({
   customer_id: "",
   price: "0",
   description: "",
+  created_date: moment().format("YYYY-MM-DD HH:mm:ss"),
   receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
 });
 let timer: any = null;
 const customerName = ref("");
-const showSelect = ref<boolean>(false);
-const customerSelect = ref(null);
-let watchTimer: any = null;
-
-// watch(customerName, (val) => {
-//   if (watchTimer != null) {
-//     clearTimeout(watchTimer);
-//   }
-//   timer = setTimeout(() => {
-//     if (val) {
-//       showSelect.value = true;
-//       nextTick(() => {
-//         customerSelect.value.focus();
-//         customerSelect.value.click();
-//       });
-//     } else {
-//       showSelect.value = false;
-//     }
-//   }, 600);
-// });
+const latestDate = new Date();
+latestDate.setDate(latestDate.getDate() + 1);
+const maxDate = latestDate.toISOString().slice(0, 10);
 
 //FUNCTIONS
 const createReceipt = async () => {
   if (customerName.value !== "") {
     receiptForm.customer_id = searchedCustomers.value[0].customer_id;
     const receipt_id = uuidv4();
-    const created_date = moment().format("YYYY-MM-DD HH:mm:ss");
+    // const created_date = moment().format("DD-MM-YYYY HH:mm");
 
     await receiptStore
       .createReceipt({
         ...receiptForm,
         receipt_id: receipt_id,
-        created_date: created_date,
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {

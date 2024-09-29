@@ -1,50 +1,67 @@
 <template>
   <div>
-    <div class="d-flex align-items-center justify-content-center my-4 position-relative">
-      <MagnifyingGlassIcon class="search-icon" />
-      <input
-        id="search-input"
-        class="form-control form-control-lg"
-        placeholder="Müşteri ara"
-        type="search"
-        v-model="searchQuery"
-        @input="searchCustomer()"
-      />
+    <div class="flex items-center justify-center mb-6">
+      <FormKit prefix-icon="search" name="search" placeholder="Müşteri ara" type="text" v-model="searchQuery" @input="searchCustomer()" />
     </div>
 
-    <h1 class="text-center fw-bold mb-4" v-if="isSearched">Arama Sonucu</h1>
+    <h1 class="text-center font-semibold text-3xl mb-8" v-if="isSearched">Arama Sonucu</h1>
     <h3 class="text-center fs-5 fw-light my-5" v-if="isSearched && searchedCustomers.length === 0">Müşteri bulunamadı</h3>
     <TransitionGroup appear @before-enter="beforeEnterSearch" @enter="enterSearch" @before-leave="beforeLeaveSearch" @leave="leaveSearch">
       <div
-        class="d-flex align-items-center justify-content-between bg-body my-2 p-3 shadow-sm rounded-3"
+        class="flex items-center justify-between bg-white my-2 p-4 shadow-md rounded-lg"
         v-for="(customer, index) in searchedCustomers"
         v-bind:key="customer.customer_id"
         :data-index="index"
       >
-        <div class="text-sm">{{ customer.customer_name }}</div>
-        <div class="dropup z-n1">
-          <a class="btn border dropdown-toggle shadow-sm fw-semibold text-sm" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Seçenekler
-          </a>
+        <div class="text-sm font-semibold">{{ customer.customer_name }}</div>
+        <Menu as="div" class="relative inline-block text-left">
+          <div>
+            <MenuButton
+              class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            >
+              Seçenekler
+              <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+            </MenuButton>
+          </div>
 
-          <ul class="dropdown-menu dropdown-menu-end z-n1">
-            <li>
-              <RouterLink :to="{ name: 'customer', params: { customer_id: customer.customer_id } }" class="dropdown-item"
-                ><UserIcon /> Müşteri Bilgileri</RouterLink
-              >
-            </li>
-            <li>
-              <RouterLink :to="{ name: 'edit-customer', params: { customer_id: customer.customer_id } }" class="dropdown-item"
-                ><PencilIcon /> Müşteri Güncelle</RouterLink
-              >
-            </li>
-            <li>
-              <a class="dropdown-item text-danger" @click="selCustomer(customer)" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                ><UserMinusIcon /> Müşteriyi Sil</a
-              >
-            </li>
-          </ul>
-        </div>
+          <transition
+            enter-active-class="transition ease-out duration-100"
+            enter-from-class="transform opacity-0 scale-95"
+            enter-to-class="transform opacity-100 scale-100"
+            leave-active-class="transition ease-in duration-75"
+            leave-from-class="transform opacity-100 scale-100"
+            leave-to-class="transform opacity-0 scale-95"
+          >
+            <MenuItems
+              class="absolute right-0 bottom-12 z-20 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+            >
+              <div class="py-2">
+                <RouterLink :to="{ name: 'customer', params: { customer_id: customer.customer_id } }">
+                  <MenuItem v-slot="{ active }">
+                    <a class="flex items-center" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                      <span class="dropdown-icon"><UserIcon /></span> <span class="ps-3">Müşteri Bilgileri</span>
+                    </a>
+                  </MenuItem>
+                </RouterLink>
+                <RouterLink :to="{ name: 'edit-customer', params: { customer_id: customer.customer_id } }">
+                  <MenuItem v-slot="{ active }">
+                    <a class="flex items-center" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                      <span class="dropdown-icon"><PencilIcon /></span> <span class="ps-3">Müşteri Güncelle</span>
+                    </a>
+                  </MenuItem>
+                </RouterLink>
+                <MenuItem v-slot="{ active }" @click="selCustomer(customer)">
+                  <a
+                    class="flex items-center text-red-500"
+                    :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                  >
+                    <span class="dropdown-icon"><UserMinusIcon /></span> <span class="ps-3">Müşteriyi Sil</span>
+                  </a>
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </transition>
+        </Menu>
       </div>
     </TransitionGroup>
 
@@ -82,6 +99,8 @@ import { storeToRefs } from "pinia";
 import { onBeforeUnmount, ref } from "vue";
 import { useToast } from "vue-toastification";
 import gsap from "gsap";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { ChevronDownIcon } from "@heroicons/vue/20/solid";
 
 const toast = useToast();
 const customerStore = useCustomerStore();
@@ -150,4 +169,30 @@ const leaveSearch: any = (el: HTMLElement) => {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.search-input {
+  transition: 0.3s ease;
+  width: 240px !important;
+  padding-left: 2.75rem;
+  border-radius: 99px;
+
+  &:focus {
+    width: 100%;
+    border-radius: 0.5rem;
+  }
+}
+
+// .search-icon {
+//   position: absolute;
+//   left: 33%;
+//   top: 36%;
+//   transform: translateY(-50%);
+//   width: 24px;
+//   height: 24px;
+//   fill: #888;
+//   margin-left: 0.3rem;
+// }
+.dropdown-icon {
+  width: 24px;
+}
+</style>
