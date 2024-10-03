@@ -5,16 +5,9 @@ const connectionConfig: ConnectionOptions = {
   port: Number(process.env.DB_PORT) ?? 3306,
   user: process.env.USER ?? "root",
   database: process.env.SYS_DATABASE ?? "sys",
-  password: process.env.DATABASE ?? "Skodal9901*",
+  password: process.env.PASSWORD ?? "Skodal9901*",
 };
-
-const createTableConnectionConfig: ConnectionOptions = {
-  host: process.env.HOST ?? "localhost",
-  port: Number(process.env.DB_PORT) ?? 3306,
-  user: process.env.USER ?? "root",
-  database: process.env.SYS_DATABASE ?? "veresiyedb",
-  password: process.env.DATABASE ?? "Skodal9901*",
-};
+const connection = mysql.createConnection(connectionConfig);
 
 const createTableUsers = `
 CREATE TABLE IF NOT EXISTS users (
@@ -52,65 +45,55 @@ CREATE TABLE IF NOT EXISTS receipts (
   UNIQUE KEY receipt_id_UNIQUE (receipt_id)
 );`;
 
-const connection = mysql.createConnection(connectionConfig);
-let createTableConnection;
-const mainDb = process.env.DATABASE ?? "veresiyedb";
-const createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS " + mainDb;
-
-connection.connect((err) => {
-  if (err) {
-    console.error("Error connecting to MySQL: " + err.stack);
-    return;
-  }
-  console.log("Connected to MySQL as id " + connection.threadId);
-
-  connection.query(createDatabaseQuery, (err, results, fields) => {
+const createDatabaseAndTables = () => {
+  connection.query("CREATE DATABASE IF NOT EXISTS veresiyedb", (err, result) => {
     if (err) {
-      console.error("Error creating database: " + err.stack);
+      console.error("Veritabanı oluşturulamadı, ", err);
       return;
     }
-    console.log("New database created successfully");
+    console.log("Veritabanı başarıyla oluşturuldu");
 
-    connection.end();
+    connection.changeUser({ database: process.env.DATABASE ?? "veresiyedb" }, (err) => {
+      if (err) {
+        console.error("Veritabanı seçilemedi, ", err);
+        return;
+      }
+
+      connection.query(createTableUsers, (err, results) => {
+        if (err) {
+          console.error("Kullanıcı tablosu oluşturulamadı, ", err);
+          return;
+        }
+        console.log("Kullanıcı tablosu oluşturuldu.");
+
+        connection.query(createTableCustomers, (err, results) => {
+          if (err) {
+            console.error("Müşteri tablosu oluşturulamadı, ", err);
+            return;
+          }
+          console.log("Müşteri tablosu oluşturuldu.");
+
+          connection.query(createTableReceipts, (err, results) => {
+            if (err) {
+              console.error("Fatura tablosu oluşturulamadı, ", err);
+              return;
+            }
+            console.log("Fatura tablosu oluşturuldu.");
+          });
+        });
+      });
+    });
   });
-});
+};
 
-createTableConnection = mysql.createConnection(createTableConnectionConfig);
-
-createTableConnection.connect((err) => {
-  if (err) {
-    console.error("Error connecting to MySQL: " + err.stack);
-    return;
-  }
-  console.log("Connected to MySQL as id " + connection.threadId);
-
-  createTableConnection.query<RowDataPacket[]>(createTableUsers, (err, results, fields) => {
-    if (err) {
-      console.error("Error creating table: " + err.stack);
-      return;
-    }
-    console.log("Users table created successfully");
-  });
-
-  createTableConnection.query<RowDataPacket[]>(createTableCustomers, (err, results, fields) => {
-    if (err) {
-      console.error("Error creating table: " + err.stack);
-      return;
-    }
-    console.log("Customers table created successfully");
-  });
-
-  createTableConnection.query<RowDataPacket[]>(createTableReceipts, (err, results, fields) => {
-    if (err) {
-      console.error("Error creating table: " + err.stack);
-      return;
-    }
-    console.log("Receipts table created successfully");
-  });
-});
+createDatabaseAndTables();
 
 const dbConfig: PoolOptions = {
-  ...createTableConnectionConfig,
+  host: process.env.HOST ?? "localhost",
+  port: Number(process.env.DB_PORT) ?? 3306,
+  user: process.env.USER ?? "root",
+  database: process.env.DATABASE ?? "veresiyedb",
+  password: process.env.PASSWORD ?? "Skodal9901*",
   waitForConnections: true,
   connectionLimit: 10,
   maxIdle: 10,
