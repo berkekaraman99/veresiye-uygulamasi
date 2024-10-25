@@ -79,7 +79,7 @@
               <p>'{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek istediğinizden emin misiniz?</p>
               <p class="text-danger-emphasis">Bu işlem geri alınamaz</p>
             </div>
-            <div class="modal-footer">
+            <div class="modal-actions">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
               <button type="button" class="btn btn-danger" @click="removeCustomer(selectedCustomer?.customer_id!)" data-bs-dismiss="modal">
                 Sil

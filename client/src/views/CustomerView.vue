@@ -91,7 +91,7 @@
                               </a>
                             </MenuItem>
                           </RouterLink>
-                          <MenuItem v-slot="{ active }" @click="removeReceipt(receipt.receipt_id)">
+                          <MenuItem v-slot="{ active }" @click="selReceipt(receipt.receipt_id), toggleModal()">
                             <a
                               class="flex items-center text-red-500"
                               :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
@@ -110,6 +110,27 @@
         </div>
       </div>
     </div>
+    <Teleport to="body" v-if="showModal">
+      <ModalVue @close="toggleModal()">
+        <template #header>
+          <h2 class="text-xl">Silme Onayı</h2>
+          <span id="close-btn" class="close" @click="toggleModal()">&times;</span>
+        </template>
+        <template #default>
+          <p class="text-base">'Bu dekontu silmek istediğinize emin misiniz?</p>
+          <p class="text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
+        </template>
+        <template #actions>
+          <button class="bg-gray-500 hover:bg-gray-600 text-sm text-white px-3 py-2 mx-4 rounded-lg" @click="toggleModal()">Vazgeç</button>
+          <button
+            class="bg-green-600 hover:bg-green-700 px-3 py-2 text-sm text-white rounded-lg"
+            @click="removeReceipt(selectedReceipt), toggleModal()"
+          >
+            Onayla
+          </button>
+        </template>
+      </ModalVue>
+    </Teleport>
   </div>
 </template>
 
@@ -123,6 +144,8 @@ import { reformatReceiptType } from "@/utils/receipt_helper";
 import { DocumentTextIcon, TrashIcon, PencilIcon } from "@heroicons/vue/24/solid";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import { useToast } from "vue-toastification";
+import ModalVue from "@/components/common/ModalVue.vue";
 
 interface Props {
   customer_id: string;
@@ -130,16 +153,29 @@ interface Props {
 
 //STATES
 const props = defineProps<Props>();
+const toast = useToast();
 const isHaveDescription = ref<boolean>(false);
 const receiptStore = useReceiptStore();
 const customerStore = useCustomerStore();
 const { customer, customerReceipts } = storeToRefs(customerStore);
+const showModal = ref<boolean>(false);
+const selectedReceipt = ref<string>("");
 
 //FUNCTIONS
+const selReceipt = (receipt_id: string) => {
+  selectedReceipt.value = receipt_id;
+};
+
 const removeReceipt = async (receipt_id: string) => {
   await receiptStore.deleteReceipt(receipt_id).then(async () => {
+    toast.success("Dekont başarıyla silindi!", { timeout: 2000 });
     await customerStore.getCustomerReceipts(props.customer_id);
   });
+};
+
+const toggleModal = () => {
+  showModal.value = !showModal.value;
+  console.log(showModal.value);
 };
 
 const sortTable = (n: number) => {
