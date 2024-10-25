@@ -9,7 +9,7 @@
                 </div>
             </RouterLink>
 
-            <table id="customersTable" class="table w-full shadow" v-if="searchedCustomers.length !== 0">
+            <table id="customersTable" class="table w-full shadow" v-if="customers.length !== 0">
                 <thead class="text-xs bg-gray-200">
                     <tr>
                         <th scope="col" class="px-3 py-2" @click="sortTable(0)">Müşteri</th>
@@ -20,7 +20,7 @@
                 </thead>
 
                 <tbody class="text-sm bg-white">
-                    <tr v-for="customer in searchedCustomers" v-bind:key="customer.customer_id">
+                    <tr v-for="customer in customers" v-bind:key="customer.customer_id">
                         <td class="px-5 py-2">{{ customer.customer_name }}</td>
                         <td v-if="isHaveAddress" class="px-3 py-2">{{ customer.customer_address }}</td>
                         <td class="px-5 py-2 text-center">{{ customer.created_at.slice(0, 10) }}</td>
@@ -90,7 +90,8 @@
                 </div>
             </div> -->
 
-            <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+            <div
+                class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 my-3 rounded shadow sm:px-6">
                 <div class="flex flex-1 justify-between sm:hidden">
                     <a href="#"
                         class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
@@ -106,7 +107,8 @@
                                 <ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
                             </a>
                             <a @click="selectPage(1)"
-                                class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm  text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">1</a>
+                                class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm  text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                                :class="{ 'font-bold underline bg-violet-600': currentPage == 1 }">1</a>
                             <span v-if="currentPage > 4"
                                 class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm  text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">...</span>
                             <a v-for="page in pageRange" :key="page" @click="selectPage(page)"
@@ -116,7 +118,8 @@
                             <span v-if="currentPage < customersPageCount - 3"
                                 class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm  text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">...</span>
                             <a @click="selectPage(customersPageCount)"
-                                class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm  text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">{{
+                                class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm  text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                                :class="{ 'font-bold underline bg-violet-600': currentPage == customersPageCount }">{{
                                     customersPageCount }}</a>
                             <a @click="nextPage()"
                                 class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
@@ -172,7 +175,7 @@ const isHaveAddress = ref(false);
 const selectedCustomer = ref<ICustomer>();
 const offset = ref(0);
 const pages = ref<Array<number>>([]);
-const { customers, searchedCustomers, customersPageCount } = storeToRefs(customerStore);
+const { customers, customersPageCount } = storeToRefs(customerStore);
 let modal: HTMLElement | null;
 const showModal = ref<boolean>(false);
 const currentPage = ref<number>(1)
@@ -190,15 +193,14 @@ const pageRange = computed(() => {
 
 //FUNCTIONS
 const selectPage = async (no: number) => {
-    if (offset.value / 15 - 1 !== no) {
-        offset.value = (no - 1) * 15;
-        await customerStore.getCustomers(offset.value);
-        currentPage.value = no
-    }
+    offset.value = (no - 1) * 15;
+    await customerStore.getCustomers(offset.value);
+    currentPage.value = no
+
 };
 
 const nextPage = async () => {
-    if (offset.value / 15 - 1 < customersPageCount.value * 15) {
+    if (currentPage.value < customersPageCount.value) {
         offset.value = offset.value + 15;
         await customerStore.getCustomers(offset.value);
         currentPage.value = currentPage.value + 1
@@ -206,7 +208,7 @@ const nextPage = async () => {
 }
 
 const previousPage = async () => {
-    if (offset.value / 15 - 1 > 0) {
+    if (currentPage.value > 1) {
         offset.value = offset.value - 15;
         await customerStore.getCustomers(offset.value);
         currentPage.value = currentPage.value - 1

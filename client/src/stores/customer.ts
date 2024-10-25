@@ -60,7 +60,7 @@ export const useCustomerStore = defineStore("customer", () => {
       const res = await instance.get(`/customer/get-customers?offset=${offset}`);
       console.log(res.data);
       customers.value = res.data.data;
-      searchedCustomers.value = res.data.data;
+      //   searchedCustomers.value = res.data.data;
       statusCode.value = res.data.statusCode;
     } catch (error: any) {
       console.error(error.response);
