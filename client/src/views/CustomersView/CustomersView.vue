@@ -1,6 +1,6 @@
 <template>
     <div class="grid grid-cols-12">
-        <div class="col-start-2 col-span-10">
+        <div class="col-span-12 md:col-start-2 md:col-span-10">
             <h1 class="text-center font-semibold text-3xl mb-8">Müşteriler</h1>
 
             <RouterLink :to="{ name: 'create-customer' }">
@@ -165,8 +165,9 @@ import { useToast } from "vue-toastification";
 import { RouterLink } from "vue-router";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-import ModalVue from "@/components/common/ModalVue.vue";
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid'
+
+import ModalVue from "@/components/common/ModalVue.vue";
 
 //STATES
 const toast = useToast();

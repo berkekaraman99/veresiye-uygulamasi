@@ -55,7 +55,8 @@
                                         </a>
                                         </MenuItem>
                                     </RouterLink>
-                                    <MenuItem v-slot="{ active }" @click="selCustomer(customer)">
+                                    <MenuItem v-slot="{ active }"
+                                        @click="selCustomer(customer.customer_id), toggleModal()">
                                     <a class="flex items-center text-red-500"
                                         :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
                                         <span class="dropdown-icon">
@@ -73,30 +74,26 @@
 
         <!-- <h1 v-if="searchedCustomers.length === 0">Müşteri Bulunamadı</h1> -->
 
-        <Teleport to="body">
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Silme Onayı</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>'{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek istediğinizden emin
-                                misiniz?</p>
-                            <p class="text-danger-emphasis">Bu işlem geri alınamaz</p>
-                        </div>
-                        <div class="modal-actions">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Vazgeç</button>
-                            <button type="button" class="btn btn-danger"
-                                @click="removeCustomer(selectedCustomer?.customer_id!)" data-bs-dismiss="modal">
-                                Sil
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <Teleport to="body" v-if="showModal">
+            <ModalVue @close="toggleModal()">
+                <template #header>
+                    <h2 class="text-xl">Silme Onayı</h2>
+                    <span id="close-btn" class="close" @click="toggleModal()">&times;</span>
+                </template>
+                <template #default>
+                    <p class="text-base">'{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek istediğinizden
+                        emin misiniz?</p>
+                    <p class="text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
+                </template>
+                <template #actions>
+                    <button class="bg-gray-500 hover:bg-gray-600 text-sm text-white px-3 py-2 mx-4 rounded-lg"
+                        @click="toggleModal()">Vazgeç</button>
+                    <button class="bg-green-600 hover:bg-green-700 px-3 py-2 text-sm text-white rounded-lg"
+                        @click="removeCustomer(selectedCustomer!.customer_id), toggleModal()">
+                        Onayla
+                    </button>
+                </template>
+            </ModalVue>
         </Teleport>
     </div>
 </template>
@@ -105,11 +102,13 @@
 import { UserIcon, UserMinusIcon, PencilIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/solid";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
-import { onBeforeUnmount, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { useToast } from "vue-toastification";
 import gsap from "gsap";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+
+import ModalVue from "@/components/common/ModalVue.vue";
 
 const toast = useToast();
 const customerStore = useCustomerStore();
@@ -118,6 +117,8 @@ const searchQuery = ref("");
 const selectedCustomer = ref<ICustomer>();
 const isSearched = ref(false);
 let timer: any = null;
+let modal: HTMLElement | null;
+const showModal = ref<boolean>(false);
 
 const searchCustomer = () => {
     if (timer != null) {
@@ -143,6 +144,11 @@ const removeCustomer = async (customer_id: string) => {
         toast.success("Müşteri Başarıyla Silindi!", { timeout: 2000 });
         await customerStore.getCustomers();
     });
+};
+
+const toggleModal = () => {
+    showModal.value = !showModal.value;
+    console.log(showModal.value);
 };
 
 onBeforeUnmount(() => {
@@ -176,6 +182,10 @@ const leaveSearch: any = (el: HTMLElement) => {
         delay: 0.1 * index,
     });
 };
+
+onMounted(() => {
+    modal = document.getElementById("modal-dialog");
+})
 </script>
 
 <style scoped lang="scss">
