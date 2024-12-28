@@ -2,8 +2,10 @@
   <div>
     <div class="grid grid-cols-12">
       <div class="col-start-4 col-span-6">
-        <h1 class="text-center mb-8 font-semibold text-3xl">Rapor Görünümü</h1>
-        <div class="bg-white rounded-lg shadow-lg p-8">
+        <div class="flex items-center justify-center">
+          <h1 class="font-semibold text-4xl mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Rapor Görünümü</h1>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-slate-200">
           <FormKit
             type="form"
             id="report-form"
@@ -27,17 +29,17 @@
       <div class="col-span-12">
         <div>
           <h1 class="text-center my-5 font-semibold text-2xl">Rapor</h1>
-          <table id="reportTable" class="table w-full">
-            <thead class="text-xs bg-gray-200">
+          <table id="reportTable" class="table w-full shadow-md">
+            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)]">
               <tr>
-                <th scope="col" class="px-3 py-2" @click="sortTable(0)">Müşteri</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(1)">Alacak</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(2)">Borç</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(3)">Son Fatura Tarihi</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(4)">Net Bakiye</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(0)">Müşteri</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(1)">Alacak</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(2)">Borç</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(3)">Son Fatura Tarihi</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(4)">Net Bakiye</th>
               </tr>
             </thead>
-            <tbody class="text-sm bg-white">
+            <tbody class="text-sm bg-white border">
               <template v-for="customer in report" v-bind:key="customer['Müşteri']">
                 <tr v-if="customer['Net Bakiye'] !== 0" class="hover:bg-slate-100">
                   <td class="px-4 py-3">{{ customer["Müşteri"] }}</td>

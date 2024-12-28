@@ -1,11 +1,13 @@
 <template>
   <div>
-    <h1 class="font-semibold text-4xl mb-8">Hızlı İşlemler</h1>
+    <h1 class="font-semibold text-4xl mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Hızlı İşlemler</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <RouterLink v-for="item in items" :key="item.name" class="col" :to="item.href">
-        <div class="interactive-card bg-slate-50 hover:bg-white text-2xl">
+        <div class="interactive-card bg-slate-100 text-[var(--primary-variant)] hover:text-[var(--primary)] hover:bg-white text-2xl">
           <h1 class="mb-0 md:mb-4">{{ item.name }}</h1>
-          <div class="text-center"><component :is="item.component" class="action-icon" /></div>
+          <div class="text-center">
+            <component :is="item.component" class="action-icon" />
+          </div>
         </div>
       </RouterLink>
     </div>
@@ -34,15 +36,15 @@ const items = [
 
 <style scoped lang="scss">
 .action-icon {
-  & {
-    @media only screen and (max-width: 768px) {
-      width: 4rem;
-      margin-right: 0.75rem;
-    }
-    @media only screen and (min-width: 768px) {
-      width: 10rem;
-      margin-right: 0.75rem;
-    }
-  }
+  @apply w-16 me-3 md:w-32 lg:w-40;
+  // & {
+  //     @media only screen and (max-width: 768px) {
+  //         @apply w-16 me-3;
+  //     }
+
+  //     @media only screen and (min-width: 768px) {
+  //         @apply w-40 me-3;
+  //     }
+  // }
 }
 </style>

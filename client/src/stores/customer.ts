@@ -58,7 +58,7 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomers = async (offset: number = 0) => {
     try {
       const res = await instance.get(`/customer/get-customers?offset=${offset}`);
-      console.log(res.data);
+      //   console.log(res.data);
       customers.value = res.data.data;
       //   searchedCustomers.value = res.data.data;
       statusCode.value = res.data.statusCode;
@@ -88,7 +88,7 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomersPageCount = async () => {
     try {
       const res = await instance.get(`/customer/get-customer-page-count`);
-      console.log(res.data);
+      //   console.log(res.data);
       customersPageCount.value = Number(res.data.data[0].count);
     } catch (error: any) {
       console.error(error.response);
@@ -100,7 +100,7 @@ export const useCustomerStore = defineStore("customer", () => {
       const res = await instance.get(`/customer/search-customers?text=${searchValue}`);
       statusCode.value = res.data.statusCode;
       searchedCustomers.value = res.data.data;
-      console.log(res.data);
+      //   console.log(res.data);
     } catch (error: any) {
       console.error(error.response);
     } finally {

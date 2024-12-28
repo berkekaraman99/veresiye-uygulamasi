@@ -12,13 +12,13 @@
 
 .routeAnimation-enter-active,
 .routeAnimation-leave-active {
-    transition: all 0.2s;
+  transition: all 0.2s;
 }
 
 .routeAnimation-enter-from,
 .routeAnimation-leave-to {
-    opacity: 0;
-    filter: blur(1rem);
+  opacity: 0;
+  filter: blur(1rem);
 }
 
 .themeIcon-enter-active,
@@ -39,4 +39,15 @@
 .fadeTransition-enter-from,
 .fadeTransition-leave-to {
   opacity: 0;
+}
+
+.navbarAnimation-enter-active,
+.navbarAnimation-leave-active {
+  transition: all 0.2s;
+  transform: translateY(48px);
+}
+
+.navbarAnimation-enter-from,
+.navbarAnimation-leave-to {
+  transform: translateY(-48px);
 }

@@ -1,8 +1,10 @@
 <template>
   <div class="grid grid-cols-12">
     <div class="col-start-4 col-span-6">
-      <h1 class="text-center mb-8 font-semibold text-3xl">{{ receiptTypeReturn }}</h1>
-      <div class="bg-white rounded-lg shadow-lg p-8">
+      <div class="flex items-center justify-center">
+        <h1 class="font-semibold text-4xl mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">{{ receiptTypeReturn }}</h1>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-slate-200">
         <FormKit
           type="form"
           id="receipt-form"
@@ -80,7 +82,7 @@ interface Props {
 }
 
 const receiptTypeReturn = computed(() => {
-  return receiptForm.receipt_type === 0 ? "Ödeme Oluştur" : "Alacak Oluştur";
+  return receiptForm.receipt_type === 0 ? "Ödeme Dekontu" : "Alacak Dekontu";
 });
 
 //STATES

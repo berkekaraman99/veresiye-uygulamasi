@@ -8,7 +8,8 @@
         <h1 class="text-center font-semibold text-3xl mb-8" v-if="isSearched">Arama Sonucu</h1>
         <h3 class="text-center fs-5 fw-light my-5" v-if="isSearched && searchedCustomers.length === 0">Müşteri
             bulunamadı</h3>
-        <div class="grid grid-cols-12">
+        <div class="grid grid-cols-12 h-full">
+            <h1 class="col-span-12 text-center">Müşteri aramak için yazınız...</h1>
             <TransitionGroup appear @before-enter="beforeEnterSearch" @enter="enterSearch"
                 @before-leave="beforeLeaveSearch" @leave="leaveSearch">
                 <div class="flex items-center justify-between bg-white my-2 p-4 shadow-md rounded-lg col-span-12 md:col-start-3 md:col-span-8"
@@ -27,7 +28,7 @@
                         <transition enter-active-class="transition ease-out duration-100"
                             enter-from-class="transform opacity-0 scale-95"
                             enter-to-class="transform opacity-100 scale-100"
-                            leave-active-class="transition ease-in duration-75"
+                            leave-active-class="transition ease-in duration-50"
                             leave-from-class="transform opacity-100 scale-100"
                             leave-to-class="transform opacity-0 scale-95">
                             <MenuItems
