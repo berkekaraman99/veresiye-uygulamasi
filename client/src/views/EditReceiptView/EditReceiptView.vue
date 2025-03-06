@@ -1,31 +1,45 @@
 <template>
-  <div class="row">
-    <div class="col-12 col-sm-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-      <div class="">
-        <h1 class="text-center my-3 fw-bold">Faturayı Düzenle</h1>
-        <FormKit type="form" id="receipt-form" @submit="updateReceipt" :actions="false">
+  <div class="grid grid-cols-12">
+    <div class="col-start-4 col-span-6">
+      <h1 class="text-center mb-8 font-semibold text-3xl">Faturayı Düzenle</h1>
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <FormKit
+          type="form"
+          id="receipt-form"
+          @submit="updateReceipt"
+          :actions="false"
+          :config="{
+            classes: {
+              outer: 'mx-auto',
+            },
+          }"
+        >
           <FormKit
             type="select"
             name="receipt_type"
             label="Dekont Türü"
             placeholder="Dekont türünü seçiniz"
             :options="[
-              { label: 'Borç', value: 0 },
+              { label: 'Ödeme', value: 0 },
               { label: 'Alacak', value: 1 },
             ]"
             v-model="receiptForm.receipt_type"
           />
 
           <FormKit type="text" name="customer_name" label="Müşteri" placeholder="Müşteri Adı" validation="required" v-model="customerName" disabled />
-          <FormKit type="number" name="price" label="Fiyat" placeholder="Fiyat" min="0" validation="required" v-model="receiptForm.price" />
+          <FormKit
+            type="number"
+            name="price"
+            label="Fiyat"
+            placeholder="Fiyat"
+            step="0.1"
+            min="0"
+            validation="required"
+            v-model="receiptForm.price"
+          />
           <FormKit type="textarea" name="description" label="Açıklama" placeholder="Açıklama" v-model="receiptForm.description" />
 
-          <FormKit
-            type="submit"
-            label="Faturayı Güncelle"
-            :disabled="statusCode === 200"
-            :wrapper-class="{ 'd-flex justify-content-center': true }"
-          />
+          <FormKit type="submit" label="Faturayı Güncelle" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
         </FormKit>
       </div>
     </div>
@@ -53,7 +67,7 @@ const { statusCode, receipt } = storeToRefs(receiptStore);
 const customerName = ref("");
 const receiptForm = reactive({
   receipt_id: "",
-  price: 0,
+  price: "0",
   description: "",
   receipt_type: 0,
 });
@@ -84,7 +98,7 @@ onMounted(async () => {
     receiptForm.receipt_id = receipt.value?.receipt_id ?? "";
     customerName.value = receipt.value?.customer_name ?? "";
     receiptForm.description = receipt.value?.description ?? "";
-    receiptForm.price = receipt.value?.price ?? 0;
+    receiptForm.price = String(receipt.value?.price) ?? "0";
     receiptForm.receipt_type = receipt.value?.receipt_type ?? 0;
   });
 });

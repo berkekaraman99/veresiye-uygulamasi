@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col-12 offset-sm-1 col-sm-10 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
-        <div class="">
-          <h1 class="text-center my-3 fw-bold">Müşteri Bilgileri</h1>
-          <div class="p-4 bg-body rounded-4 shadow-sm">
-            <table>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-start-3 md:col-span-8 lg:col-start-4 lg:col-span-6">
+        <div>
+          <h1 class="text-center mb-8 font-semibold text-3xl">Müşteri Bilgileri</h1>
+          <div class="p-4 bg-white rounded-lg shadow-lg border-2 border-slate-200">
+            <table class="table w-full">
               <tbody>
                 <tr>
                   <th class="px-2 py-2">Müşteri Adı:</th>
@@ -19,6 +19,10 @@
                   <th class="px-2 py-2">Müşterinin Eklenme Tarihi:</th>
                   <td class="px-2 py-2">{{ customer?.created_at }}</td>
                 </tr>
+                <tr v-if="customer?.net_bakiye != null">
+                  <th class="px-2 py-2">Güncel Bakiye:</th>
+                  <td class="px-2 py-2">{{ customer?.net_bakiye.toString() + " TL" }}</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -26,12 +30,12 @@
       </div>
     </div>
 
-    <div class="row my-3" v-if="customerReceipts.length !== 0">
-      <div class="col-12 col-sm-12 offset-md-1 col-md-10 offset-lg-2 col-lg-8">
-        <div class="text-sm">
-          <h1 class="text-center my-3 fw-bold">Faturalar</h1>
-          <table id="receiptsTable" class="table table-striped">
-            <thead class="text-xs text-secondary">
+    <div class="grid grid-cols-12 mt-8" v-if="customerReceipts.length !== 0">
+      <div class="col-span-12">
+        <div>
+          <h1 class="text-center mb-8 font-semibold text-2xl">Faturalar</h1>
+          <table id="receiptsTable" class="table w-full shadow">
+            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)] h-12">
               <tr>
                 <th scope="col" class="px-3 py-2" @click="sortTable(0)">Fatura No</th>
                 <th scope="col" class="px-3 py-2" @click="sortTable(1)">Tarih</th>
@@ -41,41 +45,68 @@
                 <th scope="col" class="px-3 py-2">İşlem</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="text-sm bg-white border">
               <tr v-for="receipt in customerReceipts" v-bind:key="receipt.receipt_id">
                 <td class="px-3 py-2">{{ receipt.receipt_id }}</td>
-                <td class="px-3 py-2">{{ receipt.created_date.slice(0, 10) }}</td>
+                <td class="px-3 py-2">{{ receipt.created_at.slice(0, 10) }}</td>
                 <td class="px-3 py-2">{{ reformatReceiptType(receipt.receipt_type) }}</td>
                 <td v-if="isHaveDescription" class="px-3 py-2">{{ receipt.description }}</td>
                 <td class="px-3 py-2">{{ receipt.price + " ₺" }}</td>
                 <td class="px-3 py-2">
-                  <div class="dropdown">
-                    <a
-                      class="btn border dropdown-toggle shadow-sm fw-semibold text-sm"
-                      href="#"
-                      role="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      Seçenekler
-                    </a>
+                  <Menu as="div" class="relative inline-block text-left">
+                    <div>
+                      <MenuButton
+                        class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                      >
+                        Seçenekler
+                        <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+                      </MenuButton>
+                    </div>
 
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li>
-                        <RouterLink :to="{ name: 'receipt', params: { receipt_id: receipt.receipt_id } }" class="dropdown-item"
-                          ><DocumentTextIcon /> Fatura Bilgileri</RouterLink
-                        >
-                      </li>
-                      <li>
-                        <RouterLink :to="{ name: 'edit-receipt', params: { receipt_id: receipt.receipt_id } }" class="dropdown-item"
-                          ><PencilIcon /> Faturayı Güncelle</RouterLink
-                        >
-                      </li>
-                      <li>
-                        <a class="dropdown-item text-danger" @click="removeReceipt(receipt.receipt_id)"><TrashIcon /> Faturayı Sil</a>
-                      </li>
-                    </ul>
-                  </div>
+                    <transition
+                      enter-active-class="transition ease-out duration-100"
+                      enter-from-class="transform opacity-0 scale-95"
+                      enter-to-class="transform opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-75"
+                      leave-from-class="transform opacity-100 scale-100"
+                      leave-to-class="transform opacity-0 scale-95"
+                    >
+                      <MenuItems
+                        class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                      >
+                        <div class="py-2">
+                          <RouterLink :to="{ name: 'receipt', params: { receipt_id: receipt.receipt_id } }">
+                            <MenuItem v-slot="{ active }">
+                              <a
+                                class="flex items-center"
+                                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                              >
+                                <span class="dropdown-icon"><DocumentTextIcon /></span> <span class="ps-3">Fatura Bilgileri</span>
+                              </a>
+                            </MenuItem>
+                          </RouterLink>
+                          <RouterLink :to="{ name: 'edit-receipt', params: { receipt_id: receipt.receipt_id } }">
+                            <MenuItem v-slot="{ active }">
+                              <a
+                                class="flex items-center"
+                                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                              >
+                                <span class="dropdown-icon"><PencilIcon /></span> <span class="ps-3">Faturayı Güncelle</span>
+                              </a>
+                            </MenuItem>
+                          </RouterLink>
+                          <MenuItem v-slot="{ active }" @click="selReceipt(receipt.receipt_id), toggleModal()">
+                            <a
+                              class="flex items-center text-red-500"
+                              :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                            >
+                              <span class="dropdown-icon"><TrashIcon /></span> <span class="ps-3">Faturayı Sil</span>
+                            </a>
+                          </MenuItem>
+                        </div>
+                      </MenuItems>
+                    </transition>
+                  </Menu>
                 </td>
               </tr>
             </tbody>
@@ -83,6 +114,27 @@
         </div>
       </div>
     </div>
+    <Teleport to="body" v-if="showModal">
+      <ModalVue @close="toggleModal()">
+        <template #header>
+          <h2 class="text-xl">Silme Onayı</h2>
+          <span id="close-btn" class="close" @click="toggleModal()">&times;</span>
+        </template>
+        <template #default>
+          <p class="text-base">'Bu dekontu silmek istediğinize emin misiniz?</p>
+          <p class="text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
+        </template>
+        <template #actions>
+          <button class="bg-gray-500 hover:bg-gray-600 text-sm text-white px-3 py-2 mx-4 rounded-lg" @click="toggleModal()">Vazgeç</button>
+          <button
+            class="bg-green-600 hover:bg-green-700 px-3 py-2 text-sm text-white rounded-lg"
+            @click="removeReceipt(selectedReceipt), toggleModal()"
+          >
+            Onayla
+          </button>
+        </template>
+      </ModalVue>
+    </Teleport>
   </div>
 </template>
 
@@ -94,6 +146,10 @@ import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import { reformatReceiptType } from "@/utils/receipt_helper";
 import { DocumentTextIcon, TrashIcon, PencilIcon } from "@heroicons/vue/24/solid";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { ChevronDownIcon } from "@heroicons/vue/20/solid";
+import { useToast } from "vue-toastification";
+import ModalVue from "@/components/common/ModalVue.vue";
 
 interface Props {
   customer_id: string;
@@ -101,16 +157,29 @@ interface Props {
 
 //STATES
 const props = defineProps<Props>();
+const toast = useToast();
 const isHaveDescription = ref<boolean>(false);
 const receiptStore = useReceiptStore();
 const customerStore = useCustomerStore();
 const { customer, customerReceipts } = storeToRefs(customerStore);
+const showModal = ref<boolean>(false);
+const selectedReceipt = ref<string>("");
 
 //FUNCTIONS
+const selReceipt = (receipt_id: string) => {
+  selectedReceipt.value = receipt_id;
+};
+
 const removeReceipt = async (receipt_id: string) => {
   await receiptStore.deleteReceipt(receipt_id).then(async () => {
+    toast.success("Dekont başarıyla silindi!", { timeout: 2000 });
     await customerStore.getCustomerReceipts(props.customer_id);
   });
+};
+
+const toggleModal = () => {
+  showModal.value = !showModal.value;
+  console.log(showModal.value);
 };
 
 const sortTable = (n: number) => {
@@ -174,35 +243,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-th {
-  & {
-    cursor: pointer;
-  }
-
-  &:first-child {
-    border-top-left-radius: 0.5rem;
-  }
-  &:last-child {
-    border-top-right-radius: 0.5rem;
-  }
-}
-
-tr {
-  &:last-child td {
-    &:first-child {
-      border-bottom-left-radius: 0.5rem;
-    }
-    &:last-child {
-      border-bottom-right-radius: 0.5rem;
-    }
-  }
-}
-
-td {
-  align-content: center;
-}
-
-li svg {
+.dropdown-icon {
   width: 24px;
 }
 </style>

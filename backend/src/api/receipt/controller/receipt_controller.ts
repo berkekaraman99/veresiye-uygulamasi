@@ -8,7 +8,7 @@ import { ResponseStatus } from "../../../core/constants/response_status_enum";
 
 export const createReceipt = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { receipt_id, customer_id, created_date, price, description, receipt_type } = req.body;
+    const { receipt_id, customer_id, created_at, price, description, receipt_type } = req.body;
     await createReceiptValidator
       .validate({
         price,
@@ -19,9 +19,9 @@ export const createReceipt = async (req: Request, res: Response, next: NextFunct
       });
     await db.query<RowDataPacket[]>({
       sql: `INSERT INTO receipts
-        (receipt_id, customer_id, description, price, created_date, receipt_type)
+        (receipt_id, customer_id, description, price, created_at, receipt_type)
         VALUES (?, ?, ?, ?, ?, ?)`,
-      values: [receipt_id, customer_id, description, price, created_date, receipt_type],
+      values: [receipt_id, customer_id, description, price, created_at, receipt_type],
     });
     return res.status(201).json(BaseResponse.success("Receipt created successfully!", ResponseStatus.SUCCESS));
   } catch (e: any) {
@@ -33,7 +33,7 @@ export const fetchReceipts = async (req: Request, res: Response, next: NextFunct
   try {
     const { userId, offset } = req.query;
     const [receipts] = await db.query<RowDataPacket[]>({
-      sql: `SELECT * FROM receipts R LEFT JOIN customers C ON R.customer_id = C.customer_id WHERE R.is_deleted = 0 ORDER BY R.created_date DESC LIMIT 10 OFFSET ${offset}`,
+      sql: `SELECT * FROM receipts R LEFT JOIN customers C ON R.customer_id = C.customer_id WHERE R.is_deleted = 0 ORDER BY R.created_at DESC LIMIT 10 OFFSET ${offset}`,
       values: [userId],
     });
     return res.status(200).json(BaseResponse.success(receipts, ResponseStatus.SUCCESS));
@@ -73,7 +73,7 @@ export const getReceiptById = async (req: Request, res: Response, next: NextFunc
     const { receipt_id } = req.query;
     const [receipt] = await db.query<RowDataPacket[]>({
       sql: `
-      SELECT c.customer_name AS customer_name, r.receipt_id AS receipt_id, r.description AS description, r.price AS price, r.receipt_type AS receipt_type, r.created_date AS created_date
+      SELECT c.customer_name AS customer_name, r.receipt_id AS receipt_id, r.description AS description, r.price AS price, r.receipt_type AS receipt_type, r.created_at AS created_at
       FROM receipts r LEFT JOIN customers c ON c.customer_id = r.customer_id WHERE r.is_deleted = 0 AND receipt_id = ?`,
       values: [receipt_id],
     });
@@ -90,7 +90,7 @@ export const getReceiptReport = async (req: Request, res: Response, next: NextFu
 		  SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) AS "Alacak",
 		  SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) AS "Borç",
         SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) as "Net Bakiye",
-        MAX(created_date) as "Son Fatura Tarihi"
+        MAX(r.created_at) as "Son Fatura Tarihi"
         FROM receipts r INNER JOIN customers c ON c.customer_id = r.customer_id
         WHERE r.is_deleted = 0 AND c.is_deleted = 0 group by c.customer_name ORDER BY c.customer_name`,
     });
@@ -107,7 +107,7 @@ export const downloadReportExcel = async (req: Request, res: Response, next: Nex
 		  SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) AS "Alacak",
 		  SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) AS "Borç",
         SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) as "Net Bakiye",
-        MAX(created_date) as "Son Fatura Tarihi"
+        MAX(r.created_at) as "Son Fatura Tarihi"
         FROM receipts r INNER JOIN customers c ON c.customer_id = r.customer_id
         WHERE r.is_deleted = 0 AND c.is_deleted = 0 group by c.customer_name ORDER BY c.customer_name`,
     });

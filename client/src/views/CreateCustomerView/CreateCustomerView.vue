@@ -1,9 +1,21 @@
 <template>
-  <div class="row">
-    <div class="col-12 offset-sm-1 col-sm-10 offset-lg-3 col-lg-6">
-      <div class="">
-        <h1 class="text-center my-4 fw-bold">Müşteri Oluşturma</h1>
-        <FormKit type="form" id="customer-registration" @submit="createCustomer" :actions="false">
+  <div class="grid grid-cols-12">
+    <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6">
+      <div class="flex items-center justify-center">
+        <h1 class="font-semibold text-4xl text-center mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Müşteri Oluştur</h1>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-slate-200">
+        <FormKit
+          type="form"
+          id="customer-registration"
+          @submit="createCustomer"
+          :actions="false"
+          :config="{
+            classes: {
+              outer: 'mx-auto',
+            },
+          }"
+        >
           <FormKit
             type="text"
             name="customer_name"
@@ -15,7 +27,7 @@
           />
           <FormKit type="text" name="customer_address" label="Müşteri Adresi" placeholder="Müşteri Adresi" v-model="customerForm.customer_address" />
 
-          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'd-flex justify-content-center': true }" />
+          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
         </FormKit>
       </div>
     </div>
@@ -52,7 +64,7 @@ const createCustomer = async () => {
       .createCustomer({
         ...customerForm,
         customer_id: customer_id,
-        created_date: created_date,
+        created_at: created_date,
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {

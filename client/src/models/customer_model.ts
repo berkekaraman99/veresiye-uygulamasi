@@ -3,4 +3,6 @@ interface ICustomer {
   customer_id: string;
   customer_name: string;
   customer_address: string;
+  is_deleted: number;
+  net_bakiye: number;
 }

@@ -1,10 +1,10 @@
 <template>
-  <div class="row">
-    <div class="col-12 col-sm-12 offset-md-1 col-md-10 offset-lg-2 col-lg-8">
-      <div class="">
-        <h1 class="text-center my-3 fw-bold">Fatura Bilgileri</h1>
-        <div class="p-4 bg-body rounded-4 shadow-sm">
-          <table>
+  <div class="grid grid-cols-12">
+    <div class="col-start-2 col-span-10">
+      <div>
+        <h1 class="text-center mb-8 font-semibold text-3xl">Fatura Bilgileri</h1>
+        <div class="p-4 bg-white rounded-lg shadow-lg">
+          <table class="table w-full">
             <tbody>
               <tr>
                 <th class="px-2 py-2">Müşteri Adı:</th>
@@ -20,7 +20,7 @@
               </tr>
               <tr>
                 <th class="px-2 py-2">Fatura Oluşturulma Tarihi:</th>
-                <td class="px-2 py-2">{{ receipt?.created_date }}</td>
+                <td class="px-2 py-2">{{ receipt?.created_at }}</td>
               </tr>
               <tr v-if="receipt?.description !== ''">
                 <th class="px-2 py-2">Açıklama:</th>
@@ -57,9 +57,4 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped lang="scss">
-tr td,
-tr th {
-  font-size: 1rem;
-}
-</style>
+<style scoped lang="scss"></style>

@@ -36,20 +36,25 @@ const routes = [
   {
     path: "/edit-customer/:customer_id",
     name: "edit-customer",
-    component: () => import("@/views/UpdateCustomerView/UpdateCustomerView.vue"),
+    component: () => import("@/views/EditCustomerView/EditCustomerView.vue"),
     props: (route: any) => ({ customer_id: route.params.customer_id }),
   },
   {
     path: "/edit-receipt/:receipt_id",
     name: "edit-receipt",
     component: () => import("@/views/EditReceiptView/EditReceiptView.vue"),
-    props: (route: any) => ({ receipt_id: route.params.receipt_id})
+    props: (route: any) => ({ receipt_id: route.params.receipt_id }),
+  },
+  {
+    path: "/search-customer",
+    name: "search-customer",
+    component: () => import("@/views/SearchCustomerView/SearchCustomerView.vue"),
   },
   {
     path: "/receipt/:receipt_id",
     name: "receipt",
     component: () => import("@/views/ReceiptView/ReceiptView.vue"),
-    props: (route: any) => ({receipt_id: route.params.receipt_id})
+    props: (route: any) => ({ receipt_id: route.params.receipt_id }),
   },
   {
     path: "/report",

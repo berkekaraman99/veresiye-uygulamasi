@@ -1,39 +1,52 @@
 <template>
   <div>
-    <div class="row">
-      <div class="col-12 offset-sm-1 col-sm-10 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
-        <h1 class="text-center mb-4 fw-bold">Rapor Görünümü</h1>
-        <FormKit type="form" id="report-form" @submit="getReceiptReport" :actions="false">
-          <FormKit type="submit" label="Raporu Oluştur" :wrapper-class="{ 'd-flex justify-content-center': true }" />
-          <FormKit type="button" :wrapper-class="{ 'd-flex justify-content-center': true }">
-            <a class="text-light" :href="download">Excel Formatında İndir</a>
+    <div class="grid grid-cols-12">
+      <div class="col-start-4 col-span-6">
+        <div class="flex items-center justify-center">
+          <h1 class="font-semibold text-4xl text-center mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Rapor Görünümü</h1>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-slate-200">
+          <FormKit
+            type="form"
+            id="report-form"
+            @submit="getReceiptReport"
+            :actions="false"
+            :config="{
+              classes: {
+                outer: 'mx-auto',
+              },
+            }"
+          >
+            <FormKit type="submit" label="Raporu Oluştur" :wrapper-class="report_btn" />
+            <FormKit type="button" :wrapper-class="report_btn" @click="downloadReport"> Excel Formatında İndir </FormKit>
           </FormKit>
-        </FormKit>
+        </div>
       </div>
     </div>
 
-    <div class="row my-3" v-if="report.length !== 0">
-      <div class="col-12 col-sm-12 offset-md-1 col-md-10 offset-lg-2 col-lg-8">
-        <div class="text-sm">
-          <h1 class="text-center my-3 fw-bold">Rapor</h1>
-          <table id="reportTable" class="table table-hover table-striped table-borderless">
-            <thead class="text-xs text-secondary bg-body">
+    <the-loading v-if="isLoading" />
+    <div class="grid grid-cols-12 my-3 pb-6" v-if="report.length !== 0">
+      <div class="col-span-12">
+        <div>
+          <h1 class="text-center my-5 font-semibold text-3xl">Rapor</h1>
+          <table id="reportTable" class="table w-full shadow-md">
+            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)]">
               <tr>
-                <th scope="col" class="px-3 py-2" @click="sortTable(0)">Müşteri</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(1)">Alacak</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(2)">Borç</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(3)">Son Fatura Tarihi</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(4)">Net Bakiye</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(0)">Müşteri</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(1)">Alacak</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(2)">Borç</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(3)">Son Fatura Tarihi</th>
+                <th scope="col" class="px-3 py-4" @click="sortTable(4)">Net Bakiye</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="text-sm bg-white border">
               <template v-for="customer in report" v-bind:key="customer['Müşteri']">
-                <tr v-if="customer['Net Bakiye'] !== 0">
-                  <td class="px-3 py-3">{{ customer["Müşteri"] }}</td>
-                  <td class="px-3 py-3">{{ customer["Alacak"] }}</td>
-                  <td class="px-3 py-3">{{ customer["Borç"] }}</td>
-                  <td class="px-3 py-3">{{ customer["Son Fatura Tarihi"].slice(0, 10) }}</td>
-                  <td class="px-3 py-3">{{ customer["Net Bakiye"] + " ₺" }}</td>
+                <tr v-if="customer['Net Bakiye'] !== 0" class="hover:bg-slate-100">
+                  <td class="px-4 py-3">{{ customer["Müşteri"] }}</td>
+                  <td class="px-3 py-3 text-center">{{ customer["Alacak"].toFixed(2) }}</td>
+                  <td class="px-3 py-3 text-center">{{ customer["Borç"].toFixed(2) }}</td>
+                  <td class="px-3 py-3 text-center">{{ customer["Son Fatura Tarihi"].slice(0, 10) }}</td>
+                  <td class="px-3 py-3 text-center">{{ customer["Net Bakiye"].toFixed(2) + " ₺" }}</td>
                 </tr>
               </template>
             </tbody>
@@ -47,16 +60,34 @@
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { ref } from "vue";
+import { onBeforeUnmount } from "vue";
 
 //STATES
 const receiptStore = useReceiptStore();
 const { report } = storeToRefs(receiptStore);
-const download = ref();
+const isLoading = ref(false);
 
 //FUNCTIONS
+const changeLoading = (value: boolean) => {
+  isLoading.value = value;
+};
+
+const downloadReport = async () => {
+  changeLoading(true);
+  await receiptStore
+    .downloadReceipt()
+    .then((href) => {
+      if (href != null) {
+        window.location.replace(href);
+      }
+    })
+    .finally(() => changeLoading(false));
+};
+
 const getReceiptReport = async () => {
-  await receiptStore.getReceiptReport();
+  changeLoading(true);
+  await receiptStore.getReceiptReport().finally(() => changeLoading(false));
 };
 
 const sortTable = (n: number) => {
@@ -107,15 +138,13 @@ const sortTable = (n: number) => {
   }
 };
 
-onMounted(async () => {
-  download.value = await receiptStore.downloadReceipt();
-});
-
 onBeforeUnmount(() => {
   receiptStore.$patch({
     report: [],
   });
 });
+
+const report_btn = "flex justify-center";
 </script>
 
 <style scoped lang="scss"></style>

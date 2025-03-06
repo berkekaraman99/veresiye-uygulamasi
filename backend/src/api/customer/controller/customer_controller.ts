@@ -7,7 +7,7 @@ import { ResponseStatus } from "../../../core/constants/response_status_enum";
 
 export const createCustomer = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { customer_name, customer_address, customer_id, created_date } = req.body;
+    const { customer_name, customer_address, customer_id, created_at } = req.body;
     await createCustomerValidator
       .validate({
         customer_name,
@@ -25,7 +25,7 @@ export const createCustomer = async (req: Request, res: Response, next: NextFunc
 
     await db.query({
       sql: "INSERT INTO customers (customer_id, customer_name, customer_address, created_at) VALUES (?, ?, ?, ?)",
-      values: [customer_id, customer_name, customer_address, created_date],
+      values: [customer_id, customer_name, customer_address, created_at],
     });
     res.status(200).json(BaseResponse.success("Customer created successfully", ResponseStatus.SUCCESS));
   } catch (error: any) {
@@ -63,8 +63,34 @@ export const getCustomers = async (req: Request, res: Response, next: NextFuncti
   try {
     const { offset } = req.query;
     const [customers] = await db.query<RowDataPacket[]>({
-      sql: `SELECT * FROM customers WHERE is_deleted = 0 ORDER BY customer_name LIMIT 15 OFFSET ${offset}`,
+      sql: `
+      SELECT 
+          c.customer_id, 
+          c.customer_name, 
+          c.created_at, 
+          c.customer_address, 
+          SUM(CASE WHEN r.receipt_type = 1 THEN r.price ELSE 0 END) - 
+          SUM(CASE WHEN r.receipt_type = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
+      FROM 
+          customers AS c
+      LEFT JOIN 
+          receipts AS r 
+      ON 
+          c.customer_id = r.customer_id
+      WHERE 
+          c.is_deleted = 0
+      GROUP BY 
+          c.customer_id, c.customer_name, c.created_at, c.customer_address
+      ORDER BY 
+          c.customer_name
+      LIMIT 
+          15 
+      OFFSET 
+          ${offset};
+      `,
     });
+    console.log(customers);
+
     res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
@@ -99,7 +125,22 @@ export const getCustomerById = async (req: Request, res: Response, next: NextFun
   try {
     const { customer_id } = req.query;
     const [customer] = await db.query<RowDataPacket[]>({
-      sql: `SELECT * FROM customers WHERE customer_id = ?`,
+      sql: `
+      SELECT 
+        C.customer_id, 
+        C.customer_name, 
+        C.created_at, 
+        C.is_deleted, 
+        C.customer_address, 
+        SUM(CASE WHEN R.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN R.receipt_type = 0 THEN price ELSE 0 END) as "net_bakiye" 
+      FROM 
+        customers AS C 
+      LEFT JOIN 
+        receipts AS R 
+      ON 
+        C.customer_id = R.customer_id 
+      WHERE 
+        C.customer_id = ?`,
       values: [customer_id],
     });
     res.status(200).json(BaseResponse.success(customer, ResponseStatus.SUCCESS));
@@ -113,7 +154,7 @@ export const searchCustomers = async (req: Request, res: Response, next: NextFun
     const { text } = req.query;
     const textQuery = "%" + text + "%";
     const [customers] = await db.query<RowDataPacket[]>({
-      sql: "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 5 OFFSET 0",
+      sql: "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 8",
       values: [textQuery],
     });
     res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
@@ -126,7 +167,7 @@ export const getCustomerReceipts = async (req: Request, res: Response, next: Nex
   try {
     const { customer_id, offset } = req.query;
     const [receipts] = await db.query<RowDataPacket[]>({
-      sql: `SELECT receipt_id, description, price, receipt_type, created_date FROM receipts WHERE is_deleted = 0 AND customer_id = ? LIMIT 15 OFFSET ${offset}`,
+      sql: `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? LIMIT 15 OFFSET ${offset}`,
       values: [customer_id],
     });
     res.status(200).json(BaseResponse.success(receipts, ResponseStatus.SUCCESS));

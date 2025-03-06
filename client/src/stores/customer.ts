@@ -58,9 +58,9 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomers = async (offset: number = 0) => {
     try {
       const res = await instance.get(`/customer/get-customers?offset=${offset}`);
-      // console.log(res.data);
+      console.log(res.data);
       customers.value = res.data.data;
-      searchedCustomers.value = res.data.data;
+      //   searchedCustomers.value = res.data.data;
       statusCode.value = res.data.statusCode;
     } catch (error: any) {
       console.error(error.response);
@@ -74,7 +74,7 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomerById = async (customer_id: string) => {
     try {
       const res = await instance.get(`/customer/get-customer-by-id?customer_id=${customer_id}`);
-      // console.log(res.data.data);
+      console.log(res.data.data);
       customer.value = res.data.data[0];
     } catch (error: any) {
       console.error(error.response);
@@ -88,7 +88,7 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomersPageCount = async () => {
     try {
       const res = await instance.get(`/customer/get-customer-page-count`);
-      console.log(res.data);
+      //   console.log(res.data);
       customersPageCount.value = Number(res.data.data[0].count);
     } catch (error: any) {
       console.error(error.response);
@@ -100,7 +100,7 @@ export const useCustomerStore = defineStore("customer", () => {
       const res = await instance.get(`/customer/search-customers?text=${searchValue}`);
       statusCode.value = res.data.statusCode;
       searchedCustomers.value = res.data.data;
-      console.log(res.data);
+      //   console.log(res.data);
     } catch (error: any) {
       console.error(error.response);
     } finally {
@@ -110,7 +110,7 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
-  const searchCustomersList = async (searchValue: string) => {
+  const searchCustomersList = (searchValue: string) => {
     try {
       if (searchValue === "") {
         searchedCustomers.value = customers.value;
