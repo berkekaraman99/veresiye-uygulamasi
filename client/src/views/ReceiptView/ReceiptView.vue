@@ -20,7 +20,7 @@
               </tr>
               <tr>
                 <th class="px-2 py-2">Fatura Oluşturulma Tarihi:</th>
-                <td class="px-2 py-2">{{ receipt?.created_date }}</td>
+                <td class="px-2 py-2">{{ receipt?.created_at }}</td>
               </tr>
               <tr v-if="receipt?.description !== ''">
                 <th class="px-2 py-2">Açıklama:</th>

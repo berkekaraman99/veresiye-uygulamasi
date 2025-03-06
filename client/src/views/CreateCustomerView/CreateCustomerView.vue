@@ -1,8 +1,8 @@
 <template>
   <div class="grid grid-cols-12">
-    <div class="col-start-4 col-span-6">
+    <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6">
       <div class="flex items-center justify-center">
-        <h1 class="font-semibold text-4xl mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Müşteri Oluştur</h1>
+        <h1 class="font-semibold text-4xl text-center mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Müşteri Oluştur</h1>
       </div>
       <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-slate-200">
         <FormKit
@@ -64,7 +64,7 @@ const createCustomer = async () => {
       .createCustomer({
         ...customerForm,
         customer_id: customer_id,
-        created_date: created_date,
+        created_at: created_date,
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {

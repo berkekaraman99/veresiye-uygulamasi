@@ -3,7 +3,7 @@
     <div class="grid grid-cols-12">
       <div class="col-start-4 col-span-6">
         <div class="flex items-center justify-center">
-          <h1 class="font-semibold text-4xl mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Rapor Görünümü</h1>
+          <h1 class="font-semibold text-4xl text-center mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Rapor Görünümü</h1>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-slate-200">
           <FormKit
@@ -25,10 +25,10 @@
     </div>
 
     <the-loading v-if="isLoading" />
-    <div class="grid grid-cols-12 my-3" v-if="report.length !== 0">
+    <div class="grid grid-cols-12 my-3 pb-6" v-if="report.length !== 0">
       <div class="col-span-12">
         <div>
-          <h1 class="text-center my-5 font-semibold text-2xl">Rapor</h1>
+          <h1 class="text-center my-5 font-semibold text-3xl">Rapor</h1>
           <table id="reportTable" class="table w-full shadow-md">
             <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)]">
               <tr>

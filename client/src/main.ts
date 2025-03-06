@@ -1,6 +1,7 @@
 import "./assets/css/main.scss";
 import "vue-toastification/dist/index.css";
 import "./index.css";
+import "animate.css";
 
 import { createApp } from "vue";
 import { createPinia } from "pinia";
@@ -17,8 +18,9 @@ const options: PluginOptions = {
 };
 
 const app = createApp(App);
+const pinia = createPinia();
 
-app.use(createPinia());
+app.use(pinia);
 app.use(plugin, formkitConfig);
 app.use(Toast, options);
 app.use(router);

@@ -11,21 +11,23 @@
 
       <the-loading v-if="loading"></the-loading>
       <table id="customersTable" class="table w-full shadow" v-else-if="customers.length !== 0">
-        <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)]">
+        <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)] h-12">
           <tr>
-            <th scope="col" class="px-3 py-4" @click="sortTable(0)">Müşteri</th>
+            <th scope="col" class="px-3 py-2" @click="sortTable(0)">Müşteri</th>
             <th v-if="isHaveAddress" scope="col" class="px-3 py-2" @click="sortTable(1)">Müşteri Adresi</th>
-            <th scope="col" class="px-3 py-4" @click="sortTable(2)">Oluşturulma Tarihi</th>
-            <th scope="col" class="px-3 py-4">İşlem</th>
+            <th scope="col" class="px-3 py-2" @click="sortTable(2)">Oluşturulma Tarihi</th>
+            <th scope="col" class="px-3 py-2" @click="sortTable(3)">Net Bakiye</th>
+            <th scope="col" class="px-3 py-2">İşlem</th>
           </tr>
         </thead>
 
         <tbody class="text-sm bg-white border">
           <tr v-for="customer in customers" v-bind:key="customer.customer_id">
-            <td class="px-5 py-2">{{ customer.customer_name }}</td>
+            <td class="px-3 py-2">{{ customer.customer_name }}</td>
             <td v-if="isHaveAddress" class="px-3 py-2">{{ customer.customer_address }}</td>
-            <td class="px-5 py-2 text-center">{{ customer.created_at.slice(0, 10) }}</td>
-            <td class="px-5 py-3 text-center">
+            <td class="px-3 py-2 text-center">{{ customer.created_at.slice(0, 10) }}</td>
+            <td class="px-3 py-2 text-center">{{ customer.net_bakiye.toFixed(2).toString() + " TL" }}</td>
+            <td class="px-3 py-2 text-center">
               <Menu as="div" class="relative inline-block text-left">
                 <div>
                   <MenuButton
@@ -68,7 +70,7 @@
                           </a>
                         </MenuItem>
                       </RouterLink>
-                      <MenuItem v-slot="{ active }" @click="selCustomer(customer.customer_id), toggleModal()">
+                      <MenuItem v-slot="{ active }" @click="selCustomer(customer), toggleModal()">
                         <a
                           class="flex items-center text-red-500"
                           :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"

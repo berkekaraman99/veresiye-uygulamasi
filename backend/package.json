@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.2",
     "randomstring": "^1.3.0",
+    "typeorm": "^0.3.21",
     "yup": "^1.4.0"
   },
   "devDependencies": {

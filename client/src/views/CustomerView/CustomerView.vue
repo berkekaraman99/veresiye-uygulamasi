@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="grid grid-cols-12">
-      <div class="col-start-2 col-span-10">
+      <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-start-3 md:col-span-8 lg:col-start-4 lg:col-span-6">
         <div>
           <h1 class="text-center mb-8 font-semibold text-3xl">Müşteri Bilgileri</h1>
-          <div class="p-4 bg-white rounded-lg shadow-lg">
+          <div class="p-4 bg-white rounded-lg shadow-lg border-2 border-slate-200">
             <table class="table w-full">
               <tbody>
                 <tr>
@@ -19,6 +19,10 @@
                   <th class="px-2 py-2">Müşterinin Eklenme Tarihi:</th>
                   <td class="px-2 py-2">{{ customer?.created_at }}</td>
                 </tr>
+                <tr v-if="customer?.net_bakiye != null">
+                  <th class="px-2 py-2">Güncel Bakiye:</th>
+                  <td class="px-2 py-2">{{ customer?.net_bakiye.toString() + " TL" }}</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -30,8 +34,8 @@
       <div class="col-span-12">
         <div>
           <h1 class="text-center mb-8 font-semibold text-2xl">Faturalar</h1>
-          <table id="receiptsTable" class="table w-full">
-            <thead class="text-xs bg-gray-200">
+          <table id="receiptsTable" class="table w-full shadow">
+            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)] h-12">
               <tr>
                 <th scope="col" class="px-3 py-2" @click="sortTable(0)">Fatura No</th>
                 <th scope="col" class="px-3 py-2" @click="sortTable(1)">Tarih</th>
@@ -41,10 +45,10 @@
                 <th scope="col" class="px-3 py-2">İşlem</th>
               </tr>
             </thead>
-            <tbody class="text-sm bg-white">
+            <tbody class="text-sm bg-white border">
               <tr v-for="receipt in customerReceipts" v-bind:key="receipt.receipt_id">
-                <td class="px-4 py-2">{{ receipt.receipt_id }}</td>
-                <td class="px-3 py-2">{{ receipt.created_date.slice(0, 10) }}</td>
+                <td class="px-3 py-2">{{ receipt.receipt_id }}</td>
+                <td class="px-3 py-2">{{ receipt.created_at.slice(0, 10) }}</td>
                 <td class="px-3 py-2">{{ reformatReceiptType(receipt.receipt_type) }}</td>
                 <td v-if="isHaveDescription" class="px-3 py-2">{{ receipt.description }}</td>
                 <td class="px-3 py-2">{{ receipt.price + " ₺" }}</td>

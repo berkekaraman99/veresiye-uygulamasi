@@ -1,8 +1,10 @@
 <template>
   <div class="grid grid-cols-12">
-    <div class="col-start-4 col-span-6">
+    <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6">
       <div class="flex items-center justify-center">
-        <h1 class="font-semibold text-4xl mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">{{ receiptTypeReturn }}</h1>
+        <h1 class="font-semibold text-4xl text-center mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">
+          {{ receiptTypeReturn }}
+        </h1>
       </div>
       <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-slate-200">
         <FormKit
@@ -56,7 +58,7 @@
             validation="required"
             v-model="receiptForm.price"
           />
-          <FormKit type="datetime-local" label="Tarih" :validation="'required|date_before' + maxDate" v-model="receiptForm.created_date" />
+          <FormKit type="datetime-local" label="Tarih" :validation="'required|date_before' + maxDate" v-model="receiptForm.created_at" />
           <FormKit type="textarea" name="description" label="Açıklama" placeholder="Açıklama" v-model="receiptForm.description" />
 
           <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
@@ -99,7 +101,7 @@ const receiptForm = reactive({
   customer_id: "",
   price: "0",
   description: "",
-  created_date: moment().format("YYYY-MM-DD HH:mm:ss"),
+  created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
   receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
 });
 let timer: any = null;

@@ -1,7 +1,7 @@
 {
-    "workbench.editor.highlightModifiedTabs": true,
-    "workbench.editor.revealIfOpen": false,
-    "workbench.preferredLightColorTheme": "GitHub Light",
-    "workbench.iconTheme": "material-icon-theme",
-    "workbench.colorTheme": "GitHub Dark Default"
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.editor.revealIfOpen": false,
+  "workbench.preferredLightColorTheme": "GitHub Light",
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "GitHub Dark Default"
 }
