@@ -90,7 +90,11 @@ onMounted(() => {
 <template>
   <div>
     <div class="flex items-center justify-center">
-      <h1 class="font-semibold text-4xl mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Arama</h1>
+      <h1
+        class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+      >
+        Arama
+      </h1>
     </div>
     <div class="flex items-center justify-center mb-6">
       <div class="relative max-w-lg w-full">
@@ -100,20 +104,27 @@ onMounted(() => {
           name="search"
           id="search"
           placeholder="Müşteri ara"
-          class="border-2 border-slate-300 text-[100%] rounded-lg p-4 pl-10 h-[48px] w-[100%]"
+          class="dark:text-white border-2 border-slate-300 dark:border-slate-950 dark:bg-slate-900 text-[100%] rounded-lg p-4 pl-10 h-[48px] w-[100%]"
           v-model="searchQuery"
           @input="searchCustomer()"
         />
       </div>
     </div>
 
-    <h1 class="text-center font-semibold text-3xl mb-8" v-if="isSearched">Arama Sonucu</h1>
+    <div class="flex justify-center">
+      <h1
+        class="font-semibold text-2xl mb-6 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+        v-if="isSearched"
+      >
+        Arama Sonucu
+      </h1>
+    </div>
     <h3 class="text-center fs-5 fw-light my-5" v-if="isSearched && searchedCustomers.length === 0">Müşteri bulunamadı</h3>
     <div class="grid grid-cols-12 h-full">
       <!-- <h1 class="col-span-12 text-center">Müşteri aramak için yazınız...</h1> -->
       <TransitionGroup appear @before-enter="beforeEnterSearch" @enter="enterSearch" @before-leave="beforeLeaveSearch" @leave="leaveSearch">
         <div
-          class="flex items-center justify-between bg-white my-2 p-4 shadow-md rounded-lg col-span-12 md:col-start-3 md:col-span-8"
+          class="flex items-center justify-between border-2 dark:border-slate-950 dark:text-white bg-white dark:bg-slate-900 my-2 p-4 shadow-md rounded-lg col-span-12 md:col-start-3 md:col-span-8"
           v-for="(customer, index) in searchedCustomers"
           v-bind:key="customer.customer_id"
           :data-index="index"
@@ -122,7 +133,7 @@ onMounted(() => {
           <Menu as="div" class="relative inline-block text-left">
             <div>
               <MenuButton
-                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-slate-900 dark:text-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Seçenekler
                 <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -138,12 +149,18 @@ onMounted(() => {
               leave-to-class="transform opacity-0 scale-95"
             >
               <MenuItems
-                class="absolute right-0 bottom-12 z-20 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                class="absolute right-0 bottom-12 z-20 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-slate-900 shadow-lg border dark:border-slate-700 ring-1 ring-black ring-opacity-5 focus:outline-none"
               >
                 <div class="py-2">
                   <RouterLink :to="{ name: 'customer', params: { customer_id: customer.customer_id } }">
                     <MenuItem v-slot="{ active }">
-                      <a class="flex items-center" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                      <a
+                        class="flex items-center"
+                        :class="[
+                          active ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                      >
                         <span class="dropdown-icon">
                           <UserIcon />
                         </span>
@@ -153,7 +170,13 @@ onMounted(() => {
                   </RouterLink>
                   <RouterLink :to="{ name: 'edit-customer', params: { customer_id: customer.customer_id } }">
                     <MenuItem v-slot="{ active }">
-                      <a class="flex items-center" :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']">
+                      <a
+                        class="flex items-center"
+                        :class="[
+                          active ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300',
+                          'block px-4 py-2 text-sm',
+                        ]"
+                      >
                         <span class="dropdown-icon">
                           <PencilIcon />
                         </span>
@@ -163,7 +186,7 @@ onMounted(() => {
                   </RouterLink>
                   <MenuItem v-slot="{ active }" @click="selCustomer(customer.customer_id), toggleModal()">
                     <a
-                      class="flex items-center text-red-500"
+                      class="flex items-center text-red-600 hover:text-red-400 cursor-pointer"
                       :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
                     >
                       <span class="dropdown-icon">

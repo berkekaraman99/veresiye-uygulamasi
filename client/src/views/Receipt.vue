@@ -1,9 +1,21 @@
 <template>
   <div class="grid grid-cols-12">
+    <RouterLink class="create-btn-wrapper" :to="{ name: 'edit-receipt' }">
+      <div class="bg-[var(--secondary)] hover:bg-[var(--secondary-variant)] create-btn text-white">
+        <PencilIcon />
+      </div>
+    </RouterLink>
+
     <div class="col-start-2 col-span-10">
       <div>
-        <h1 class="text-center mb-8 font-semibold text-3xl">Fatura Bilgileri</h1>
-        <div class="p-4 bg-white rounded-lg shadow-lg">
+        <div class="flex justify-center">
+          <h1
+            class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+          >
+            Fatura Bilgileri
+          </h1>
+        </div>
+        <div class="p-4 bg-white dark:bg-slate-900 dark:text-white border-2 dark:border-slate-950 rounded-lg shadow-lg">
           <table class="table w-full">
             <tbody>
               <tr>
@@ -43,6 +55,7 @@ import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 import { reformatReceiptType } from "@/utils/receipt_helper";
+import { PencilIcon } from "@heroicons/vue/24/solid";
 
 interface Props {
   receipt_id: string;
@@ -57,4 +70,15 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+th {
+  text-align: end;
+}
+.create-btn-wrapper {
+  @apply fixed bottom-14 right-2/4 translate-x-2/4 translate-y-2/4 sm:right-4 sm:bottom-3 sm:translate-x-0 sm:translate-y-0 z-50;
+}
+
+.create-btn {
+  @apply w-16 h-16 rounded-full p-4;
+}
+</style>

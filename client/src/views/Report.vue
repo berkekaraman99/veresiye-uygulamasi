@@ -1,11 +1,15 @@
 <template>
-  <div>
+  <div class="pb-8">
     <div class="grid grid-cols-12">
       <div class="col-start-4 col-span-6">
         <div class="flex items-center justify-center">
-          <h1 class="font-semibold text-4xl text-center mb-8 inline-block bg-white px-4 py-2 rounded-lg border-2 border-slate-200">Rapor Görünümü</h1>
+          <h1
+            class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+          >
+            Rapor Görünümü
+          </h1>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-slate-200">
+        <div class="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-900">
           <FormKit
             type="form"
             id="report-form"
@@ -13,7 +17,7 @@
             :actions="false"
             :config="{
               classes: {
-                outer: 'mx-auto',
+                outer: '$reset mx-auto my-2',
               },
             }"
           >
@@ -25,12 +29,18 @@
     </div>
 
     <the-loading v-if="isLoading" />
-    <div class="grid grid-cols-12 my-3 pb-6" v-if="report.length !== 0">
+    <div class="grid grid-cols-12 mt-8" v-if="report.length !== 0">
       <div class="col-span-12">
         <div>
-          <h1 class="text-center my-5 font-semibold text-3xl">Rapor</h1>
+          <div class="flex justify-center">
+            <h1
+              class="font-semibold text-2xl mb-6 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+            >
+              Rapor
+            </h1>
+          </div>
           <table id="reportTable" class="table w-full shadow-md">
-            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)]">
+            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-light)]">
               <tr>
                 <th scope="col" class="px-3 py-4" @click="sortTable(0)">Müşteri</th>
                 <th scope="col" class="px-3 py-4" @click="sortTable(1)">Alacak</th>
@@ -39,9 +49,9 @@
                 <th scope="col" class="px-3 py-4" @click="sortTable(4)">Net Bakiye</th>
               </tr>
             </thead>
-            <tbody class="text-sm bg-white border">
+            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border dark:border-slate-950">
               <template v-for="customer in report" v-bind:key="customer['Müşteri']">
-                <tr v-if="customer['Net Bakiye'] !== 0" class="hover:bg-slate-100">
+                <tr v-if="customer['Net Bakiye'] !== 0" class="hover:bg-slate-100 dark:hover:bg-slate-800">
                   <td class="px-4 py-3">{{ customer["Müşteri"] }}</td>
                   <td class="px-3 py-3 text-center">{{ customer["Alacak"].toFixed(2) }}</td>
                   <td class="px-3 py-3 text-center">{{ customer["Borç"].toFixed(2) }}</td>

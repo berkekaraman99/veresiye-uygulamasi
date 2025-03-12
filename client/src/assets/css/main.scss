@@ -4,9 +4,13 @@
 $primary: #6200ee;
 $primary-variant: #3700b3;
 $secondary: #3f5eef;
-$secondary-variant: #0037de;
-$text-light: #000000;
-$text-dark: #ffffff;
+$secondary-variant: #21327c;
+$text-light: #ffffff;
+$text-dark: #000000;
+$dark-mode-color: #1f1f1f;
+$light-mode-color: #f9f9f9;
+$sidebar-color: #21327c;
+$navbar-color: #21327c;
 
 :root {
   --primary: #{$primary};
@@ -15,6 +19,10 @@ $text-dark: #ffffff;
   --secondary-variant: #{$secondary-variant};
   --text-light: #{$text-light};
   --text-dark: #{$text-dark};
+  --dark-mode-color: #{$dark-mode-color};
+  --light-mode-color: #{$light-mode-color};
+  --sidebar-color: #{$sidebar-color};
+  --navbar-color: #{$navbar-color};
 }
 
 * {
@@ -85,43 +93,6 @@ a {
   font-size: 0.875rem;
   padding: 0.75rem 1.125rem;
   transition: 0.25s ease;
-}
-
-.interactive-card {
-  // height: 400px;
-  & {
-    display: flex;
-    margin: 0.5rem 0rem;
-    cursor: pointer;
-    transition: 0.3s ease;
-    border-radius: 1rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-
-    @media screen and (max-width: 768px) {
-      align-items: center;
-      justify-content: flex-end;
-      flex-direction: row-reverse;
-      height: 100px;
-      padding: 1rem 1.25rem;
-    }
-
-    @media screen and (min-width: 768px) {
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      height: 320px;
-    }
-  }
-
-  &:hover {
-    // background-color: #eeeeee !important;
-    transform: translateY(-8px);
-    box-shadow: 0px 4px 1rem -6px black;
-  }
-
-  &:active {
-    transform: scale(95%);
-  }
 }
 
 svg-icon {
