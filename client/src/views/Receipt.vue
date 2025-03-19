@@ -70,7 +70,7 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 th {
   text-align: end;
 }

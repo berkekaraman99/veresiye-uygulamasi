@@ -30,7 +30,9 @@ onMounted(() => {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
+@reference "@/index.css";
+
 /* The Close Button */
 .close {
   color: #aaa;
@@ -47,7 +49,6 @@ onMounted(() => {
 
 /* The Modal (background) */
 .modal {
-  //   display: block; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
   left: 0;
@@ -87,8 +88,6 @@ onMounted(() => {
   min-width: 400px;
   width: 80%;
   max-width: 640px;
-  //   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  //   border-radius: 1rem;
   animation-name: animatefade;
   animation-duration: 0.4s;
   @apply rounded-lg shadow-lg;

@@ -153,5 +153,3 @@ const searchCustomer = async () => {
   }, 500);
 };
 </script>
-
-<style scoped></style>

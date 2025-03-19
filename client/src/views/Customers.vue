@@ -14,7 +14,7 @@
       </RouterLink>
 
       <the-loading v-if="loading"></the-loading>
-      <table id="customersTable" class="table w-full shadow" v-else-if="customers.length !== 0">
+      <table id="customersTable" class="table w-full shadow-sm" v-else-if="customers.length !== 0">
         <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-light)] h-12">
           <tr>
             <th scope="col" class="px-3 py-2" @click="sortTable(0)">Müşteri</th>
@@ -35,7 +35,7 @@
               <Menu as="div" class="relative inline-block text-left">
                 <div>
                   <MenuButton
-                    class="inline-flex w-full justify-center gap-x-1.5 rounded-md dark:text-white bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700"
+                    class="inline-flex w-full justify-center gap-x-1.5 rounded-md dark:text-white bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700"
                   >
                     Seçenekler
                     <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -126,7 +126,7 @@
           </div>
           <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-center">
             <div>
-              <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+              <nav class="isolate inline-flex -space-x-px rounded-md shadow-xs" aria-label="Pagination">
                 <a
                   @click="previousPage()"
                   class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
@@ -339,7 +339,7 @@ onMounted(async () => {
   await customerStore
     .getCustomers(offset.value)
     .then(async () => {
-      customers.value.forEach((element) => {
+      customers.value.forEach((element: any) => {
         if (element.customer_address !== "") {
           isHaveAddress.value = true;
         }
@@ -360,7 +360,9 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
+@reference "@/index.css";
+
 .create-btn-wrapper {
   @apply fixed bottom-14 right-2/4 translate-x-2/4 translate-y-2/4 sm:right-4 sm:bottom-3 sm:translate-x-0 sm:translate-y-0 z-50;
 }

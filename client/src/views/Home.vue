@@ -38,46 +38,47 @@ const items = [
 ];
 </script>
 
-<style scoped lang="scss">
+<style scoped>
+@reference "@/index.css";
+
 .action-icon {
   @apply w-16 me-3 md:w-32 lg:w-40;
 }
 
 .interactive-card {
-  @apply border-2 border-slate-100 dark:border-slate-900 bg-slate-50 dark:bg-slate-900 hover:bg-white dark:hover:bg-slate-800 text-[var(--secondary)] hover:text-[var(--primary)] text-2xl;
+  @apply cursor-pointer flex border-2 border-slate-100 dark:border-slate-900 bg-slate-50 dark:bg-slate-900 hover:bg-white dark:hover:bg-slate-800 text-[var(--secondary)] hover:text-[var(--primary)] text-2xl;
 
-  & {
-    display: flex;
-    margin: 0.5rem 0rem;
-    cursor: pointer;
-    transition: 0.3s ease;
-    border-radius: 1rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin: 0.5rem 0rem;
+  transition: 0.3s ease;
+  border-radius: 1rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
 
-    @media screen and (max-width: 768px) {
-      align-items: center;
-      justify-content: flex-end;
-      flex-direction: row-reverse;
-      height: 100px;
-      padding: 1rem 1.25rem;
-    }
+.interactive-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0px 4px 1rem -6px black;
+}
 
-    @media screen and (min-width: 768px) {
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      height: 320px;
-    }
+.interactive-card:active {
+  transform: scale(95%);
+}
+
+@media screen and (max-width: 768px) {
+  .interactive-card {
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: row-reverse;
+    height: 100px;
+    padding: 1rem 1.25rem;
   }
+}
 
-  &:hover {
-    // background-color: #eeeeee !important;
-    transform: translateY(-8px);
-    box-shadow: 0px 4px 1rem -6px black;
-  }
-
-  &:active {
-    transform: scale(95%);
+@media screen and (min-width: 768px) {
+  .interactive-card {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 320px;
   }
 }
 </style>

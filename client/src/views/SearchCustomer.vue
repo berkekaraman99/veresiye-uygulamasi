@@ -87,6 +87,7 @@ onMounted(() => {
   modal = document.getElementById("modal-dialog");
 });
 </script>
+
 <template>
   <div>
     <div class="flex items-center justify-center">
@@ -133,7 +134,7 @@ onMounted(() => {
           <Menu as="div" class="relative inline-block text-left">
             <div>
               <MenuButton
-                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-slate-900 dark:text-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-slate-900 dark:text-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Seçenekler
                 <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -229,29 +230,18 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
 .search-input {
   transition: 0.3s ease;
   width: 240px !important;
   padding-left: 2.75rem;
   border-radius: 99px;
-
-  &:focus {
-    width: 100%;
-    border-radius: 0.5rem;
-  }
+}
+.search-input:focus {
+  width: 100%;
+  border-radius: 0.5rem;
 }
 
-// .search-icon {
-//   position: absolute;
-//   left: 33%;
-//   top: 36%;
-//   transform: translateY(-50%);
-//   width: 24px;
-//   height: 24px;
-//   fill: #888;
-//   margin-left: 0.3rem;
-// }
 .dropdown-icon {
   width: 24px;
 }

@@ -19,7 +19,9 @@ const toggleDark = useToggle(isDark);
   </div>
 </template>
 
-<style scoped lang="scss">
+<style scoped>
+@reference "@/index.css";
+
 .theme-change-btn {
   @apply p-2 text-[var(--text-light)] rounded-lg cursor-pointer bg-[var(--light-color-mode)] hover:bg-[var(--secondary)];
 }

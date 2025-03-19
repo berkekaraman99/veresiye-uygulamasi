@@ -64,32 +64,32 @@ export const getCustomers = async (req: Request, res: Response, next: NextFuncti
     const { offset } = req.query;
     const [customers] = await db.query<RowDataPacket[]>({
       sql: `
-      SELECT 
-          c.customer_id, 
-          c.customer_name, 
-          c.created_at, 
-          c.customer_address, 
-          SUM(CASE WHEN r.receipt_type = 1 THEN r.price ELSE 0 END) - 
-          SUM(CASE WHEN r.receipt_type = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
-      FROM 
-          customers AS c
-      LEFT JOIN 
-          receipts AS r 
-      ON 
-          c.customer_id = r.customer_id
-      WHERE 
-          c.is_deleted = 0
-      GROUP BY 
-          c.customer_id, c.customer_name, c.created_at, c.customer_address
-      ORDER BY 
-          c.customer_name
-      LIMIT 
-          15 
-      OFFSET 
-          ${offset};
+        SELECT 
+            c.customer_id, 
+            c.customer_name, 
+            c.created_at, 
+            c.customer_address, 
+            SUM(CASE WHEN r.receipt_type = 1 THEN r.price ELSE 0 END) - 
+            SUM(CASE WHEN r.receipt_type = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
+        FROM 
+            customers AS c
+        LEFT JOIN 
+            receipts AS r 
+        ON 
+            c.customer_id = r.customer_id
+        WHERE 
+            c.is_deleted = 0
+        GROUP BY 
+            c.customer_id, c.customer_name, c.created_at, c.customer_address
+        ORDER BY 
+            c.customer_name
+        LIMIT 
+            15 
+        OFFSET 
+            ${offset};
       `,
     });
-    console.log(customers);
+    // console.log(customers);
 
     res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
   } catch (error: any) {

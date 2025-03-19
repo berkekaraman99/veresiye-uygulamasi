@@ -156,5 +156,3 @@ onBeforeUnmount(() => {
 
 const report_btn = "flex justify-center";
 </script>
-
-<style scoped lang="scss"></style>

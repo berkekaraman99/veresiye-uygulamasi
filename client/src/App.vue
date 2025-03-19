@@ -12,5 +12,3 @@ import MainLayout from "@/components/layouts/MainLayout.vue";
     </RouterView>
   </MainLayout>
 </template>
-
-<style lang="scss"></style>

@@ -1,6 +1,5 @@
-import "./assets/css/main.scss";
+import "./assets/css/main.css";
 import "vue-toastification/dist/index.css";
-import "./index.css";
 import "animate.css";
 
 import { createApp } from "vue";

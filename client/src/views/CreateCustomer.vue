@@ -90,5 +90,3 @@ const createCustomer = async () => {
   }
 };
 </script>
-
-<style scoped></style>
