@@ -10,7 +10,7 @@
           <div class="inset-y-0 flex items-center" @click="emit('openSideNav')">
             <!-- Mobile menu button-->
             <DisclosureButton
-              class="relative inline-flex items-center justify-center rounded-md p-2 text-[var(--text-dark)] hover:bg-[var(--secondary)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition ease-in-out"
+              class="relative inline-flex items-center justify-center rounded-md p-2 text-[var(--text-dark)] hover:bg-[var(--secondary)] focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white transition ease-in-out"
             >
               <span class="absolute -inset-0.5" />
               <span class="sr-only">Open main menu</span>
@@ -18,7 +18,7 @@
             </DisclosureButton>
           </div>
           <div class="mx-2">
-            <RouterLink to="/" class="flex flex-shrink-0 items-center font-semibold">Veresiye</RouterLink>
+            <RouterLink to="/" class="flex shrink-0 items-center font-semibold">Veresiye</RouterLink>
           </div>
         </div>
         <div class="mx-2">
@@ -40,7 +40,6 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { DocumentDuplicateIcon, UsersIcon, UserPlusIcon, DocumentPlusIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/solid";
-import NavbarMenu from "@/components/layouts/NavbarMenu.vue";
 import DarkMode from "@/components/shared/DarkMode.vue";
 
 const emit = defineEmits(["openSideNav"]);

@@ -46,8 +46,8 @@
               Faturalar
             </h1>
           </div>
-          <table id="receiptsTable" class="table w-full shadow">
-            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-light)] h-12">
+          <table id="receiptsTable" class="table w-full shadow-sm">
+            <thead class="text-xs bg-gradient-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] h-12">
               <tr>
                 <th scope="col" class="px-3 py-2" @click="sortTable(0)">Fatura No</th>
                 <th scope="col" class="px-3 py-2" @click="sortTable(1)">Tarih</th>
@@ -68,7 +68,7 @@
                   <Menu as="div" class="relative inline-block text-left">
                     <div>
                       <MenuButton
-                        class="inline-flex w-full justify-center gap-x-1.5 rounded-md dark:text-white bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700"
+                        class="inline-flex w-full justify-center gap-x-1.5 rounded-md dark:text-white bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-2xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700"
                       >
                         Seçenekler
                         <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -84,7 +84,7 @@
                       leave-to-class="transform opacity-0 scale-95"
                     >
                       <MenuItems
-                        class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-slate-900 shadow-lg border dark:border-slate-700 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        class="absolute right-32 top-0 z-10 w-56 origin-top-right rounded-md bg-white dark:bg-slate-900 shadow-lg dark:border-slate-700 ring-1 ring-slate-300 dark:ring-slate-700 ring-opacity-5 focus:outline-hidden"
                       >
                         <div class="py-2">
                           <RouterLink :to="{ name: 'receipt', params: { receipt_id: receipt.receipt_id } }">

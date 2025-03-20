@@ -134,7 +134,7 @@ onMounted(() => {
           <Menu as="div" class="relative inline-block text-left">
             <div>
               <MenuButton
-                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-slate-900 dark:text-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white dark:bg-slate-900 dark:text-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-2xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Seçenekler
                 <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -150,7 +150,7 @@ onMounted(() => {
               leave-to-class="transform opacity-0 scale-95"
             >
               <MenuItems
-                class="absolute right-0 bottom-12 z-20 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-slate-900 shadow-lg border dark:border-slate-700 ring-1 ring-black ring-opacity-5 focus:outline-none"
+                class="absolute right-0 bottom-12 z-20 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-slate-900 shadow-lg border dark:border-slate-700 ring-1 ring-black ring-opacity-5 focus:outline-hidden"
               >
                 <div class="py-2">
                   <RouterLink :to="{ name: 'customer', params: { customer_id: customer.customer_id } }">

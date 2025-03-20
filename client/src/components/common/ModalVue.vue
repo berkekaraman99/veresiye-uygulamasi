@@ -3,13 +3,13 @@
     <!-- Modal content -->
     <div class="modal-content">
       <div class="modal-header">
-        <slot name="header"></slot>
+        <slot name="header" />
       </div>
       <div class="modal-body">
-        <slot></slot>
+        <slot />
       </div>
       <div class="modal-actions">
-        <slot name="actions"></slot>
+        <slot name="actions" />
       </div>
     </div>
   </div>
@@ -62,7 +62,7 @@ onMounted(() => {
 
 /* Modal Content/Box */
 .modal-header {
-  @apply text-2xl font-semibold p-4 border-b-2 flex items-center justify-between;
+  @apply text-2xl font-semibold p-4 border-b-1 dark:border-slate-700 flex items-center justify-between;
 }
 
 /* Modal Body */
@@ -81,16 +81,15 @@ onMounted(() => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: #fefefe;
+  /* background-color: #fefefe; */
   margin: auto;
   padding: 0;
-  border: 1px solid #888;
   min-width: 400px;
   width: 80%;
   max-width: 640px;
   animation-name: animatefade;
   animation-duration: 0.4s;
-  @apply rounded-lg shadow-lg;
+  @apply rounded-lg shadow-lg bg-slate-100 dark:bg-slate-900 border dark:border-slate-700;
 }
 
 /* Add Animation */

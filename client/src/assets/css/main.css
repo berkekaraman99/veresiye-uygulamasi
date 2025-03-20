@@ -70,7 +70,7 @@ a {
   background-color: transparent !important;
   text-decoration: none !important;
   transition: 0.3s ease !important;
-  color: #fff;
+  /* color: #fff; */
 }
 
 .dropdown-item {
