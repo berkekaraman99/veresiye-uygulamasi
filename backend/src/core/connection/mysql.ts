@@ -9,84 +9,72 @@ const connectionConfig: ConnectionOptions = {
 };
 const connection = mysql.createConnection(connectionConfig);
 
-// const createTableUsers = `
-// CREATE TABLE IF NOT EXISTS users (
-//   id varchar(255) NOT NULL,
-//   company_name varchar(255) NOT NULL,
-//   user_name varchar(45) NOT NULL,
-//   hashed_password varchar(255) NOT NULL,
-//   created_at varchar(255) NOT NULL,
-//   PRIMARY KEY (id),
-//   UNIQUE KEY id_UNIQUE (id),
-//   UNIQUE KEY user_name_UNIQUE (user_name)
-// );
-// `;
+const createTableCustomers = `
+CREATE TABLE IF NOT EXISTS customers (
+  id int NOT NULL AUTO_INCREMENT,
+  customer_id varchar(255) NOT NULL,
+  customer_name varchar(255) NOT NULL,
+  customer_address varchar(255) DEFAULT NULL,
+  created_at varchar(255) DEFAULT NULL,
+  updated_at varchar(255) DEFAULT NULL,
+  is_deleted tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (id),
+  UNIQUE KEY customer_id_UNIQUE (customer_id)
+) ENGINE=InnoDB AUTO_INCREMENT=155 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-// const createTableCustomers = `
-// CREATE TABLE IF NOT EXISTS customers (
-//   customer_id varchar(255) NOT NULL,
-//   customer_name varchar(255) NOT NULL,
-//   created_at varchar(255) NOT NULL,
-//   is_deleted tinyint unsigned NOT NULL DEFAULT '0',
-//   customer_address varchar(255) DEFAULT NULL,
-//   PRIMARY KEY(customer_id)
-// );
-// `;
-// const createTableReceipts = `
-// CREATE TABLE IF NOT EXISTS receipts (
-//   receipt_id varchar(255) NOT NULL,
-//   customer_id varchar(255) NOT NULL,
-//   description varchar(1024) NOT NULL,
-//   price float unsigned NOT NULL,
-//   receipt_type tinyint unsigned NOT NULL,
-//   created_date varchar(255) NOT NULL,
-//   is_deleted tinyint unsigned NOT NULL DEFAULT '0',
-//   PRIMARY KEY (receipt_id),
-//   UNIQUE KEY receipt_id_UNIQUE (receipt_id)
-// );`;
+`;
 
-// const createDatabaseAndTables = () => {
-//   connection.query("CREATE DATABASE IF NOT EXISTS veresiyedb", (err, result) => {
-//     if (err) {
-//       console.error("Veritabanı oluşturulamadı, ", err);
-//       return;
-//     }
-//     console.log("Veritabanı başarıyla oluşturuldu");
+const createTableReceipts = `
+CREATE TABLE IF NOT EXISTS receipts (
+  id int NOT NULL AUTO_INCREMENT,
+  receipt_id varchar(255) NOT NULL,
+  customer_id varchar(255) NOT NULL,
+  description varchar(1024) NOT NULL,
+  price double unsigned NOT NULL,
+  receipt_type tinyint unsigned NOT NULL,
+  created_at varchar(255) DEFAULT NULL,
+  updated_at varchar(255) DEFAULT NULL,
+  is_deleted tinyint unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (id),
+  UNIQUE KEY receipt_id_UNIQUE (receipt_id)
+) ENGINE=InnoDB AUTO_INCREMENT=612 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-//     connection.changeUser({ database: process.env.DATABASE ?? "veresiyedb" }, (err) => {
-//       if (err) {
-//         console.error("Veritabanı seçilemedi, ", err);
-//         return;
-//       }
+`;
 
-//       connection.query(createTableUsers, (err, results) => {
-//         if (err) {
-//           console.error("Kullanıcı tablosu oluşturulamadı, ", err);
-//           return;
-//         }
-//         console.log("Kullanıcı tablosu oluşturuldu.");
+const createDatabaseAndTables = () => {
+  connection.query("CREATE DATABASE IF NOT EXISTS veresiyedb", (err, result) => {
+    if (err) {
+      console.error("Veritabanı oluşturulamadı, ", err);
+      return;
+    }
+    console.log("Veritabanı başarıyla oluşturuldu");
 
-//         connection.query(createTableCustomers, (err, results) => {
-//           if (err) {
-//             console.error("Müşteri tablosu oluşturulamadı, ", err);
-//             return;
-//           }
-//           console.log("Müşteri tablosu oluşturuldu.");
+    connection.changeUser({ database: process.env.DATABASE ?? "veresiyedb" }, (err) => {
+      if (err) {
+        console.error("Veritabanı seçilemedi, ", err);
+        return;
+      }
 
-//           connection.query(createTableReceipts, (err, results) => {
-//             if (err) {
-//               console.error("Fatura tablosu oluşturulamadı, ", err);
-//               return;
-//             }
-//             console.log("Fatura tablosu oluşturuldu.");
-//           });
-//         });
-//       });
-//     });
-//   });
-// };
+      connection.query(createTableCustomers, (err, results) => {
+        if (err) {
+          console.error("Müşteri tablosu oluşturulamadı, ", err);
+          return;
+        }
+        console.log("Müşteri tablosu oluşturuldu.");
 
-// createDatabaseAndTables();
+        connection.query(createTableReceipts, (err, results) => {
+          if (err) {
+            console.error("Fatura tablosu oluşturulamadı, ", err);
+            return;
+          }
+          console.log("Fatura tablosu oluşturuldu.");
+        });
+      });
+    });
+  });
+};
+
+createDatabaseAndTables();
 
 const dbConfig: PoolOptions = {
   host: process.env.HOST ?? "localhost",

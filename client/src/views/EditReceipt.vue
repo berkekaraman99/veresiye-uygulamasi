@@ -1,8 +1,14 @@
 <template>
   <div class="grid grid-cols-12">
-    <div class="col-start-4 col-span-6">
-      <h1 class="text-center mb-8 font-semibold text-3xl">Faturayı Düzenle</h1>
-      <div class="bg-white rounded-lg shadow-lg p-8">
+    <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6">
+      <div class="flex justify-center">
+        <h1
+          class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+        >
+          Faturayı Düzenle
+        </h1>
+      </div>
+      <div class="bg-white dark:bg-slate-900 dark:text-white border-2 dark:border-slate-950 rounded-lg shadow-lg p-8">
         <FormKit
           type="form"
           id="receipt-form"
@@ -103,5 +109,3 @@ onMounted(async () => {
   });
 });
 </script>
-
-<style scoped></style>

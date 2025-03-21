@@ -1,19 +1,28 @@
 <template>
-  <Disclosure as="nav" class="bg-[var(--primary)] text-[var(--text-dark)] z-20 fixed w-[100%] h-[64px]" v-slot="{ open }">
+  <Disclosure
+    as="nav"
+    class="bg-[var(--navbar-color)] dark:bg-[var(--navbar-color)] text-[var(--text-light)] z-20 fixed w-[100%] h-[64px]"
+    v-slot="{ open }"
+  >
     <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-      <div class="relative flex h-16 items-center">
-        <div class="inset-y-0 flex items-center" @click="emit('openSideNav')">
-          <!-- Mobile menu button-->
-          <DisclosureButton
-            class="relative inline-flex items-center justify-center rounded-md p-2 text-[var(--text-dark)] hover:bg-[var(--primary-variant)] focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition ease-in-out"
-          >
-            <span class="absolute -inset-0.5" />
-            <span class="sr-only">Open main menu</span>
-            <Bars3Icon class="block h-6 w-6" />
-          </DisclosureButton>
+      <div class="relative flex h-16 items-center justify-between">
+        <div class="flex items-center">
+          <div class="inset-y-0 flex items-center" @click="emit('openSideNav')">
+            <!-- Mobile menu button-->
+            <DisclosureButton
+              class="relative inline-flex items-center justify-center rounded-md p-2 text-[var(--text-dark)] hover:bg-[var(--secondary)] focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white transition ease-in-out"
+            >
+              <span class="absolute -inset-0.5" />
+              <span class="sr-only">Open main menu</span>
+              <Bars3Icon class="block h-6 w-6 text-[var(--text-light)]" />
+            </DisclosureButton>
+          </div>
+          <div class="mx-2">
+            <RouterLink to="/" class="flex shrink-0 items-center font-semibold">Veresiye</RouterLink>
+          </div>
         </div>
         <div class="mx-2">
-          <RouterLink to="/" class="flex flex-shrink-0 items-center font-semibold">Veresiye</RouterLink>
+          <DarkMode />
         </div>
         <!-- <div class="flex flex-1 items-center ms-12 sm:ms-0 sm:items-stretch sm:justify-start">
           <div class="hidden sm:ml-6 sm:block">
@@ -31,7 +40,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from "@headlessui/vue";
 import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { DocumentDuplicateIcon, UsersIcon, UserPlusIcon, DocumentPlusIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/solid";
-import NavbarMenu from "@/components/layouts/NavbarMenu.vue";
+import DarkMode from "@/components/shared/DarkMode.vue";
 
 const emit = defineEmits(["openSideNav"]);
 
@@ -44,4 +53,4 @@ const navigation = [
 ];
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

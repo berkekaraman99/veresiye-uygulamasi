@@ -3,8 +3,14 @@
     <div class="grid grid-cols-12">
       <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-start-3 md:col-span-8 lg:col-start-4 lg:col-span-6">
         <div>
-          <h1 class="text-center mb-8 font-semibold text-3xl">Müşteri Bilgileri</h1>
-          <div class="p-4 bg-white rounded-lg shadow-lg border-2 border-slate-200">
+          <div class="flex justify-center">
+            <h1
+              class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+            >
+              Müşteri Bilgileri
+            </h1>
+          </div>
+          <div class="p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg shadow-lg">
             <table class="table w-full">
               <tbody>
                 <tr>
@@ -33,9 +39,15 @@
     <div class="grid grid-cols-12 mt-8" v-if="customerReceipts.length !== 0">
       <div class="col-span-12">
         <div>
-          <h1 class="text-center mb-8 font-semibold text-2xl">Faturalar</h1>
-          <table id="receiptsTable" class="table w-full shadow">
-            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-dark)] h-12">
+          <div class="flex justify-center">
+            <h1
+              class="font-semibold text-2xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+            >
+              Faturalar
+            </h1>
+          </div>
+          <table id="receiptsTable" class="table w-full shadow-sm">
+            <thead class="text-xs bg-gradient-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] h-12">
               <tr>
                 <th scope="col" class="px-3 py-2" @click="sortTable(0)">Fatura No</th>
                 <th scope="col" class="px-3 py-2" @click="sortTable(1)">Tarih</th>
@@ -45,7 +57,7 @@
                 <th scope="col" class="px-3 py-2">İşlem</th>
               </tr>
             </thead>
-            <tbody class="text-sm bg-white border">
+            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border dark:border-slate-950">
               <tr v-for="receipt in customerReceipts" v-bind:key="receipt.receipt_id">
                 <td class="px-3 py-2">{{ receipt.receipt_id }}</td>
                 <td class="px-3 py-2">{{ receipt.created_at.slice(0, 10) }}</td>
@@ -56,7 +68,7 @@
                   <Menu as="div" class="relative inline-block text-left">
                     <div>
                       <MenuButton
-                        class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        class="inline-flex w-full justify-center gap-x-1.5 rounded-md dark:text-white bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-2xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700"
                       >
                         Seçenekler
                         <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -72,14 +84,17 @@
                       leave-to-class="transform opacity-0 scale-95"
                     >
                       <MenuItems
-                        class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                        class="absolute right-32 top-0 z-10 w-56 origin-top-right rounded-md bg-white dark:bg-slate-900 shadow-lg dark:border-slate-700 ring-1 ring-slate-300 dark:ring-slate-700 ring-opacity-5 focus:outline-hidden"
                       >
                         <div class="py-2">
                           <RouterLink :to="{ name: 'receipt', params: { receipt_id: receipt.receipt_id } }">
                             <MenuItem v-slot="{ active }">
                               <a
                                 class="flex items-center"
-                                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                                :class="[
+                                  active ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300',
+                                  'block px-4 py-2 text-sm',
+                                ]"
                               >
                                 <span class="dropdown-icon"><DocumentTextIcon /></span> <span class="ps-3">Fatura Bilgileri</span>
                               </a>
@@ -89,7 +104,10 @@
                             <MenuItem v-slot="{ active }">
                               <a
                                 class="flex items-center"
-                                :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
+                                :class="[
+                                  active ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300',
+                                  'block px-4 py-2 text-sm',
+                                ]"
                               >
                                 <span class="dropdown-icon"><PencilIcon /></span> <span class="ps-3">Faturayı Güncelle</span>
                               </a>
@@ -97,7 +115,7 @@
                           </RouterLink>
                           <MenuItem v-slot="{ active }" @click="selReceipt(receipt.receipt_id), toggleModal()">
                             <a
-                              class="flex items-center text-red-500"
+                              class="flex items-center text-red-600 hover:text-red-400 cursor-pointer"
                               :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
                             >
                               <span class="dropdown-icon"><TrashIcon /></span> <span class="ps-3">Faturayı Sil</span>
@@ -114,6 +132,7 @@
         </div>
       </div>
     </div>
+
     <Teleport to="body" v-if="showModal">
       <ModalVue @close="toggleModal()">
         <template #header>
@@ -233,7 +252,7 @@ const sortTable = (n: number) => {
 onMounted(async () => {
   await customerStore.getCustomerById(props.customer_id);
   await customerStore.getCustomerReceipts(props.customer_id).then(() => {
-    customerReceipts.value.forEach((element) => {
+    customerReceipts.value.forEach((element: any) => {
       if (element.description !== "") {
         isHaveDescription.value = true;
       }
@@ -242,7 +261,7 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped lang="scss">
+<style scoped>
 .dropdown-icon {
   width: 24px;
 }
