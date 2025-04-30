@@ -58,15 +58,15 @@ import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useToast } from "vue-toastification";
+import { useAppToast } from "@/composables/useAppToast";
 
 interface Props {
   receipt_id: string;
 }
 
 //STATES
+const { toastSuccess, toastError } = useAppToast();
 const props = defineProps<Props>();
-const toast = useToast();
 const router = useRouter();
 const receiptStore = useReceiptStore();
 const { statusCode, receipt } = storeToRefs(receiptStore);
@@ -82,9 +82,7 @@ const receiptForm = reactive({
 const updateReceipt = async () => {
   await receiptStore.updateReceipt(receiptForm).then(() => {
     if (statusCode.value === ResponseStatus.SUCCESS) {
-      toast.success("Fatura güncellendi!", {
-        timeout: 2000,
-      });
+      toastSuccess({ title: "Fatura güncellendi!" });
       setTimeout(() => {
         receiptStore.$patch({
           statusCode: 0,
@@ -92,9 +90,7 @@ const updateReceipt = async () => {
         router.push({ name: "home" });
       }, 2000);
     } else {
-      toast.error("Bir hata oluştu, lütfen daha sonra tekrar deneyiniz", {
-        timeout: 2000,
-      });
+      toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
     }
   });
 };
@@ -104,7 +100,7 @@ onMounted(async () => {
     receiptForm.receipt_id = receipt.value?.receipt_id ?? "";
     customerName.value = receipt.value?.customer_name ?? "";
     receiptForm.description = receipt.value?.description ?? "";
-    receiptForm.price = String(receipt.value?.price) ?? "0";
+    receiptForm.price = String(receipt.value?.price);
     receiptForm.receipt_type = receipt.value?.receipt_type ?? 0;
   });
 });

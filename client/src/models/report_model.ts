@@ -1,4 +1,4 @@
-interface IReport {
+export interface IReport {
   Alacak: number;
   Borç: number;
   Müşteri: string;

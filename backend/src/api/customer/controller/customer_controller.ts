@@ -62,7 +62,8 @@ export const updateCustomer = async (req: Request, res: Response, next: NextFunc
 export const getCustomers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { offset } = req.query;
-    const [customers] = await db.query<RowDataPacket[]>({
+    const page = Number(offset);
+    const [result] = await db.query<RowDataPacket[]>({
       sql: `
         SELECT 
             c.customer_id, 
@@ -86,36 +87,16 @@ export const getCustomers = async (req: Request, res: Response, next: NextFuncti
         LIMIT 
             15 
         OFFSET 
-            ${offset};
+            ?
+        ;
+        SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0;
+        SELECT CEIL(COUNT(*) / 15) AS totalPages FROM customers;
       `,
+      values: [page],
     });
     // console.log(customers);
 
-    res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
-  } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-  }
-};
-
-export const getCustomerPageCount = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const [page_count] = await db.query<RowDataPacket[]>({
-      sql: "SELECT CEIL(COUNT(*) / 15) AS count FROM customers",
-    });
-    res.status(200).json(BaseResponse.success(page_count, ResponseStatus.SUCCESS));
-  } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-  }
-};
-
-export const getCustomerReceiptsPageCount = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.query;
-    const [page_count] = await db.query<RowDataPacket[]>({
-      sql: "SELECT CEIL(COUNT(*) / 15) AS count FROM receipts WHERE customer_id = ?",
-      values: [id],
-    });
-    res.status(200).json(BaseResponse.success(page_count, ResponseStatus.SUCCESS));
+    res.status(200).json(BaseResponse.success(result, ResponseStatus.SUCCESS));
   } catch (error: any) {
     res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
   }
@@ -132,7 +113,7 @@ export const getCustomerById = async (req: Request, res: Response, next: NextFun
         C.created_at, 
         C.is_deleted, 
         C.customer_address, 
-        SUM(CASE WHEN R.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN R.receipt_type = 0 THEN price ELSE 0 END) as "net_bakiye" 
+        SUM(CASE WHEN R.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN R.receipt_type = 0 THEN price ELSE 0 END) as "net_bakiye"
       FROM 
         customers AS C 
       LEFT JOIN 
@@ -140,7 +121,7 @@ export const getCustomerById = async (req: Request, res: Response, next: NextFun
       ON 
         C.customer_id = R.customer_id 
       WHERE 
-        C.customer_id = ?`,
+        C.customer_id = ?;`,
       values: [customer_id],
     });
     res.status(200).json(BaseResponse.success(customer, ResponseStatus.SUCCESS));
@@ -167,8 +148,10 @@ export const getCustomerReceipts = async (req: Request, res: Response, next: Nex
   try {
     const { customer_id, offset } = req.query;
     const [receipts] = await db.query<RowDataPacket[]>({
-      sql: `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? LIMIT 15 OFFSET ${offset}`,
-      values: [customer_id],
+      sql: `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? ORDER BY created_at ASC LIMIT 10 OFFSET ${offset};
+            SELECT COUNT(*) AS total FROM receipts WHERE is_deleted = 0 AND customer_id = ?;
+            SELECT CEIL(COUNT(*) / 15) AS totalPages FROM receipts WHERE is_deleted = 0 AND customer_id = ?;`,
+      values: [customer_id, customer_id, customer_id],
     });
     res.status(200).json(BaseResponse.success(receipts, ResponseStatus.SUCCESS));
   } catch (error: any) {

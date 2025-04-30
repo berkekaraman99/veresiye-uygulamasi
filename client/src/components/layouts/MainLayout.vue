@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
 import TheNavbar from "@/components/layouts/TheNavbar.vue";
-import { DocumentDuplicateIcon, UsersIcon, UserPlusIcon, DocumentPlusIcon, MagnifyingGlassIcon } from "@heroicons/vue/24/solid";
 import { ref, useTemplateRef, onMounted } from "vue";
-import { Bars3Icon, XMarkIcon } from "@heroicons/vue/24/outline";
 
 const openSideNav = ref(true);
 const openSideNavOverlay = ref(false);
@@ -38,11 +35,11 @@ const resize = () => {
 };
 
 const navigation = [
-  { name: "Müşteriler", href: "customers", icon: UsersIcon },
-  { name: "Müşteri Oluştur", href: "create-customer", icon: UserPlusIcon },
-  { name: "Dekont Oluştur", href: "create-receipt", icon: DocumentPlusIcon },
-  { name: "Rapor", href: "report", icon: DocumentDuplicateIcon },
-  { name: "Arama", href: "search-customer", icon: MagnifyingGlassIcon },
+  { name: "Müşteriler", href: "customers", icon: "heroicons:users-solid" },
+  { name: "Müşteri Oluştur", href: "create-customer", icon: "heroicons:user-plus-solid" },
+  { name: "Dekont Oluştur", href: "create-receipt", icon: "heroicons:document-plus-solid" },
+  { name: "Rapor", href: "report", icon: "heroicons:document-duplicate-solid" },
+  { name: "Arama", href: "search-customer", icon: "heroicons:magnifying-glass-solid" },
 ];
 </script>
 
@@ -58,16 +55,12 @@ const navigation = [
     >
       <ul class="mt-[64px] w-full" :class="[!openSideNav ? 'p-2' : 'px-2 pb-2 pt-[7px]']">
         <RouterLink v-for="item in navigation" :key="item.name" :to="{ name: item.href }">
-          <li class="group flex items-center rounded-lg py-2 text-base font-medium" :class="[!openSideNav ? 'p-0 justify-center' : 'px-3']">
-            <div
-              class="my-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg"
-              :class="[!openSideNav ? 'group-hover:bg-white' : 'bg-gray-50 group-hover:bg-white']"
-            >
-              <component
-                :is="item.icon"
-                :class="[!openSideNav ? 'text-white group-hover:text-[var(--secondary)]' : 'text-gray-600']"
-                class="h-6 w-6"
-              />
+          <li
+            class="flex items-center rounded-lg my-1.5 text-base font-medium hover:bg-[var(--secondary)] dark:hover:bg-[var(--primary-variant)]"
+            :class="[!openSideNav ? 'p-0 justify-center' : 'px-3']"
+          >
+            <div class="my-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg">
+              <UIcon :name="item.icon" class="h-6 w-6 text-white" />
             </div>
             <div v-if="openSideNav" class="font-semibold text-[var(--text-light)] text-[14px] ms-4">{{ item.name }}</div>
           </li>
@@ -90,9 +83,9 @@ const navigation = [
       <div class="flex items-center mx-2 my-3">
         <button
           @click="isNavOverlay()"
-          class="relative inline-flex items-center justify-center rounded-md p-2 text-[var(--text-dark)] hover:bg-[var(--primary)] focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white transition ease-in-out"
+          class="relative inline-flex items-center justify-center rounded-md p-2 text-[var(--text-dark)] dark:text-[var(--text-light)] hover:bg-[var(--primary)] focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white transition ease-in-out"
         >
-          <Bars3Icon class="block h-6 w-6" />
+          <UIcon name="heroicons:bars-3" class="block h-6 w-6" />
         </button>
         <div class="mx-2"></div>
         <RouterLink to="/" class="flex shrink-0 items-center font-semibold text-white">Veresiye</RouterLink>
@@ -102,9 +95,9 @@ const navigation = [
         <RouterLink v-for="item in navigation" :key="item.name" :to="{ name: item.href }">
           <li class="group flex items-center rounded-lg py-2 text-base font-medium hover:bg-[var(--primary)] px-3">
             <div class="my-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-              <component :is="item.icon" class="h-6 w-6 text-gray-600" />
+              <UIcon :name="item.icon" class="h-6 w-6 size-6 text-gray-600 group-hover:text-[var(--primary-variant)]" aria-hidden="true" />
             </div>
-            <div class="font-semibold text-[var(--text-dark)] text-[14px] ms-4">{{ item.name }}</div>
+            <div class="font-semibold text-[var(--text-dark)] dark:text-[var(--text-light)] text-[14px] ms-4">{{ item.name }}</div>
           </li>
         </RouterLink>
       </ul>
@@ -120,13 +113,3 @@ const navigation = [
     </main>
   </div>
 </template>
-
-<style>
-#app {
-  min-height: 100vh;
-}
-
-html.dark {
-  color-scheme: dark;
-}
-</style>

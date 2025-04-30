@@ -1,9 +1,7 @@
-export interface ICustomer {
+export interface ISearchedCustomer {
   customer_id: string;
   customer_name: string;
   customer_address: string;
-  is_deleted: number;
-  net_bakiye: number;
   created_at: string;
   updated_at?: string;
 }

@@ -43,13 +43,13 @@ import { reactive } from "vue";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
-import { useToast } from "vue-toastification";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { ResponseStatus } from "@/constants/response_status_enum";
+import { useAppToast } from "@/composables/useAppToast";
 
 //STATES
-const toast = useToast();
+const { toastSuccess, toastError } = useAppToast();
 const router = useRouter();
 const customerStore = useCustomerStore();
 const { statusCode } = storeToRefs(customerStore);
@@ -72,9 +72,7 @@ const createCustomer = async () => {
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {
-          toast.success("Müşteri oluşturuldu!", {
-            timeout: 2000,
-          });
+          toastSuccess({ title: "Müşteri oluşturuldu!" });
           setTimeout(() => {
             customerStore.$patch({
               statusCode: 0,
@@ -82,9 +80,7 @@ const createCustomer = async () => {
             router.push({ name: "customers" });
           }, 2000);
         } else {
-          toast.error("Bir hata oluştu, lütfen daha sonra tekrar deneyiniz", {
-            timeout: 2000,
-          });
+          toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
         }
       });
   }

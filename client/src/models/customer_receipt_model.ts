@@ -1,4 +1,4 @@
-interface ICustomerReceipt {
+export interface ICustomerReceipt {
   receipt_id: string;
   description: string;
   price: number;

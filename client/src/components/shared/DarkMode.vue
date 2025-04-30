@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { SunIcon, MoonIcon } from "@heroicons/vue/20/solid";
 import { useDark, useToggle } from "@vueuse/core";
 import { computed } from "vue";
 
@@ -14,8 +13,8 @@ const themeText = computed(() => {
 <template>
   <div @click="toggleDark()" class="theme-change-btn">
     <div class="flex items-center">
-      <MoonIcon class="w-6" v-if="isDark" />
-      <SunIcon class="w-6" v-else />
+      <UIcon name="heroicons:moon-solid" class="w-6 size-6" v-if="isDark" />
+      <UIcon name="heroicons:sun-solid" class="w-6 size-6" v-else />
       <span class="ms-2 text-sm">{{ themeText }}</span>
     </div>
   </div>

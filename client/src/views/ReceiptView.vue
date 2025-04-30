@@ -2,7 +2,7 @@
   <div class="grid grid-cols-12">
     <RouterLink class="create-btn-wrapper" :to="{ name: 'edit-receipt' }">
       <div class="bg-[var(--secondary)] hover:bg-[var(--secondary-variant)] create-btn text-white">
-        <PencilIcon />
+        <UIcon name="heroicons:pencil-solid" class="size-8" />
       </div>
     </RouterLink>
 
@@ -55,7 +55,6 @@ import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
 import { reformatReceiptType } from "@/utils/receipt_helper";
-import { PencilIcon } from "@heroicons/vue/24/solid";
 
 interface Props {
   receipt_id: string;
@@ -71,6 +70,8 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@reference '@/index.css';
+
 th {
   text-align: end;
 }

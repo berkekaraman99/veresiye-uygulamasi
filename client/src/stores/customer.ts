@@ -1,13 +1,17 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { instance } from "@/utils/network_manager";
+import type { ICustomer } from "@/models/customer_model";
+import type { ICustomerReceipt } from "@/models/customer_receipt_model";
+import type { ICustomers } from "@/models/customers_model";
+import type { ISearchedCustomer } from "@/models/searched_customer_model";
 
 export const useCustomerStore = defineStore("customer", () => {
   //STATES
   const customer = ref<ICustomer>();
-  const customers = ref<Array<ICustomer>>([]);
+  const customers = ref<Array<ICustomers>>([]);
   const statusCode = ref<number>(0);
-  const searchedCustomers = ref<Array<ICustomer>>([]);
+  const searchedCustomers = ref<Array<ISearchedCustomer>>([]);
   const customerReceipts = ref<Array<ICustomerReceipt>>([]);
   const customersPageCount = ref<number>(0);
   const customerReceiptsPageCount = ref<number>(0);
@@ -58,7 +62,9 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomers = async (offset: number = 0) => {
     try {
       const res = await instance.get(`/customer/get-customers?offset=${offset}`);
-      customers.value = res.data.data;
+      customers.value = res.data.data[0];
+      console.log(res);
+      customersPageCount.value = res.data.data[2][0].totalPages;
       statusCode.value = res.data.statusCode;
     } catch (error: any) {
       console.error(error.response);
@@ -98,25 +104,13 @@ export const useCustomerStore = defineStore("customer", () => {
       const res = await instance.get(`/customer/search-customers?text=${searchValue}`);
       statusCode.value = res.data.statusCode;
       searchedCustomers.value = res.data.data;
-      //   console.log(res.data);
+      console.log(res.data);
     } catch (error: any) {
       console.error(error.response);
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
       }, 2000);
-    }
-  };
-
-  const searchCustomersList = (searchValue: string) => {
-    try {
-      if (searchValue === "") {
-        searchedCustomers.value = customers.value;
-      } else {
-        searchedCustomers.value = customers.value.filter((item) => item.customer_name.toLowerCase().includes(searchValue));
-      }
-    } catch (error: any) {
-      console.error(error.response);
     }
   };
 
@@ -124,24 +118,15 @@ export const useCustomerStore = defineStore("customer", () => {
     try {
       const res = await instance.get(`/customer/get-customer-receipts?customer_id=${customer_id}&offset=${offset}`);
       statusCode.value = res.data.statusCode;
-      customerReceipts.value = res.data.data;
-      // console.log(res.data);
+      customerReceipts.value = res.data.data[0];
+      customerReceiptsPageCount.value = res.data.data[2][0].totalPages;
+      console.log(res.data.data);
     } catch (error: any) {
       console.error(error.response);
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
       }, 2000);
-    }
-  };
-
-  const getCustomerReceiptsPageCount = async (customer_id: string) => {
-    try {
-      const res = await instance.get(`/customer/get-customer-receipts-page-count?id=${customer_id}`);
-      customerReceiptsPageCount.value = Number(res.data.data[0].count);
-      //   console.log(res.data);
-    } catch (error: any) {
-      console.error(error.response);
     }
   };
 
@@ -160,8 +145,6 @@ export const useCustomerStore = defineStore("customer", () => {
     getCustomerById,
     searchCustomers,
     getCustomerReceipts,
-    searchCustomersList,
-    getCustomerReceiptsPageCount,
     getCustomersPageCount,
   };
 });

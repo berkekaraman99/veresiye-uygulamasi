@@ -4,15 +4,13 @@ import MainLayout from "@/components/layouts/MainLayout.vue";
 </script>
 
 <template>
-  <MainLayout>
-    <RouterView v-slot="{ Component, route }">
-      <Transition name="routeAnimation" mode="out-in">
-        <component :is="Component" :key="route.path" />
-      </Transition>
-    </RouterView>
-  </MainLayout>
+  <UApp>
+    <MainLayout>
+      <RouterView v-slot="{ Component, route }">
+        <Transition name="routeAnimation" mode="out-in">
+          <component :is="Component" :key="route.path" />
+        </Transition>
+      </RouterView>
+    </MainLayout>
+  </UApp>
 </template>
-
-<style lang="css">
-@reference "@/index.css";
-</style>
