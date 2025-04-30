@@ -11,22 +11,19 @@ const connection = mysql.createConnection(connectionConfig);
 
 const createTableCustomers = `
 CREATE TABLE IF NOT EXISTS customers (
-  id int NOT NULL AUTO_INCREMENT,
   customer_id varchar(255) NOT NULL,
   customer_name varchar(255) NOT NULL,
   customer_address varchar(255) DEFAULT NULL,
   created_at varchar(255) DEFAULT NULL,
   updated_at varchar(255) DEFAULT NULL,
   is_deleted tinyint unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
+  PRIMARY KEY (customer_id),
   UNIQUE KEY customer_id_UNIQUE (customer_id)
-) ENGINE=InnoDB AUTO_INCREMENT=155 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
 
 const createTableReceipts = `
 CREATE TABLE IF NOT EXISTS receipts (
-  id int NOT NULL AUTO_INCREMENT,
   receipt_id varchar(255) NOT NULL,
   customer_id varchar(255) NOT NULL,
   description varchar(1024) NOT NULL,
@@ -35,10 +32,9 @@ CREATE TABLE IF NOT EXISTS receipts (
   created_at varchar(255) DEFAULT NULL,
   updated_at varchar(255) DEFAULT NULL,
   is_deleted tinyint unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (id),
+  PRIMARY KEY (receipt_id),
   UNIQUE KEY receipt_id_UNIQUE (receipt_id)
-) ENGINE=InnoDB AUTO_INCREMENT=612 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 `;
 
 const createDatabaseAndTables = () => {
@@ -89,6 +85,7 @@ const dbConfig: PoolOptions = {
   queueLimit: 0,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
+  multipleStatements: true,
 };
 
 export const db = mysql.createPool(dbConfig).promise();

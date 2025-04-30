@@ -10,7 +10,7 @@
         <div class="interactive-card">
           <h1 class="mb-0 md:mb-4">{{ item.name }}</h1>
           <div class="text-center">
-            <component :is="item.component" class="action-icon" />
+            <UIcon :name="item.component" class="action-icon" />
           </div>
         </div>
       </RouterLink>
@@ -21,7 +21,6 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { RouterLink } from "vue-router";
-import { UserPlusIcon, DocumentPlusIcon, UsersIcon, MagnifyingGlassIcon, DocumentMinusIcon, DocumentDuplicateIcon } from "@heroicons/vue/24/solid";
 
 const routerReceiptType = reactive({
   alacak: 1,
@@ -29,12 +28,20 @@ const routerReceiptType = reactive({
 });
 
 const items = [
-  { name: "Alacak Ekle", href: { name: "create-receipt", params: { receipt_type: routerReceiptType.alacak } }, component: DocumentPlusIcon },
-  { name: "Ödeme Ekle", href: { name: "create-receipt", params: { receipt_type: routerReceiptType.borc } }, component: DocumentMinusIcon },
-  { name: "Müşteri Ekle", href: { name: "create-customer" }, component: UserPlusIcon },
-  { name: "Müşteriler", href: { name: "customers" }, component: UsersIcon },
-  { name: "Rapor Al", href: { name: "report" }, component: DocumentDuplicateIcon },
-  { name: "Müşteri Arama", href: { name: "search-customer" }, component: MagnifyingGlassIcon },
+  {
+    name: "Alacak Ekle",
+    href: { name: "create-receipt", params: { receipt_type: routerReceiptType.alacak } },
+    component: "heroicons:document-plus-solid",
+  },
+  {
+    name: "Ödeme Ekle",
+    href: { name: "create-receipt", params: { receipt_type: routerReceiptType.borc } },
+    component: "heroicons:document-minus-solid",
+  },
+  { name: "Müşteri Ekle", href: { name: "create-customer" }, component: "heroicons:user-plus-solid" },
+  { name: "Müşteriler", href: { name: "customers" }, component: "heroicons:users-solid" },
+  { name: "Rapor Al", href: { name: "report" }, component: "heroicons:document-duplicate-solid" },
+  { name: "Müşteri Arama", href: { name: "search-customer" }, component: "heroicons:magnifying-glass-solid" },
 ];
 </script>
 
@@ -42,7 +49,7 @@ const items = [
 @reference "@/index.css";
 
 .action-icon {
-  @apply w-16 me-3 md:w-32 lg:w-40;
+  @apply w-16 me-3 md:w-32 lg:w-40 size-40;
 }
 
 .interactive-card {

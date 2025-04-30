@@ -1,6 +1,8 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import { instance } from "@/utils/network_manager";
+import type { IReport } from "@/models/report_model";
+import type { IReceipt } from "@/models/receipt_model";
 
 export const useReceiptStore = defineStore("receipt", () => {
   //STATES

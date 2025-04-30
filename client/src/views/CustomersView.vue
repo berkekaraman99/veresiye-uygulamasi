@@ -9,7 +9,7 @@
 
       <RouterLink v-if="!loading" class="create-btn-wrapper" :to="{ name: 'create-customer' }">
         <div class="bg-[var(--secondary)] hover:bg-[var(--secondary-variant)] create-btn text-white">
-          <PlusIcon />
+          <UIcon name="heroicons:plus" class="size-8" />
         </div>
       </RouterLink>
 
@@ -32,75 +32,47 @@
             <td class="px-3 py-2 text-center">{{ customer.created_at.slice(0, 10) }}</td>
             <td class="px-3 py-2 text-center">{{ customer.net_bakiye.toFixed(2).toString() + " TL" }}</td>
             <td class="px-3 py-2 text-center">
-              <Menu as="div" class="relative inline-block">
-                <div>
-                  <MenuButton
-                    class="inline-flex w-full justify-center gap-x-1.5 rounded-md dark:text-white bg-white dark:bg-slate-900 hover:bg-gray-50 dark:hover:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 shadow-2xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700"
-                  >
-                    Seçenekler
-                    <ChevronDownIcon class="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
-                  </MenuButton>
-                </div>
-
-                <transition
-                  enter-active-class="transition ease-out duration-100"
-                  enter-from-class="transform opacity-0 scale-95"
-                  enter-to-class="transform opacity-100 scale-100"
-                  leave-active-class="transition ease-in duration-75"
-                  leave-from-class="transform opacity-100 scale-100"
-                  leave-to-class="transform opacity-0 scale-95"
-                >
-                  <MenuItems
-                    class="absolute right-32 top-0 z-10 w-56 origin-top-right rounded-md bg-white dark:bg-slate-900 shadow-lg dark:border-slate-700 ring-1 ring-slate-300 dark:ring-slate-700 ring-opacity-5 focus:outline-hidden"
-                  >
-                    <div class="py-2">
-                      <RouterLink :to="{ name: 'customer', params: { customer_id: customer.customer_id } }">
-                        <MenuItem v-slot="{ active }">
-                          <a
-                            class="flex items-center"
-                            :class="[
-                              'block px-4 py-2 text-sm',
-                              active ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300',
-                            ]"
-                          >
-                            <span class="dropdown-icon">
-                              <UserIcon />
-                            </span>
-                            <span class="ps-3">Müşteri Bilgileri</span>
-                          </a>
-                        </MenuItem>
-                      </RouterLink>
-                      <RouterLink :to="{ name: 'edit-customer', params: { customer_id: customer.customer_id } }">
-                        <MenuItem v-slot="{ active }">
-                          <a
-                            class="flex items-center"
-                            :class="[
-                              active ? 'bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300',
-                              'block px-4 py-2 text-sm',
-                            ]"
-                          >
-                            <span class="dropdown-icon">
-                              <PencilIcon />
-                            </span>
-                            <span class="ps-3">Müşteri Güncelle</span>
-                          </a>
-                        </MenuItem>
-                      </RouterLink>
-                      <MenuItem v-slot="{ active }" @click="selCustomer(customer), toggleModal()">
-                        <a
-                          class="flex items-center text-red-600 hover:text-red-400 cursor-pointer"
-                          :class="[active ? 'bg-gray-100 text-gray-900' : 'text-gray-700', 'block px-4 py-2 text-sm']"
-                        >
-                          <span class="dropdown-icon">
-                            <UserMinusIcon />
-                          </span>
-                          <span class="ps-3">Müşteriyi Sil</span>
-                        </a>
-                      </MenuItem>
-                    </div>
-                  </MenuItems>
-                </transition>
-              </Menu>
+              <UDropdownMenu
+                arrow
+                :content="{
+                  align: 'end',
+                  side: 'bottom',
+                  sideOffset: 8,
+                }"
+                :items="[
+                  [
+                    {
+                      label: 'Müşteri Bilgileri',
+                      icon: 'fluent:person-32-regular',
+                      onSelect() {
+                        router.push({ name: 'customer', params: { customer_id: customer.customer_id } });
+                      },
+                    },
+                    {
+                      label: 'Müşteri Güncelle',
+                      icon: 'fluent:edit-32-filled',
+                      onSelect() {
+                        router.push({ name: 'edit-customer', params: { customer_id: customer.customer_id } });
+                      },
+                    },
+                  ],
+                  [
+                    {
+                      label: 'Müşteriyi Sil',
+                      color: 'error',
+                      icon: 'fluent:person-subtract-24-regular',
+                      onSelect() {
+                        selCustomer(customer);
+                      },
+                    },
+                  ],
+                ]"
+                :ui="{
+                  content: 'w-48',
+                }"
+              >
+                <UButton label="Seçenekler" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+              </UDropdownMenu>
             </td>
           </tr>
         </tbody>
@@ -132,7 +104,7 @@
                   class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                 >
                   <span class="sr-only">Previous</span>
-                  <ChevronLeftIcon class="h-5 w-5" :class="{ 'text-black dark:text-white': currentPage !== 1 }" aria-hidden="true" />
+                  <UIcon name="heroicons:chevron-left-16-solid" class="h-5 w-5 size-6" :class="{ 'text-black dark:text-white': currentPage !== 1 }" />
                 </a>
                 <a
                   v-if="customersPageCount !== 0"
@@ -172,10 +144,10 @@
                   class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                 >
                   <span class="sr-only">Next</span>
-                  <ChevronRightIcon
-                    class="h-5 w-5"
+                  <UIcon
+                    name="heroicons:chevron-right-16-solid"
+                    class="h-5 w-5 size-6"
                     :class="{ 'text-black dark:text-white': currentPage !== customersPageCount }"
-                    aria-hidden="true"
                   />
                 </a>
               </nav>
@@ -185,61 +157,45 @@
       </div>
     </div>
 
-    <Teleport to="body" v-if="showModal">
-      <ModalVue @close="toggleModal()">
-        <template #header>
-          <h2 class="text-xl">Silme Onayı</h2>
-          <span
-            id="close-btn"
-            class="close cursor-pointer hover:bg-slate-600 hover:text-white dark:hover:bg-slate-100 dark:hover:text-black p-1 rounded-full"
-            @click="toggleModal()"
-            ><XMarkIcon class="h-5 w-5"
-          /></span>
-        </template>
-        <template #default>
+    <Teleport to="body">
+      <UModal v-model:open="open" :dismissible="false" title="Silme Onayı">
+        <template #body>
           <p class="text-base">'{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek istediğinizden emin misiniz?</p>
           <p class="text-red-700 dark:text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
         </template>
-        <template #actions>
-          <button class="bg-gray-500 hover:bg-gray-600 text-sm text-white px-3 py-2 mx-4 rounded-lg" @click="toggleModal()">Vazgeç</button>
-          <button
-            class="bg-green-600 hover:bg-green-700 px-3 py-2 text-sm text-white rounded-lg"
-            @click="removeCustomer(selectedCustomer!.customer_id), toggleModal()"
-          >
-            Onayla
-          </button>
+        <template #footer>
+          <UButton color="neutral" variant="solid" @click="open = false">Vazgeç</UButton>
+          <UButton color="success" variant="solid" @click="removeCustomer(selectedCustomer!.customer_id)"> Onayla </UButton>
         </template>
-      </ModalVue>
+      </UModal>
     </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { UserIcon, UserMinusIcon, PencilIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref } from "vue";
-import { useToast } from "vue-toastification";
 import { RouterLink } from "vue-router";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import { ChevronDownIcon } from "@heroicons/vue/20/solid";
-import { ChevronLeftIcon, ChevronRightIcon, XMarkIcon } from "@heroicons/vue/20/solid";
+import { useAppToast } from "@/composables/useAppToast";
 
-import ModalVue from "@/components/common/ModalVue.vue";
 import type { ICustomer } from "@/models/customer_model";
+import router from "@/router";
 
 //STATES
-const toast = useToast();
+const { toastSuccess } = useAppToast();
 const customerStore = useCustomerStore();
 const isHaveAddress = ref(false);
 const selectedCustomer = ref<ICustomer>();
 const offset = ref(0);
-const pages = ref<Array<number>>([]);
 const { customers, customersPageCount } = storeToRefs(customerStore);
-let modal: HTMLElement | null;
-const showModal = ref<boolean>(false);
 const currentPage = ref<number>(1);
 const loading = ref<boolean>(true);
+const open = ref(false);
+
+// defineShortcuts({
+//   o: () => (open.value = !open.value),
+// });
 
 const pageRange = computed(() => {
   const range = [];
@@ -258,6 +214,14 @@ const selectPage = async (no: number) => {
   currentPage.value = no;
 };
 
+const previousPage = async () => {
+  if (currentPage.value > 1) {
+    offset.value = offset.value - 15;
+    await customerStore.getCustomers(offset.value);
+    currentPage.value = currentPage.value - 1;
+  }
+};
+
 const nextPage = async () => {
   if (currentPage.value < customersPageCount.value) {
     offset.value = offset.value + 15;
@@ -266,31 +230,23 @@ const nextPage = async () => {
   }
 };
 
-const previousPage = async () => {
-  if (currentPage.value > 1) {
-    offset.value = offset.value - 15;
-    await customerStore.getCustomers(offset.value);
-    currentPage.value = currentPage.value - 1;
-  }
-};
 const selCustomer = (customer: any) => {
   selectedCustomer.value = customer;
+  open.value = true;
 };
 
 const removeCustomer = async (customer_id: string) => {
-  await customerStore.deleteCustomer(customer_id).then(async () => {
-    toast.success("Müşteri Başarıyla Silindi!", { timeout: 2000 });
-    await customerStore.getCustomers();
-  });
+  await customerStore
+    .deleteCustomer(customer_id)
+    .then(async () => {
+      toastSuccess({ title: "Müşteri Başarıyla Silindi!" });
+      await customerStore.getCustomers();
+    })
+    .finally(() => (open.value = false));
 };
 
 const changeLoadingState = () => {
   loading.value = !loading.value;
-};
-
-const toggleModal = () => {
-  showModal.value = !showModal.value;
-  console.log(showModal.value);
 };
 
 const sortTable = (n: number) => {
@@ -351,18 +307,14 @@ onMounted(async () => {
         }
       });
     })
-    .then(() => {
-      changeLoadingState();
-    })
-    .catch((e) => {
+    .finally(() => {
       changeLoadingState();
     });
-  await customerStore.getCustomersPageCount().then(() => {
-    for (let i = 1; i <= customersPageCount.value; i++) {
-      pages.value.push(i);
-    }
-  });
-  modal = document.getElementById("modal-dialog");
+  // await customerStore.getCustomersPageCount().then(() => {
+  //   for (let i = 1; i <= customersPageCount.value; i++) {
+  //     pages.value.push(i);
+  //   }
+  // });
 });
 </script>
 

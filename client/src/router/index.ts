@@ -4,18 +4,18 @@ const routes = [
   {
     path: "/",
     name: "home",
-    component: () => import("@/views/Home.vue"),
+    component: () => import("@/views/HomeView.vue"),
   },
   {
     path: "/customer/:customer_id",
     name: "customer",
-    component: () => import("@/views/Customer.vue"),
+    component: () => import("@/views/CustomerView.vue"),
     props: (route: any) => ({ customer_id: route.params.customer_id }),
   },
   {
     path: "/customers",
     name: "customers",
-    component: () => import("@/views/Customers.vue"),
+    component: () => import("@/views/CustomersView.vue"),
   },
   {
     path: "/create-receipt/:receipt_type?",
@@ -48,13 +48,13 @@ const routes = [
   {
     path: "/receipt/:receipt_id",
     name: "receipt",
-    component: () => import("@/views/Receipt.vue"),
+    component: () => import("@/views/ReceiptView.vue"),
     props: (route: any) => ({ receipt_id: route.params.receipt_id }),
   },
   {
     path: "/report",
     name: "report",
-    component: () => import("@/views/Report.vue"),
+    component: () => import("@/views/ReportView.vue"),
   },
 ];
 

@@ -1,4 +1,4 @@
-interface IReceipt {
+export interface IReceipt {
   receipt_id: string;
   customer_id: string;
   customer_name: string;

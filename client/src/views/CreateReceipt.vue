@@ -44,7 +44,7 @@
             autofocus
           />
           <datalist id="customers">
-            <option v-for="customer in searchedCustomers" :value="customer.customer_name"></option>
+            <option v-for="customer in searchedCustomers" :value="customer.customer_name" :key="customer.customer_id"></option>
           </datalist>
 
           <!-- <select v-show="showSelect" ref="customerSelect" class="form-select" aria-label="Default select example">
@@ -73,13 +73,13 @@
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { computed, nextTick, reactive, ref, watch } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useToast } from "vue-toastification";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
 import { ResponseStatus } from "@/constants/response_status_enum";
+import { useAppToast } from "@/composables/useAppToast";
 
 interface Props {
   receipt_type?: number;
@@ -93,7 +93,6 @@ const receiptTypeReturn = computed(() => {
 const props = withDefaults(defineProps<Props>(), {
   receipt_type: 0,
 });
-const toast = useToast();
 const router = useRouter();
 const customerStore = useCustomerStore();
 const receiptStore = useReceiptStore();
@@ -111,6 +110,7 @@ const customerName = ref("");
 const latestDate = new Date();
 latestDate.setDate(latestDate.getDate() + 1);
 const maxDate = latestDate.toISOString().slice(0, 10);
+const { toastSuccess, toastError } = useAppToast();
 
 //FUNCTIONS
 const createReceipt = async () => {
@@ -126,9 +126,7 @@ const createReceipt = async () => {
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {
-          toast.success("Dekont oluşturuldu!", {
-            timeout: 2000,
-          });
+          toastSuccess({ title: "Dekont oluşturuldu!" });
           setTimeout(() => {
             receiptStore.$patch({
               statusCode: 0,
@@ -136,9 +134,7 @@ const createReceipt = async () => {
             router.push({ name: "home" });
           }, 2000);
         } else {
-          toast.error("Bir hata oluştu, lütfen daha sonra tekrar deneyiniz", {
-            timeout: 2000,
-          });
+          toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
         }
       });
   }

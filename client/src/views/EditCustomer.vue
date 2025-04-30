@@ -44,14 +44,14 @@ import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
 import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
-import { useToast } from "vue-toastification";
+import { useAppToast } from "@/composables/useAppToast";
 
 interface Props {
   customer_id: string;
 }
 //STATES
+const { toastSuccess, toastError } = useAppToast();
 const props = defineProps<Props>();
-const toast = useToast();
 const router = useRouter();
 const customerStore = useCustomerStore();
 const { customer, statusCode } = storeToRefs(customerStore);
@@ -65,9 +65,7 @@ const updateCustomer = async () => {
   if (customerForm.customer_name !== "") {
     await customerStore.updateCustomer({ ...customerForm, customer_id: props.customer_id }).then(() => {
       if (statusCode.value === ResponseStatus.SUCCESS) {
-        toast.success("Müşteri bilgileri güncellendi!", {
-          timeout: 2000,
-        });
+        toastSuccess({ title: "Müşteri bilgileri güncellendi!" });
         setTimeout(() => {
           customerStore.$patch({
             statusCode: 0,
@@ -75,9 +73,7 @@ const updateCustomer = async () => {
           router.push({ name: "customers" });
         }, 2000);
       } else {
-        toast.error("Bir hata oluştu, lütfen daha sonra tekrar deneyiniz", {
-          timeout: 2000,
-        });
+        toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
       }
     });
   }

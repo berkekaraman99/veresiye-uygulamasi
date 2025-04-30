@@ -16,18 +16,11 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue";
-
-let modal: HTMLElement | null;
 const emit = defineEmits(["close"]);
 
 const closeModal = () => {
   emit("close");
 };
-
-onMounted(() => {
-  modal = document.getElementById("modal-dialog");
-});
 </script>
 
 <style scoped>
