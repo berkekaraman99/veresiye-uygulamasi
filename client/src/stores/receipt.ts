@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 import { instance } from "@/utils/network_manager";
 import type { IReport } from "@/models/report_model";
@@ -15,7 +15,6 @@ export const useReceiptStore = defineStore("receipt", () => {
   const createReceipt = async (receiptForm: any) => {
     try {
       const res = await instance.post("/receipt/create-receipt", receiptForm);
-      // console.log(res.data);
       statusCode.value = res.data.statusCode;
     } catch (error: any) {
       console.error(error.response);
@@ -29,7 +28,6 @@ export const useReceiptStore = defineStore("receipt", () => {
   const deleteReceipt = async (receipt_id: string) => {
     try {
       const res = await instance.post("/receipt/delete-receipt", { receipt_id });
-      // console.log(res.data);
       statusCode.value = res.data.statusCode;
     } catch (error: any) {
       console.error(error.response);
@@ -43,7 +41,6 @@ export const useReceiptStore = defineStore("receipt", () => {
   const updateReceipt = async (receiptForm: any) => {
     try {
       const res = await instance.post("/receipt/update-receipt", receiptForm);
-      // console.log(res.data);
       statusCode.value = res.data.statusCode;
     } catch (error: any) {
       console.error(error.response);
@@ -57,7 +54,6 @@ export const useReceiptStore = defineStore("receipt", () => {
   const fetchReceipts = async () => {
     try {
       const res = await instance.get("/receipt/get-receipts");
-      // console.log(res.data);
       receipts.value = res.data.data;
       statusCode.value = res.data.statusCode;
     } catch (error: any) {
@@ -72,7 +68,6 @@ export const useReceiptStore = defineStore("receipt", () => {
   const getReceiptById = async (id: string) => {
     try {
       const res = await instance.get(`/receipt/get-receipt-by-id?receipt_id=${id}`);
-      // console.log(res.data);
       receipt.value = res.data.data;
     } catch (error: any) {
       console.error(error.response);
@@ -86,7 +81,6 @@ export const useReceiptStore = defineStore("receipt", () => {
   const getReceiptReport = async () => {
     try {
       const res = await instance.get("/receipt/report");
-      // console.log(res.data);
       report.value = res.data.data;
     } catch (error: any) {
       console.error(error.response);
@@ -99,10 +93,8 @@ export const useReceiptStore = defineStore("receipt", () => {
 
   const downloadReceipt = async () => {
     try {
-      // const res = await instance.get("/receipt/download-report");
       const url = instance.defaults.baseURL + "/receipt/download-report";
       return url;
-      // console.log(res);
     } catch (error: any) {
       console.error(error.response);
     } finally {
