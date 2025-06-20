@@ -1,13 +1,18 @@
-import BaseResponse from "../../../core/response/base_response";
-import { db } from "../../../core/connection/mysql";
-import { NextFunction, Request, Response } from "express";
-import { createCustomerValidator } from "../validators/create_customer_validator";
+import { db } from "../config/mysql";
+import { createCustomerValidator } from "../models/create_customer_validator";
 import { RowDataPacket } from "mysql2";
-import { ResponseStatus } from "../../../core/constants/response_status_enum";
+import { ResponseStatus } from "../constants/response_status_enum";
 
-export const createCustomer = async (req: Request, res: Response, next: NextFunction) => {
+interface ICreateCustomer {
+  customer_name: string;
+  customer_address?: string;
+  customer_id: string;
+  created_at: string;
+}
+
+export const createCustomerService = async (body: ICreateCustomer) => {
   try {
-    const { customer_name, customer_address, customer_id, created_at } = req.body;
+    const { customer_name, customer_address, customer_id, created_at } = body;
     await createCustomerValidator
       .validate({
         customer_name,
@@ -20,49 +25,49 @@ export const createCustomer = async (req: Request, res: Response, next: NextFunc
       values: [customer_id],
     });
     if (checkIsCustomerUnique[0].length !== 0) {
-      return res.status(200).json(BaseResponse.fail("Customer is already exists", 1013));
+      return { status: 200, data: "Customer is already exists", responseStatus: 1013 };
     }
 
     await db.query({
       sql: "INSERT INTO customers (customer_id, customer_name, customer_address, created_at) VALUES (?, ?, ?, ?)",
       values: [customer_id, customer_name, customer_address, created_at],
     });
-    res.status(200).json(BaseResponse.success("Customer created successfully", ResponseStatus.SUCCESS));
+    return { status: 200, data: "Customer created successfully", responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const deleteCustomer = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteCustomerService = async (customer_id: string) => {
   try {
-    const { customer_id } = req.body;
     await db.query<RowDataPacket[]>({
       sql: "UPDATE customers SET is_deleted = 1 WHERE customer_id = ?",
       values: [customer_id],
     });
-    res.status(200).json(BaseResponse.success("Customer deleted successfully!", ResponseStatus.SUCCESS));
+
+    return { status: 200, data: "Customer deleted successfully!", responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const updateCustomer = async (req: Request, res: Response, next: NextFunction) => {
+export const updateCustomerService = async (body: any) => {
   try {
-    const { customer_name, customer_address, customer_id } = req.body;
+    const { customer_name, customer_address, customer_id } = body;
     await db.query<RowDataPacket[]>({
       sql: "UPDATE customers SET customer_name = ?, customer_address = ? WHERE customer_id = ?",
       values: [customer_name, customer_address, customer_id],
     });
-    res.status(200).json(BaseResponse.success("Customer updated successfully!", ResponseStatus.SUCCESS));
+
+    return { status: 200, data: "Customer updated successfully!", responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const getCustomers = async (req: Request, res: Response, next: NextFunction) => {
+export const getCustomersService = async (offset: number) => {
   try {
-    const { offset } = req.query;
-    const page = Number(offset);
+    const page = offset;
     const [result] = await db.query<RowDataPacket[]>({
       sql: `
         SELECT 
@@ -94,17 +99,15 @@ export const getCustomers = async (req: Request, res: Response, next: NextFuncti
       `,
       values: [page],
     });
-    // console.log(customers);
 
-    res.status(200).json(BaseResponse.success(result, ResponseStatus.SUCCESS));
+    return { status: 200, data: result, responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const getCustomerById = async (req: Request, res: Response, next: NextFunction) => {
+export const getCustomerByIdService = async (customer_id: string) => {
   try {
-    const { customer_id } = req.query;
     const [customer] = await db.query<RowDataPacket[]>({
       sql: `
       SELECT 
@@ -124,37 +127,39 @@ export const getCustomerById = async (req: Request, res: Response, next: NextFun
         C.customer_id = ?;`,
       values: [customer_id],
     });
-    res.status(200).json(BaseResponse.success(customer, ResponseStatus.SUCCESS));
+
+    return { status: 200, data: customer, responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const searchCustomers = async (req: Request, res: Response, next: NextFunction) => {
+export const searchCustomersService = async (text: string) => {
   try {
-    const { text } = req.query;
     const textQuery = "%" + text + "%";
     const [customers] = await db.query<RowDataPacket[]>({
       sql: "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 8",
       values: [textQuery],
     });
-    res.status(200).json(BaseResponse.success(customers, ResponseStatus.SUCCESS));
+
+    return { status: 200, data: customers, responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const getCustomerReceipts = async (req: Request, res: Response, next: NextFunction) => {
+export const getCustomerReceiptsService = async (query: any) => {
   try {
-    const { customer_id, offset } = req.query;
+    const { customer_id, offset } = query;
     const [receipts] = await db.query<RowDataPacket[]>({
       sql: `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? ORDER BY created_at ASC LIMIT 10 OFFSET ${offset};
             SELECT COUNT(*) AS total FROM receipts WHERE is_deleted = 0 AND customer_id = ?;
             SELECT CEIL(COUNT(*) / 15) AS totalPages FROM receipts WHERE is_deleted = 0 AND customer_id = ?;`,
       values: [customer_id, customer_id, customer_id],
     });
-    res.status(200).json(BaseResponse.success(receipts, ResponseStatus.SUCCESS));
+
+    return { status: 200, data: receipts, responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };

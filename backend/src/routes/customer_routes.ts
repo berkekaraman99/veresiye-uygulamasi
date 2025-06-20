@@ -7,7 +7,7 @@ import {
   getCustomers,
   searchCustomers,
   updateCustomer,
-} from "../controller/customer_controller";
+} from "../controllers/customer_controller";
 
 const CustomerRoutes: Router = Router();
 

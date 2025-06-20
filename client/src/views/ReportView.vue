@@ -39,7 +39,7 @@
               Rapor
             </h1>
           </div>
-          <table id="reportTable" class="table w-full shadow-md">
+          <table id="reportTable" class="table w-full shadow-xs">
             <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-light)]">
               <tr>
                 <th scope="col" class="px-3 py-4" @click="sortTable(0)">Müşteri</th>
@@ -49,7 +49,7 @@
                 <th scope="col" class="px-3 py-4" @click="sortTable(4)">Net Bakiye</th>
               </tr>
             </thead>
-            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border dark:border-slate-950">
+            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950">
               <template v-for="customer in report" v-bind:key="customer['Müşteri']">
                 <tr v-if="customer['Net Bakiye'] !== 0" class="hover:bg-slate-100 dark:hover:bg-slate-800">
                   <td class="px-4 py-3">{{ customer["Müşteri"] }}</td>

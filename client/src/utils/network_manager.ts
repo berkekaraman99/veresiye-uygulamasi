@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const timeOut = 120000;
+const timeOut = import.meta.env.VITE_NETWORK_TIMEOUT ?? 120000;
+const baseURL = import.meta.env.VITE_NETWORK_BASE_URL ?? "http://localhost:3000/api";
 
 export const instance = axios.create({
-  baseURL: "http://localhost:3000/api",
-  timeout: import.meta.env.VITE_NETWORK_TIMEOUT ?? timeOut,
+  baseURL: baseURL,
+  timeout: timeOut,
 });

@@ -1,6 +1,6 @@
 import express, { Router } from "express";
-import ReceiptRoutes from "../receipt/routes/receipt_routes";
-import CustomerRoutes from "../customer/routes/customer_routes";
+import ReceiptRoutes from "./receipt_routes";
+import CustomerRoutes from "./customer_routes";
 
 const RootRoutes: Router = express.Router();
 

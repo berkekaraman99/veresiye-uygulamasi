@@ -38,7 +38,7 @@
       <!-- <h1 class="col-span-12 text-center">Müşteri aramak için yazınız...</h1> -->
       <TransitionGroup appear @before-enter="beforeEnterSearch" @enter="enterSearch" @before-leave="beforeLeaveSearch" @leave="leaveSearch">
         <div
-          class="flex items-center justify-between border-2 dark:border-slate-950 dark:text-white bg-white dark:bg-slate-900 my-2 p-4 shadow-md rounded-lg col-span-12 md:col-start-3 md:col-span-8"
+          class="flex items-center justify-between border-2 border-slate-200 dark:border-slate-950 dark:text-white bg-white dark:bg-slate-900 my-2 p-4 shadow-md rounded-lg col-span-12 md:col-start-3 md:col-span-8"
           v-for="(customer, index) in searchedCustomers"
           v-bind:key="customer.customer_id"
           :data-index="index"

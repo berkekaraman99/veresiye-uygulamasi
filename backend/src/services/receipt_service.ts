@@ -1,14 +1,23 @@
-import BaseResponse from "../../../core/response/base_response";
-import { db } from "../../../core/connection/mysql";
+import BaseResponse from "../utils/base_response";
+import { db } from "../config/mysql";
 import { NextFunction, Request, Response } from "express";
-import { createReceiptValidator } from "../validators/create_receipt_validator";
+import { createReceiptValidator } from "../models/create_receipt_validator";
 import { RowDataPacket } from "mysql2";
 import * as ExcelJS from "exceljs";
-import { ResponseStatus } from "../../../core/constants/response_status_enum";
+import { ResponseStatus } from "../constants/response_status_enum";
 
-export const createReceipt = async (req: Request, res: Response, next: NextFunction) => {
+interface ICreateReceipt {
+  receipt_id: string;
+  customer_id: string;
+  created_at: string;
+  price: number;
+  description?: string;
+  receipt_type: number;
+}
+
+export const createReceiptService = async (body: ICreateReceipt) => {
   try {
-    const { receipt_id, customer_id, created_at, price, description, receipt_type } = req.body;
+    const { receipt_id, customer_id, created_at, price, description, receipt_type } = body;
     await createReceiptValidator
       .validate({
         price,
@@ -23,89 +32,90 @@ export const createReceipt = async (req: Request, res: Response, next: NextFunct
         VALUES (?, ?, ?, ?, ?, ?)`,
       values: [receipt_id, customer_id, description, price, created_at, receipt_type],
     });
-    return res.status(201).json(BaseResponse.success("Receipt created successfully!", ResponseStatus.SUCCESS));
-  } catch (e: any) {
-    return res.status(500).json(BaseResponse.fail(e.message, e.statusCode));
+
+    return { status: 200, data: "Receipt created successfully!", responseStatus: ResponseStatus.SUCCESS };
+  } catch (error: any) {
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const fetchReceipts = async (req: Request, res: Response, next: NextFunction) => {
+export const fetchReceiptsService = async (user_id: string, offset: number) => {
   try {
-    const { userId, offset } = req.query;
     const [receipts] = await db.query<RowDataPacket[]>({
       sql: `SELECT * FROM receipts R LEFT JOIN customers C ON R.customer_id = C.customer_id WHERE R.is_deleted = 0 ORDER BY R.created_at DESC LIMIT 10 OFFSET ${offset}`,
-      values: [userId],
+      values: [user_id],
     });
-    return res.status(200).json(BaseResponse.success(receipts, ResponseStatus.SUCCESS));
-  } catch (e: any) {
-    return res.status(500).json(BaseResponse.fail(e.message, e.statusCode));
+    return { status: 200, data: receipts, responseStatus: ResponseStatus.SUCCESS };
+  } catch (error: any) {
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const deleteReceipt = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteReceiptService = async (receipt_id: string) => {
   try {
-    const { receipt_id } = req.body;
     await db.query<RowDataPacket[]>({
       sql: "UPDATE receipts SET is_deleted = 1 WHERE receipt_id = ?",
       values: [receipt_id],
     });
-    res.status(200).json(BaseResponse.fail("Receipt deleted successfully!", ResponseStatus.SUCCESS));
+    return { status: 200, data: "Receipt deleted successfully!", responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const updateReceipt = async (req: Request, res: Response, next: NextFunction) => {
+export const updateReceiptService = async (body: any) => {
   try {
-    const { receipt_id, price, description, receipt_type } = req.body;
+    const { receipt_id, price, description, receipt_type } = body;
     await db.query<RowDataPacket[]>({
       sql: "UPDATE receipts SET price = ?, description = ?, receipt_type = ? WHERE  receipt_id = ?",
       values: [price, description, receipt_type, receipt_id],
     });
-    res.status(200).json(BaseResponse.success("Receipt updated successfully!", ResponseStatus.SUCCESS));
+
+    return { status: 200, data: "Receipt updated successfully!", responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const getReceiptById = async (req: Request, res: Response, next: NextFunction) => {
+export const getReceiptByIdService = async (receipt_id: string) => {
   try {
-    const { receipt_id } = req.query;
     const [receipt] = await db.query<RowDataPacket[]>({
       sql: `
       SELECT c.customer_name AS customer_name, r.receipt_id AS receipt_id, r.description AS description, r.price AS price, r.receipt_type AS receipt_type, r.created_at AS created_at
       FROM receipts r LEFT JOIN customers c ON c.customer_id = r.customer_id WHERE r.is_deleted = 0 AND receipt_id = ?`,
       values: [receipt_id],
     });
-    res.status(200).json(BaseResponse.success(receipt[0], ResponseStatus.SUCCESS));
+
+    return { status: 200, data: receipt[0], responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
-    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const getReceiptReport = async (req: Request, res: Response, next: NextFunction) => {
+export const getReceiptReportService = async () => {
   try {
     const [report] = await db.query<RowDataPacket[]>({
       sql: `SELECT c.customer_name as "Müşteri",
-		  SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) AS "Alacak",
-		  SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) AS "Borç",
+          SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) AS "Alacak",
+          SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) AS "Borç",
         SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) as "Net Bakiye",
         MAX(r.created_at) as "Son Fatura Tarihi"
         FROM receipts r INNER JOIN customers c ON c.customer_id = r.customer_id
         WHERE r.is_deleted = 0 AND c.is_deleted = 0 group by c.customer_name ORDER BY c.customer_name`,
     });
-    return res.status(200).json(BaseResponse.success(report, ResponseStatus.SUCCESS));
-  } catch (e: any) {
-    return res.status(500).json(BaseResponse.fail(e.message, e.statusCode));
+
+    return { status: 200, data: report, responseStatus: ResponseStatus.SUCCESS };
+  } catch (error: any) {
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
 
-export const downloadReportExcel = async (req: Request, res: Response, next: NextFunction) => {
+export const downloadReportExcelServicce = async () => {
   try {
     const [report] = await db.query<RowDataPacket[]>({
       sql: `SELECT c.customer_name as "Müşteri",
-		  SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) AS "Alacak",
-		  SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) AS "Borç",
+          SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) AS "Alacak",
+          SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) AS "Borç",
         SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) as "Net Bakiye",
         MAX(r.created_at) as "Son Fatura Tarihi"
         FROM receipts r INNER JOIN customers c ON c.customer_id = r.customer_id
@@ -162,11 +172,8 @@ export const downloadReportExcel = async (req: Request, res: Response, next: Nex
     worksheet.getCell("C1").font = { ...font, bold: true };
 
     const buffer = await workbook.xlsx.writeBuffer();
-
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", "attachment; filename=Report.xlsx");
-    res.send(buffer);
-  } catch (e: any) {
-    return res.status(500).json(BaseResponse.fail(e.message, e.statusCode));
+    return buffer;
+  } catch (error: any) {
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };

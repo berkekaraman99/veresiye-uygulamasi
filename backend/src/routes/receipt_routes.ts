@@ -1,5 +1,13 @@
 import { Router } from "express";
-import { createReceipt, deleteReceipt, downloadReportExcel, fetchReceipts, getReceiptById, getReceiptReport, updateReceipt } from "../controller/receipt_controller";
+import {
+  createReceipt,
+  deleteReceipt,
+  downloadReportExcel,
+  fetchReceipts,
+  getReceiptById,
+  getReceiptReport,
+  updateReceipt,
+} from "../controllers/receipt_controller";
 
 const ReceiptRoutes: Router = Router();
 

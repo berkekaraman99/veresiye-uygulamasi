@@ -63,7 +63,7 @@
           <FormKit type="datetime-local" label="Tarih" :validation="'required|date_before' + maxDate" v-model="receiptForm.created_at" />
           <FormKit type="textarea" name="description" label="Açıklama" placeholder="Açıklama" v-model="receiptForm.description" />
 
-          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
+          <FormKit type="submit" label="Oluştur" :disabled="buttonDisabled" :wrapper-class="{ 'flex justify-center': true }" />
         </FormKit>
       </div>
     </div>
@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
@@ -112,6 +112,10 @@ latestDate.setDate(latestDate.getDate() + 1);
 const maxDate = latestDate.toISOString().slice(0, 10);
 const { toastSuccess, toastError } = useAppToast();
 
+const buttonDisabled = computed(() => {
+  return !!(statusCode.value === 200 || receiptForm.price == "0" || receiptForm.price == "");
+});
+
 //FUNCTIONS
 const createReceipt = async () => {
   if (customerName.value !== "") {
@@ -148,4 +152,10 @@ const searchCustomer = async () => {
     await customerStore.searchCustomers(customerName.value);
   }, 500);
 };
+
+onBeforeUnmount(() => {
+  customerStore.$patch({
+    searchedCustomers: [],
+  });
+});
 </script>

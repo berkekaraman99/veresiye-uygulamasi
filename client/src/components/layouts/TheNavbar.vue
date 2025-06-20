@@ -1,6 +1,6 @@
 <template>
-  <header class="bg-[var(--navbar-color)] dark:bg-[var(--navbar-color)] text-[var(--text-light)] z-20 fixed top-0 w-[100%] h-[64px]">
-    <div class="px-2 sm:px-6 lg:px-8">
+  <header class="text-[var(--text-light)] z-20 fixed top-0 left-0 right-0 sm:left-[6px] sm:right-[6px] sm:top-1 h-[64px]">
+    <div class="px-2 sm:px-3.5 bg-[var(--navbar-color)] dark:bg-[var(--navbar-color)] sm:rounded-xl">
       <div class="relative flex h-16 items-center justify-between">
         <div class="flex items-center">
           <div class="inset-y-0 flex items-center" @click="emit('openSideNav')">

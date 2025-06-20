@@ -10,8 +10,8 @@
               Müşteri Bilgileri
             </h1>
           </div>
-          <div class="p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg shadow-lg">
-            <table class="table w-full">
+          <div class="p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg">
+            <table>
               <tbody>
                 <tr>
                   <th class="px-2 py-2">Müşteri Adı:</th>
@@ -46,7 +46,7 @@
               Faturalar
             </h1>
           </div>
-          <table id="receiptsTable" class="table w-full shadow-sm">
+          <table id="receiptsTable">
             <thead class="text-xs bg-gradient-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] h-12">
               <tr>
                 <th scope="col" class="px-3 py-2" @click="sortTable(0)">Fatura No</th>
@@ -57,7 +57,7 @@
                 <th scope="col" class="px-3 py-2">İşlem</th>
               </tr>
             </thead>
-            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border dark:border-slate-950">
+            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950">
               <tr v-for="receipt in customerReceipts" v-bind:key="receipt.receipt_id">
                 <td class="px-3 py-2">{{ receipt.receipt_id }}</td>
                 <td class="px-3 py-2">{{ receipt.created_at?.slice(0, 10) }}</td>
@@ -130,7 +130,7 @@
                   <nav class="isolate inline-flex -space-x-px rounded-md shadow-2xs" aria-label="Pagination">
                     <a
                       @click="previousPage()"
-                      class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                      class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
                     >
                       <span class="sr-only">Previous</span>
                       <UIcon
@@ -142,39 +142,38 @@
                     <a
                       v-if="customerReceiptsPageCount !== 0"
                       @click="selectPage(1)"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-current dark:text-gray-200 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                      :class="{ 'font-bold underline bg-violet-600': currentPage == 1 }"
+                      class="paging-item"
+                      :class="[
+                        currentPage === 1 ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500' : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                      ]"
                       >1</a
                     >
-                    <span
-                      v-if="currentPage > 4"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-gray-900 dark:text-gray-200 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
-                      s
-                      >...</span
-                    >
+                    <span v-if="currentPage > 4" class="paging-item">...</span>
                     <a
                       v-for="page in pageRange"
                       :key="page"
                       @click="selectPage(page)"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-black dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                      :class="{ 'font-bold underline bg-violet-600': currentPage === page }"
+                      class="paging-item"
+                      :class="[
+                        currentPage === page ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500' : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                      ]"
                       >{{ page }}</a
                     >
-                    <span
-                      v-if="currentPage < customerReceiptsPageCount - 3"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-gray-900 dark:text-gray-200 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
-                      >...</span
-                    >
+                    <span v-if="currentPage < customerReceiptsPageCount - 3" class="paging-item">...</span>
                     <a
                       v-if="customerReceiptsPageCount !== 0"
                       @click="selectPage(customerReceiptsPageCount)"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                      :class="{ 'font-bold underline bg-violet-600': currentPage == customerReceiptsPageCount }"
+                      class="paging-item"
+                      :class="[
+                        currentPage === customerReceiptsPageCount
+                          ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                      ]"
                       >{{ customerReceiptsPageCount }}</a
                     >
                     <a
                       @click="nextPage()"
-                      class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                      class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
                     >
                       <span class="sr-only">Next</span>
                       <UIcon
@@ -344,6 +343,12 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@reference "@/index.css";
+
+.paging-item {
+  @apply relative cursor-pointer inline-flex items-center px-4 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:z-20 focus:outline-offset-0;
+}
+
 .dropdown-icon {
   width: 24px;
 }
