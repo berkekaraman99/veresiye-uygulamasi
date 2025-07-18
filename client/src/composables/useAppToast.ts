@@ -8,6 +8,7 @@ export const useAppToast = () => {
         description,
         icon: "i-heroicons-check-circle",
         color: "success",
+        duration: 2000,
       });
     },
     toastError: ({ title, description }: { title: string; description?: string }) => {
@@ -16,6 +17,7 @@ export const useAppToast = () => {
         description: description,
         icon: "i-heroicons-exclamation-circle",
         color: "error",
+        duration: 2000,
       });
     },
   };

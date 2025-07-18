@@ -4,8 +4,10 @@ import {
   createCustomerService,
   deleteCustomerService,
   getCustomerByIdService,
+  getCustomerByNameService,
   getCustomerReceiptsService,
   getCustomersService,
+  getLastCustomersService,
   searchCustomersService,
   updateCustomerService,
 } from "../services/customer_service";
@@ -64,6 +66,17 @@ export const getCustomerById = async (req: Request, res: Response, next: NextFun
   }
 };
 
+export const getCustomerByName = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { customer_name } = req.query;
+    const result = await getCustomerByNameService(customer_name as string);
+
+    res.status(result.status).json(BaseResponse.success(result.data, result.responseStatus));
+  } catch (error: any) {
+    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+  }
+};
+
 export const searchCustomers = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { text } = req.query;
@@ -79,6 +92,16 @@ export const getCustomerReceipts = async (req: Request, res: Response, next: Nex
   try {
     const { customer_id, offset } = req.query;
     const result = await getCustomerReceiptsService({ customer_id, offset });
+
+    res.status(result.status).json(BaseResponse.success(result.data, result.responseStatus));
+  } catch (error: any) {
+    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+  }
+};
+
+export const getLastCustomers = async (req: Request, res: Response) => {
+  try {
+    const result = await getLastCustomersService();
 
     res.status(result.status).json(BaseResponse.success(result.data, result.responseStatus));
   } catch (error: any) {

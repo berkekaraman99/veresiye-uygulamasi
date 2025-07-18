@@ -3,11 +3,14 @@ import { defineStore } from "pinia";
 import { instance } from "@/utils/network_manager";
 import type { IReport } from "@/models/report_model";
 import type { IReceipt } from "@/models/receipt_model";
+import type { IDashboardReceipt } from "@/models/dashboard_receipt_model";
 
 export const useReceiptStore = defineStore("receipt", () => {
   //STATES
   const receipt = ref<IReceipt>();
   const receipts = ref<Array<IReceipt>>([]);
+  const lastReceipts = ref<Array<IDashboardReceipt>>([]);
+  const debtReceivableResult = ref();
   const report = ref<Array<IReport>>([]);
   const statusCode = ref<number>(0);
 
@@ -104,11 +107,37 @@ export const useReceiptStore = defineStore("receipt", () => {
     }
   };
 
+  const getLastReceipts = async () => {
+    try {
+      const res = await instance.get("/receipt/get-last-receipts");
+      statusCode.value = res.data.statusCode;
+
+      lastReceipts.value = res.data.data;
+      // console.log(res.data);
+    } catch (error: any) {
+      console.error(error.response);
+    }
+  };
+
+  const getDebtAndReceivable = async () => {
+    try {
+      const res = await instance.get("/receipt/get-debt-and-receivable");
+      statusCode.value = res.data.statusCode;
+
+      debtReceivableResult.value = res.data.data;
+      console.log(res.data);
+    } catch (error: any) {
+      console.error(error.response);
+    }
+  };
+
   return {
     receipt,
     receipts,
+    lastReceipts,
     statusCode,
     report,
+    debtReceivableResult,
     createReceipt,
     updateReceipt,
     deleteReceipt,
@@ -116,5 +145,7 @@ export const useReceiptStore = defineStore("receipt", () => {
     getReceiptById,
     getReceiptReport,
     downloadReceipt,
+    getLastReceipts,
+    getDebtAndReceivable,
   };
 });

@@ -8,63 +8,62 @@
           {{ receiptTypeReturn }}
         </h1>
       </div>
-      <div class="bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-950">
-        <FormKit
-          type="form"
-          id="receipt-form"
-          @submit="createReceipt"
-          :actions="false"
-          :config="{
-            classes: {
-              outer: 'mx-auto',
-            },
-          }"
-        >
+      <div class="relative">
+        <div class="bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-950">
           <FormKit
-            type="select"
-            name="receipt_type"
-            label="Dekont Türü"
-            placeholder="Dekont türünü seçiniz"
-            :options="[
-              { label: 'Ödeme', value: 0 },
-              { label: 'Alacak', value: 1 },
-            ]"
-            v-model="receiptForm.receipt_type"
-          />
+            type="form"
+            id="receipt-form"
+            @submit="createReceipt"
+            :actions="false"
+            :config="{
+              classes: {
+                outer: 'mx-auto',
+              },
+            }"
+          >
+            <FormKit
+              type="select"
+              name="receipt_type"
+              label="Dekont Türü"
+              placeholder="Dekont türünü seçiniz"
+              :options="[
+                { label: 'Ödeme', value: 0 },
+                { label: 'Alacak', value: 1 },
+              ]"
+              v-model="state.receipt_type"
+            />
 
-          <FormKit
-            type="text"
-            name="customer_name"
-            label="Müşteri"
-            placeholder="Müşteri Adı"
-            validation="required"
-            v-model="customerName"
-            list="customers"
-            @input="searchCustomer()"
-            autofocus
-          />
-          <datalist id="customers">
-            <option v-for="customer in searchedCustomers" :value="customer.customer_name" :key="customer.customer_id"></option>
-          </datalist>
-
-          <!-- <select v-show="showSelect" ref="customerSelect" class="form-select" aria-label="Default select example">
+            <FormKit
+              type="text"
+              name="customer_name"
+              label="Müşteri"
+              placeholder="Müşteri Adı"
+              validation="required"
+              v-model="customerName"
+              list="customers"
+              @input="searchCustomer"
+            />
+            <datalist id="customers">
+              <option v-for="customer in searchedCustomers" :value="customer.customer_name" :key="customer.customer_id"></option>
+            </datalist>
+            <!-- <select v-show="showSelect" ref="customerSelect" class="form-select" aria-label="Default select example">
             <option v-for="customer in searchedCustomers" :value="customer.customer_id">{{ customer.customer_name }}</option>
           </select> -->
-          <FormKit
-            type="number"
-            name="price"
-            label="Fiyat"
-            placeholder="Fiyat"
-            min="0"
-            step="0.1"
-            validation="required"
-            v-model="receiptForm.price"
-          />
-          <FormKit type="datetime-local" label="Tarih" :validation="'required|date_before' + maxDate" v-model="receiptForm.created_at" />
-          <FormKit type="textarea" name="description" label="Açıklama" placeholder="Açıklama" v-model="receiptForm.description" />
+            <FormKit type="number" name="price" label="Fiyat" placeholder="Fiyat" min="0" step="0.1" validation="required" v-model="state.price" />
+            <FormKit type="datetime-local" label="Tarih" :validation="'required|date_before' + maxDate" v-model="state.created_at" />
+            <FormKit type="textarea" name="description" label="Açıklama (Opsiyonel)" placeholder="Açıklama" v-model="state.description" />
 
-          <FormKit type="submit" label="Oluştur" :disabled="buttonDisabled" :wrapper-class="{ 'flex justify-center': true }" />
-        </FormKit>
+            <FormKit type="submit" label="Oluştur" :disabled="buttonDisabled" :wrapper-class="{ 'flex justify-center': true }" />
+          </FormKit>
+        </div>
+        <div
+          v-if="customer"
+          class="bg-white dark:bg-slate-900 my-4 dark:text-white rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-950 xl:absolute xl:w-fit xl:-right-80 xl:top-1/6"
+        >
+          <h2 class="text-2xl font-medium mb-4">{{ customer.customer_name }}</h2>
+          <p v-if="customer.customer_address">{{ customer.customer_address }}</p>
+          <p>Bakiye: {{ customer.net_bakiye }}₺</p>
+        </div>
       </div>
     </div>
   </div>
@@ -73,75 +72,81 @@
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { computed, reactive, ref, onBeforeUnmount } from "vue";
-import { useRouter } from "vue-router";
+import { computed, ref, onBeforeUnmount, watch } from "vue";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
 import { ResponseStatus } from "@/constants/response_status_enum";
 import { useAppToast } from "@/composables/useAppToast";
+import { useDuration } from "@/composables/useDuration";
 
 interface Props {
   receipt_type?: number;
 }
 
-const receiptTypeReturn = computed(() => {
-  return receiptForm.receipt_type === 0 ? "Ödeme Dekontu" : "Alacak Dekontu";
-});
-
 //STATES
 const props = withDefaults(defineProps<Props>(), {
   receipt_type: 0,
 });
-const router = useRouter();
+const { toastSuccess, toastError } = useAppToast();
+const { shortTime } = useDuration();
 const customerStore = useCustomerStore();
 const receiptStore = useReceiptStore();
 const { statusCode } = storeToRefs(receiptStore);
-const { searchedCustomers } = storeToRefs(customerStore);
-const receiptForm = reactive({
+const { searchedCustomers, customer } = storeToRefs(customerStore);
+const initialState = {
   customer_id: "",
   price: "0",
   description: "",
   created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
   receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
-});
-let timer: any = null;
-const customerName = ref("");
+};
+const state = ref({ ...initialState });
+const customerName = ref();
+let timer: ReturnType<typeof setTimeout> | null = null;
+let timer2: ReturnType<typeof setTimeout> | null = null;
 const latestDate = new Date();
 latestDate.setDate(latestDate.getDate() + 1);
 const maxDate = latestDate.toISOString().slice(0, 10);
-const { toastSuccess, toastError } = useAppToast();
-
-const buttonDisabled = computed(() => {
-  return !!(statusCode.value === 200 || receiptForm.price == "0" || receiptForm.price == "");
-});
 
 //FUNCTIONS
+const receiptTypeReturn = computed(() => {
+  return state.value.receipt_type === 0 ? "Ödeme Dekontu" : "Alacak Dekontu";
+});
+
+const buttonDisabled = computed(() => {
+  return !!(statusCode.value === 200 || state.value.price == "0" || state.value.price == "");
+});
+
 const createReceipt = async () => {
   if (customerName.value !== "") {
-    receiptForm.customer_id = searchedCustomers.value[0].customer_id;
+    state.value.customer_id = searchedCustomers.value[0].customer_id;
     const receipt_id = uuidv4();
-    // const created_date = moment().format("DD-MM-YYYY HH:mm");
 
     await receiptStore
       .createReceipt({
-        ...receiptForm,
+        ...state.value,
         receipt_id: receipt_id,
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {
           toastSuccess({ title: "Dekont oluşturuldu!" });
+          Object.assign(state.value, initialState);
+          customerName.value = undefined;
           setTimeout(() => {
             receiptStore.$patch({
               statusCode: 0,
             });
-            router.push({ name: "home" });
-          }, 2000);
+          }, shortTime);
         } else {
           toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
         }
       });
   }
+};
+
+const getCustomerInfo = async () => {
+  await customerStore.getCustomerByName(customerName.value);
 };
 
 const searchCustomer = async () => {
@@ -152,6 +157,16 @@ const searchCustomer = async () => {
     await customerStore.searchCustomers(customerName.value);
   }, 500);
 };
+
+watch(customerName, () => {
+  if (timer2) {
+    clearTimeout(timer2);
+  }
+  let sleep = 500;
+  timer2 = setTimeout(() => {
+    getCustomerInfo();
+  }, sleep);
+});
 
 onBeforeUnmount(() => {
   customerStore.$patch({

@@ -31,22 +31,22 @@
     <the-loading v-if="isLoading" />
     <div class="grid grid-cols-12 mt-8" v-if="report.length !== 0">
       <div class="col-span-12">
-        <div>
-          <div class="flex justify-center">
-            <h1
-              class="font-semibold text-2xl mb-6 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-            >
-              Rapor
-            </h1>
-          </div>
-          <table id="reportTable" class="table w-full shadow-xs">
+        <div class="flex justify-center">
+          <h1
+            class="font-semibold text-2xl mb-6 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+          >
+            Rapor
+          </h1>
+        </div>
+        <div class="block h-[600px] overflow-y-auto">
+          <table id="reportTable" class="min-w-full">
             <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-light)]">
               <tr>
-                <th scope="col" class="px-3 py-4" @click="sortTable(0)">Müşteri</th>
-                <th scope="col" class="px-3 py-4" @click="sortTable(1)">Alacak</th>
-                <th scope="col" class="px-3 py-4" @click="sortTable(2)">Borç</th>
-                <th scope="col" class="px-3 py-4" @click="sortTable(3)">Son Fatura Tarihi</th>
-                <th scope="col" class="px-3 py-4" @click="sortTable(4)">Net Bakiye</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(0)">Müşteri</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(1)">Alacak</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(2)">Borç</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(3)">Son Fatura Tarihi</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(4)">Net Bakiye</th>
               </tr>
             </thead>
             <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950">

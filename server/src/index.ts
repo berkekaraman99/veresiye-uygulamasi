@@ -26,3 +26,8 @@ app.use("/api", RootRoutes);
 app.listen(PORT, () => {
   console.log(`[server]: Server is running on port `, PORT);
 });
+
+process.on("SIGTERM", () => {
+  console.log("Backend kapanıyor...");
+  process.exit(0);
+});

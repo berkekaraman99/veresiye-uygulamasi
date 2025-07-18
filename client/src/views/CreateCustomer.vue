@@ -26,10 +26,10 @@
             label="Müşteri Adı"
             placeholder="Müşteri adı"
             validation="required"
-            v-model="customerForm.customer_name"
+            v-model="state.customer_name"
             autofocus
           />
-          <FormKit type="text" name="customer_address" label="Müşteri Adresi" placeholder="Müşteri Adresi" v-model="customerForm.customer_address" />
+          <FormKit type="text" name="customer_address" label="Müşteri Adresi" placeholder="Müşteri Adresi" v-model="state.customer_address" />
 
           <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
         </FormKit>
@@ -39,46 +39,52 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { ref } from "vue";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
-import { useRouter } from "vue-router";
+// import { useRouter } from "vue-router";
 import { ResponseStatus } from "@/constants/response_status_enum";
 import { useAppToast } from "@/composables/useAppToast";
+import { useDuration } from "@/composables/useDuration";
 
 //STATES
 const { toastSuccess, toastError } = useAppToast();
-const router = useRouter();
+const { shortTime } = useDuration();
+// const router = useRouter();
 const customerStore = useCustomerStore();
 const { statusCode } = storeToRefs(customerStore);
-const customerForm = reactive({
+const initialState = {
   customer_name: "",
   customer_address: "",
-});
+};
+const state = ref({ ...initialState });
 
 //FUNCTIONS
 const createCustomer = async () => {
-  if (customerForm.customer_name !== "") {
+  if (state.value.customer_name !== "") {
     const customer_id = uuidv4();
     const created_date = moment().format("YYYY-MM-DD HH:mm:ss");
 
     await customerStore
       .createCustomer({
-        ...customerForm,
+        ...state.value,
         customer_id: customer_id,
         created_at: created_date,
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {
           toastSuccess({ title: "Müşteri oluşturuldu!" });
+
+          Object.assign(state.value, initialState);
+
           setTimeout(() => {
             customerStore.$patch({
               statusCode: 0,
             });
-            router.push({ name: "customers" });
-          }, 2000);
+            // router.push({ name: "customers" });
+          }, shortTime);
         } else {
           toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
         }

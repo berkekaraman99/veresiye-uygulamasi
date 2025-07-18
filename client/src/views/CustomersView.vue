@@ -8,7 +8,7 @@
       </h1>
 
       <RouterLink v-if="!loading" class="create-btn-wrapper" :to="{ name: 'create-customer' }">
-        <div class="bg-[var(--secondary)] hover:bg-[var(--secondary-variant)] create-btn text-white">
+        <div class="backdrop-blur-lg bg-[var(--secondary)]/85 hover:bg-[var(--secondary-variant)]/85 create-btn text-white">
           <UIcon name="heroicons:user-plus-16-solid" class="size-8" />
         </div>
       </RouterLink>
@@ -68,10 +68,10 @@
                   ],
                 ]"
                 :ui="{
-                  content: 'w-48',
+                  content: 'w-48 bg-transparent backdrop-blur-md',
                 }"
               >
-                <UButton label="Seçenekler" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+                <UButton :label="width > 640 ? 'Seçenekler' : undefined" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
               </UDropdownMenu>
             </td>
           </tr>
@@ -161,8 +161,12 @@
           <p class="text-red-700 dark:text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
         </template>
         <template #footer>
-          <UButton color="neutral" variant="solid" @click="open = false">Vazgeç</UButton>
-          <UButton color="success" variant="solid" @click="removeCustomer(selectedCustomer!.customer_id)"> Onayla </UButton>
+          <div class="flex items-center justify-end w-full">
+            <UButton color="neutral" variant="solid" class="rounded-full px-6 py-3 me-2" @click="open = false">Vazgeç</UButton>
+            <UButton color="success" variant="solid" class="rounded-full px-6 py-3" @click="removeCustomer(selectedCustomer!.customer_id)">
+              Onayla
+            </UButton>
+          </div>
         </template>
       </UModal>
     </Teleport>
@@ -178,6 +182,7 @@ import { useAppToast } from "@/composables/useAppToast";
 
 import type { ICustomer } from "@/models/customer_model";
 import router from "@/router";
+import type { ICustomers } from "@/models/customers_model";
 
 //STATES
 const { toastSuccess } = useAppToast();
@@ -189,6 +194,7 @@ const { customers, customersPageCount } = storeToRefs(customerStore);
 const currentPage = ref<number>(1);
 const loading = ref<boolean>(true);
 const open = ref(false);
+const width = ref(document.documentElement.clientWidth);
 
 // defineShortcuts({
 //   o: () => (open.value = !open.value),
@@ -227,7 +233,7 @@ const nextPage = async () => {
   }
 };
 
-const selCustomer = (customer: any) => {
+const selCustomer = (customer: ICustomer) => {
   selectedCustomer.value = customer;
   open.value = true;
 };
@@ -298,7 +304,7 @@ onMounted(async () => {
   await customerStore
     .getCustomers(offset.value)
     .then(async () => {
-      customers.value.forEach((element: any) => {
+      customers.value.forEach((element: ICustomers) => {
         if (element.customer_address !== "") {
           isHaveAddress.value = true;
         }
@@ -307,6 +313,10 @@ onMounted(async () => {
     .finally(() => {
       changeLoadingState();
     });
+
+  window.addEventListener("resize", () => {
+    width.value = document.documentElement.clientWidth;
+  });
   // await customerStore.getCustomersPageCount().then(() => {
   //   for (let i = 1; i <= customersPageCount.value; i++) {
   //     pages.value.push(i);

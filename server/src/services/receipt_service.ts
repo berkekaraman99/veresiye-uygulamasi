@@ -177,3 +177,30 @@ export const downloadReportExcelServicce = async () => {
     return { status: 500, data: error.message, responseStatus: error.statusCode };
   }
 };
+
+export const getLastReceiptsService = async () => {
+  try {
+    const [receipts] = await db.query<RowDataPacket[]>({
+      sql: `SELECT C.customer_name, R.receipt_type, R.price, R.receipt_id, R.created_at FROM receipts R LEFT JOIN customers C ON R.customer_id = C.customer_id WHERE R.is_deleted = 0 ORDER BY R.created_at DESC LIMIT 5;`,
+    });
+
+    return { status: 200, data: receipts, responseStatus: ResponseStatus.SUCCESS };
+  } catch (error: any) {
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
+  }
+};
+
+export const getDebtAndReceivableService = async () => {
+  try {
+    const [result] = await db.query<RowDataPacket[]>({
+      sql: `SELECT 
+            FLOOR(SUM(CASE WHEN receipt_type = 1 THEN price ELSE 0 END)) as alacak, 
+            SUM(CASE WHEN receipt_type = 0 THEN price ELSE 0 END) as borc 
+            FROM receipts WHERE is_deleted = 0;`,
+    });
+
+    return { status: 200, data: result, responseStatus: ResponseStatus.SUCCESS };
+  } catch (error: any) {
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
+  }
+};

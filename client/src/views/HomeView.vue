@@ -31,17 +31,17 @@ const items = [
   {
     name: "Alacak Ekle",
     href: { name: "create-receipt", params: { receipt_type: routerReceiptType.alacak } },
-    component: "heroicons:document-plus-solid",
+    component: "fluent:document-add-24-filled",
   },
   {
     name: "Ödeme Ekle",
     href: { name: "create-receipt", params: { receipt_type: routerReceiptType.borc } },
-    component: "heroicons:document-minus-solid",
+    component: "fluent:document-arrow-down-24-filled",
   },
-  { name: "Müşteri Ekle", href: { name: "create-customer" }, component: "heroicons:user-plus-solid" },
-  { name: "Müşteriler", href: { name: "customers" }, component: "heroicons:users-solid" },
-  { name: "Rapor Al", href: { name: "report" }, component: "heroicons:document-duplicate-solid" },
-  { name: "Müşteri Arama", href: { name: "search-customer" }, component: "heroicons:magnifying-glass-solid" },
+  { name: "Müşteri Ekle", href: { name: "create-customer" }, component: "fluent:person-add-24-filled" },
+  { name: "Müşteriler", href: { name: "customers" }, component: "fluent:people-24-filled" },
+  { name: "Rapor Al", href: { name: "report" }, component: "fluent:document-multiple-24-filled" },
+  { name: "Müşteri Arama", href: { name: "search-customer" }, component: "fluent:search-24-filled" },
 ];
 </script>
 

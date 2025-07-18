@@ -5,11 +5,13 @@ import type { ICustomer } from "@/models/customer_model";
 import type { ICustomerReceipt } from "@/models/customer_receipt_model";
 import type { ICustomers } from "@/models/customers_model";
 import type { ISearchedCustomer } from "@/models/searched_customer_model";
+import type { IDashboardCustomer } from "@/models/dashboard_customer_model";
 
 export const useCustomerStore = defineStore("customer", () => {
   //STATES
   const customer = ref<ICustomer>();
   const customers = ref<Array<ICustomers>>([]);
+  const lastCustomers = ref<Array<IDashboardCustomer>>([]);
   const statusCode = ref<number>(0);
   const searchedCustomers = ref<Array<ISearchedCustomer>>([]);
   const customerReceipts = ref<Array<ICustomerReceipt>>([]);
@@ -84,6 +86,20 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
+  const getCustomerByName = async (customer_name: string) => {
+    try {
+      const res = await instance.get(`/customer/get-customer-by-name?customer_name=${customer_name}`);
+      customer.value = res.data.data[0];
+      console.log(res.data);
+    } catch (error: any) {
+      console.error(error.response);
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
+    }
+  };
+
   const getCustomersPageCount = async () => {
     try {
       const res = await instance.get(`/customer/get-customer-page-count`);
@@ -122,9 +138,22 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
+  const getLastCustomers = async () => {
+    try {
+      const res = await instance.get("/customer/get-last-customers");
+      statusCode.value = res.data.statusCode;
+
+      lastCustomers.value = res.data.data;
+      // console.log(res.data);
+    } catch (error: any) {
+      console.error(error.response);
+    }
+  };
+
   return {
     customer,
     customers,
+    lastCustomers,
     searchedCustomers,
     statusCode,
     customerReceipts,
@@ -135,8 +164,10 @@ export const useCustomerStore = defineStore("customer", () => {
     updateCustomer,
     getCustomers,
     getCustomerById,
+    getCustomerByName,
     searchCustomers,
     getCustomerReceipts,
     getCustomersPageCount,
+    getLastCustomers,
   };
 });

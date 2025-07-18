@@ -16,7 +16,7 @@
           placeholder="Müşteri ara"
           color="secondary"
           size="xl"
-          icon="i-lucide-search"
+          icon="fluent:search-24-filled"
           class="w-full"
           :ui="{ base: 'py-4' }"
           v-model="searchQuery"
@@ -80,7 +80,7 @@
               ],
             ]"
             :ui="{
-              content: 'w-48',
+              content: 'w-48 bg-transparent backdrop-blur-md',
             }"
           >
             <UButton icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />

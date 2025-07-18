@@ -21,6 +21,10 @@
   -webkit-user-select: none;
 }
 
+#app {
+  height: 100vh;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -36,9 +40,9 @@ main {
   padding-bottom: 1rem;
 }
 
-th {
+/* th {
   cursor: pointer;
-}
+} */
 th:first-child {
   border-top-left-radius: 0.5rem;
 }
@@ -63,5 +67,5 @@ td {
 }
 
 table {
-  @apply table w-full shadow-xs;
+  @apply table-auto w-full shadow-xs;
 }

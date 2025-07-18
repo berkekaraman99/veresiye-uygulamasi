@@ -45,12 +45,14 @@ import { storeToRefs } from "pinia";
 import { onMounted, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useAppToast } from "@/composables/useAppToast";
+import { useDuration } from "@/composables/useDuration";
 
 interface Props {
   customer_id: string;
 }
 //STATES
 const { toastSuccess, toastError } = useAppToast();
+const { shortTime } = useDuration();
 const props = defineProps<Props>();
 const router = useRouter();
 const customerStore = useCustomerStore();
@@ -71,7 +73,7 @@ const updateCustomer = async () => {
             statusCode: 0,
           });
           router.push({ name: "customers" });
-        }, 2000);
+        }, shortTime);
       } else {
         toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
       }

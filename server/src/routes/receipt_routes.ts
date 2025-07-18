@@ -4,6 +4,8 @@ import {
   deleteReceipt,
   downloadReportExcel,
   fetchReceipts,
+  getDebtAndReceivable,
+  getLastReceipts,
   getReceiptById,
   getReceiptReport,
   updateReceipt,
@@ -18,5 +20,7 @@ ReceiptRoutes.get("/get-receipts", fetchReceipts);
 ReceiptRoutes.get("/get-receipt-by-id", getReceiptById);
 ReceiptRoutes.get("/report", getReceiptReport);
 ReceiptRoutes.get("/download-report", downloadReportExcel);
+ReceiptRoutes.get("/get-last-receipts", getLastReceipts);
+ReceiptRoutes.get("/get-debt-and-receivable", getDebtAndReceivable);
 
 export default ReceiptRoutes;

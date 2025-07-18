@@ -1,10 +1,53 @@
 {
+  "name": "veresiye-app",
+  "version": "0.0.1",
+  "main": "main.js",
+  "type": "module",
+  "build": {
+    "appId": "com.beko.veresiyeapp",
+    "productName": "Veresiye App",
+    "files": [
+      "main.js",
+      "client/dist/**/*",
+      "server/dist/**/*",
+      "server/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "server/dist",
+        "to": "server/dist"
+      },
+      {
+        "from": "server/node_modules",
+        "to": "server/node_modules"
+      }
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    }
+  },
   "scripts": {
     "client": "cd client && npm run dev",
-    "server": "cd backend && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "server": "cd server && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "electron": "electron .",
+    "build-client": "npm run build-only --prefix client",
+    "build": "electron-builder"
   },
   "dependencies": {
     "concurrently": "^9.1.2"
+  },
+  "devDependencies": {
+    "electron": "^37.2.0",
+    "electron-builder": "^26.0.12",
+    "ts-node": "^10.9.2"
   }
 }

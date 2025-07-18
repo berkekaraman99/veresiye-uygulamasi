@@ -59,6 +59,7 @@ import { storeToRefs } from "pinia";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAppToast } from "@/composables/useAppToast";
+import { useDuration } from "@/composables/useDuration";
 
 interface Props {
   receipt_id: string;
@@ -66,6 +67,7 @@ interface Props {
 
 //STATES
 const { toastSuccess, toastError } = useAppToast();
+const { shortTime } = useDuration();
 const props = defineProps<Props>();
 const router = useRouter();
 const receiptStore = useReceiptStore();
@@ -88,7 +90,7 @@ const updateReceipt = async () => {
           statusCode: 0,
         });
         router.push({ name: "home" });
-      }, 2000);
+      }, shortTime);
     } else {
       toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
     }

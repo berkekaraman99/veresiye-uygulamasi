@@ -10,6 +10,8 @@ import {
   deleteReceiptService,
   downloadReportExcelServicce,
   fetchReceiptsService,
+  getDebtAndReceivableService,
+  getLastReceiptsService,
   getReceiptByIdService,
   getReceiptReportService,
   updateReceiptService,
@@ -89,5 +91,25 @@ export const downloadReportExcel = async (req: Request, res: Response, next: Nex
     res.send(buffer);
   } catch (e: any) {
     return res.status(500).json(BaseResponse.fail(e.message, e.statusCode));
+  }
+};
+
+export const getLastReceipts = async (req: Request, res: Response) => {
+  try {
+    const result = await getLastReceiptsService();
+
+    res.status(result.status).json(BaseResponse.success(result.data, result.responseStatus));
+  } catch (error: any) {
+    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+  }
+};
+
+export const getDebtAndReceivable = async (req: Request, res: Response) => {
+  try {
+    const result = await getDebtAndReceivableService();
+
+    res.status(result.status).json(BaseResponse.success(result.data, result.responseStatus));
+  } catch (error: any) {
+    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
   }
 };
