@@ -112,16 +112,16 @@ import { storeToRefs } from "pinia";
 import { onBeforeUnmount, ref } from "vue";
 import gsap from "gsap";
 import { useAppToast } from "@/composables/useAppToast";
-import type { ISearchedCustomer } from "@/models/searched_customer_model";
 import { useRouter } from "vue-router";
+import type { SearchedCustomer } from "@/models/searched_customer_model";
 
 const { toastSuccess } = useAppToast();
 const customerStore = useCustomerStore();
 const { searchedCustomers } = storeToRefs(customerStore);
 const searchQuery = ref("");
-const selectedCustomer = ref<ISearchedCustomer>();
+const selectedCustomer = ref<SearchedCustomer>();
 const isSearched = ref(false);
-let timer: any = null;
+let timer: ReturnType<typeof setTimeout> | null = null;
 const router = useRouter();
 const open = ref(false);
 
@@ -145,7 +145,7 @@ const searchCustomer = () => {
   }, 500);
 };
 
-const selCustomer = (customer: ISearchedCustomer) => {
+const selCustomer = (customer: SearchedCustomer) => {
   selectedCustomer.value = customer;
   open.value = true;
 };
@@ -166,11 +166,11 @@ onBeforeUnmount(() => {
   });
 });
 
-const beforeEnterSearch: any = (el: HTMLElement) => {
+const beforeEnterSearch = (el: HTMLElement) => {
   el.style.opacity = "0";
   el.style.transform = "translateX(-64px)";
 };
-const enterSearch: any = (el: HTMLElement) => {
+const enterSearch = (el: HTMLElement) => {
   const index = el.dataset.index ? parseInt(el.dataset.index) : 0;
   gsap.to(el, {
     opacity: 1,
@@ -179,10 +179,10 @@ const enterSearch: any = (el: HTMLElement) => {
     delay: 0.1 * index,
   });
 };
-const beforeLeaveSearch: any = (el: HTMLElement) => {
+const beforeLeaveSearch = (el: HTMLElement) => {
   el.style.opacity = "1";
 };
-const leaveSearch: any = (el: HTMLElement) => {
+const leaveSearch = (el: HTMLElement) => {
   const index = el.dataset.index ? parseInt(el.dataset.index) : 0;
   gsap.to(el, {
     opacity: 0,

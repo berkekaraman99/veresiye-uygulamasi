@@ -24,6 +24,7 @@ const __dirname = import.meta.dirname;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
+    autoHideMenuBar: true,
     width: 1000,
     height: 800,
     webPreferences: {

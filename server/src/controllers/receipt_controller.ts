@@ -30,8 +30,8 @@ export const createReceipt = async (req: Request, res: Response, next: NextFunct
 
 export const fetchReceipts = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { userId, offset } = req.query;
-    const result = await fetchReceiptsService(userId as string, Number(offset));
+    const { user_id, offset } = req.query;
+    const result = await fetchReceiptsService(user_id as string, Number(offset));
 
     return res.status(result.status).json(BaseResponse.success(result.data, result.responseStatus));
   } catch (e: any) {

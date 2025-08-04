@@ -126,7 +126,7 @@
                 >
                 <span v-if="currentPage < customersPageCount - 3" class="paging-item">...</span>
                 <a
-                  v-if="customersPageCount !== 0"
+                  v-if="customersPageCount !== 0 && customersPageCount > 1"
                   @click="selectPage(customersPageCount)"
                   class="paging-item"
                   :class="[
@@ -177,14 +177,14 @@
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 import { useAppToast } from "@/composables/useAppToast";
 
 import type { ICustomer } from "@/models/customer_model";
-import router from "@/router";
-import type { ICustomers } from "@/models/customers_model";
+import type { Customers } from "@/models/customers_model";
 
 //STATES
+const router = useRouter();
 const { toastSuccess } = useAppToast();
 const customerStore = useCustomerStore();
 const isHaveAddress = ref(false);
@@ -304,7 +304,7 @@ onMounted(async () => {
   await customerStore
     .getCustomers(offset.value)
     .then(async () => {
-      customers.value.forEach((element: ICustomers) => {
+      customers.value.forEach((element: Customers) => {
         if (element.customer_address !== "") {
           isHaveAddress.value = true;
         }

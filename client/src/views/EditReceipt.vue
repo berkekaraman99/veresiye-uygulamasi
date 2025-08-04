@@ -75,13 +75,14 @@ const { statusCode, receipt } = storeToRefs(receiptStore);
 const customerName = ref("");
 const receiptForm = reactive({
   receipt_id: "",
-  price: "0",
+  price: 0,
   description: "",
   receipt_type: 0,
 });
 
 //FUNCTIONS
 const updateReceipt = async () => {
+  receiptForm.price = Number(receiptForm.price);
   await receiptStore.updateReceipt(receiptForm).then(() => {
     if (statusCode.value === ResponseStatus.SUCCESS) {
       toastSuccess({ title: "Fatura güncellendi!" });

@@ -1,8 +1,3 @@
-export interface ICustomerReceipt {
-  receipt_id: string;
-  description: string;
-  price: number;
-  receipt_type: number;
-  created_at?: string;
-  updated_at?: string;
-}
+import type { IReceipt } from "./receipt_model";
+
+export type CustomerReceipt = Omit<IReceipt, "customer_id" | "customer_name">;

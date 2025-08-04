@@ -52,7 +52,7 @@ const navigation = [
     <div
       v-if="width > 640"
       id="SideNav"
-      class="fixed z-0 transition-all duration-300 ease-in-out bg-[var(--sidebar-color)]/80 backdrop-blur-md ml-[6px] top-[72px] bottom-2 rounded-xl border-r border-b border-white dark:border-gray-600 shadow-lg"
+      class="fixed z-0 transition-all duration-300 ease-in-out bg-[var(--sidebar-color)]/80 backdrop-blur-md ml-[6px] top-[76px] bottom-2 rounded-xl border-r border-b border-white dark:border-gray-600 shadow-lg"
       :style="{ width: openSideNav ? '240px' : '70px' }"
     >
       <ul class="w-full" :class="[!openSideNav ? 'p-2' : 'px-2 pb-2 pt-[7px]']">

@@ -1,7 +1,3 @@
-export interface IDashboardCustomer {
-  customer_id: string;
-  customer_name: string;
-  customer_address?: string;
-  net_bakiye: number;
-  created_at: string;
-}
+import type { ICustomer } from "./customer_model";
+
+export type DashboardCustomer = Omit<ICustomer, "updated_at">;

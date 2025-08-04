@@ -3,24 +3,30 @@ import { defineStore } from "pinia";
 import { instance } from "@/utils/network_manager";
 import type { IReport } from "@/models/report_model";
 import type { IReceipt } from "@/models/receipt_model";
-import type { IDashboardReceipt } from "@/models/dashboard_receipt_model";
+import type { CreateReceipt } from "@/models/create_receipt_model";
+import type { UpdateReceipt } from "@/models/update_receipt_model";
+import type { DashboardReceipt } from "@/models/dashboard_receipt_model";
 
 export const useReceiptStore = defineStore("receipt", () => {
   //STATES
   const receipt = ref<IReceipt>();
   const receipts = ref<Array<IReceipt>>([]);
-  const lastReceipts = ref<Array<IDashboardReceipt>>([]);
+  const lastReceipts = ref<Array<DashboardReceipt>>([]);
   const debtReceivableResult = ref();
   const report = ref<Array<IReport>>([]);
   const statusCode = ref<number>(0);
 
   //ACTIONS
-  const createReceipt = async (receiptForm: any) => {
+  const createReceipt = async (receiptForm: CreateReceipt) => {
     try {
       const res = await instance.post("/receipt/create-receipt", receiptForm);
       statusCode.value = res.data.statusCode;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -32,8 +38,12 @@ export const useReceiptStore = defineStore("receipt", () => {
     try {
       const res = await instance.post("/receipt/delete-receipt", { receipt_id });
       statusCode.value = res.data.statusCode;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -41,12 +51,16 @@ export const useReceiptStore = defineStore("receipt", () => {
     }
   };
 
-  const updateReceipt = async (receiptForm: any) => {
+  const updateReceipt = async (receiptForm: UpdateReceipt) => {
     try {
       const res = await instance.post("/receipt/update-receipt", receiptForm);
       statusCode.value = res.data.statusCode;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -59,8 +73,12 @@ export const useReceiptStore = defineStore("receipt", () => {
       const res = await instance.get("/receipt/get-receipts");
       receipts.value = res.data.data;
       statusCode.value = res.data.statusCode;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -72,8 +90,12 @@ export const useReceiptStore = defineStore("receipt", () => {
     try {
       const res = await instance.get(`/receipt/get-receipt-by-id?receipt_id=${id}`);
       receipt.value = res.data.data;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -85,8 +107,12 @@ export const useReceiptStore = defineStore("receipt", () => {
     try {
       const res = await instance.get("/receipt/report");
       report.value = res.data.data;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -98,8 +124,12 @@ export const useReceiptStore = defineStore("receipt", () => {
     try {
       const url = instance.defaults.baseURL + "/receipt/download-report";
       return url;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -114,8 +144,12 @@ export const useReceiptStore = defineStore("receipt", () => {
 
       lastReceipts.value = res.data.data;
       // console.log(res.data);
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     }
   };
 
@@ -126,8 +160,12 @@ export const useReceiptStore = defineStore("receipt", () => {
 
       debtReceivableResult.value = res.data.data;
       console.log(res.data);
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     }
   };
 

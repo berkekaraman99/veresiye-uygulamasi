@@ -161,7 +161,7 @@
                     >
                     <span v-if="currentPage < customerReceiptsPageCount - 3" class="paging-item">...</span>
                     <a
-                      v-if="customerReceiptsPageCount !== 0"
+                      v-if="customerReceiptsPageCount !== 0 && customerReceiptsPageCount > 1"
                       @click="selectPage(customerReceiptsPageCount)"
                       class="paging-item"
                       :class="[
@@ -216,6 +216,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { reformatReceiptType } from "@/utils/receipt_helper";
 import { useAppToast } from "@/composables/useAppToast";
+import type { CustomerReceipt } from "@/models/customer_receipt_model";
 
 interface Props {
   customer_id: string;
@@ -252,14 +253,14 @@ const pageRange = computed(() => {
 
 const selectPage = async (no: number) => {
   offset.value = (no - 1) * 15;
-  await customerStore.getCustomerReceipts(customer.value.customer_id, offset.value);
+  await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
   currentPage.value = no;
 };
 
 const previousPage = async () => {
   if (currentPage.value > 1) {
     offset.value = offset.value - 15;
-    await customerStore.getCustomerReceipts(customer.value.customer_id, offset.value);
+    await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
     currentPage.value = currentPage.value - 1;
   }
 };
@@ -267,7 +268,7 @@ const previousPage = async () => {
 const nextPage = async () => {
   if (currentPage.value < customerReceiptsPageCount.value) {
     offset.value = offset.value + 15;
-    await customerStore.getCustomerReceipts(customer.value.customer_id, offset.value);
+    await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
     currentPage.value = currentPage.value + 1;
   }
 };
@@ -333,7 +334,7 @@ const sortTable = (n: number) => {
 onMounted(async () => {
   await customerStore.getCustomerById(props.customer_id);
   await customerStore.getCustomerReceipts(props.customer_id).then(() => {
-    customerReceipts.value.forEach((element: any) => {
+    customerReceipts.value.forEach((element: CustomerReceipt) => {
       if (element.description !== "") {
         isHaveDescription.value = true;
       }
