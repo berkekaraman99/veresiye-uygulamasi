@@ -10,20 +10,14 @@
           </h1>
         </div>
         <div class="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-900">
-          <FormKit
-            type="form"
-            id="report-form"
-            @submit="getReceiptReport"
-            :actions="false"
-            :config="{
-              classes: {
-                outer: '$reset mx-auto my-2',
-              },
-            }"
-          >
-            <FormKit type="submit" label="Raporu Oluştur" :wrapper-class="report_btn" />
-            <FormKit type="button" :wrapper-class="report_btn" @click="downloadReport"> Excel Formatında İndir </FormKit>
-          </FormKit>
+          <UFormField class="text-center mb-4">
+            <UButton color="secondary" class="py-3 px-6 font-bold" type="button" @click="getReceiptReport">Raporu Oluştur</UButton>
+          </UFormField>
+          <UFormField class="text-center">
+            <UButton color="secondary" variant="outline" class="py-3 px-6 font-bold" type="button" @click="downloadReport"
+              >Excel Formatında İndir</UButton
+            >
+          </UFormField>
         </div>
       </div>
     </div>
@@ -153,6 +147,4 @@ onBeforeUnmount(() => {
     report: [],
   });
 });
-
-const report_btn = "flex justify-center";
 </script>

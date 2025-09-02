@@ -4,7 +4,7 @@ export interface IReceipt {
   customer_name: string;
   created_at?: string;
   updated_at?: string;
-  price: number;
+  price: string;
   description: string;
   receipt_type: number;
 }

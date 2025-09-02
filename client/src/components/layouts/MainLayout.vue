@@ -57,10 +57,7 @@ const navigation = [
     >
       <ul class="w-full" :class="[!openSideNav ? 'p-2' : 'px-2 pb-2 pt-[7px]']">
         <RouterLink v-for="item in navigation" :key="item.name" :to="{ name: item.href }">
-          <li
-            class="flex items-center rounded-lg my-1.5 font-medium hover:bg-[var(--secondary)] text-[var(--text-light)] dark:text-[var(--text-light)] dark:hover:bg-[var(--primary-variant)]"
-            :class="[openSideNav ? ' justify-start px-3' : ' justify-center ps-4']"
-          >
+          <li class="sidebar-item-link" :class="[openSideNav ? ' justify-start px-3' : ' justify-center ps-4']">
             <div class="my-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg">
               <UIcon :name="item.icon" class="h-6 w-6" />
             </div>
@@ -76,6 +73,13 @@ const navigation = [
           </li>
         </RouterLink>
       </ul>
+      <!-- <UCollapsible class="flex flex-col gap-2 w-48">
+        <UButton label="Open" color="neutral" variant="subtle" trailing-icon="i-lucide-chevron-down" block />
+
+        <template #content>
+          <h1>Test</h1>
+        </template>
+      </UCollapsible> -->
     </div>
 
     <div
@@ -120,6 +124,7 @@ const navigation = [
       <div class="max-w-6xl mx-auto">
         <slot />
       </div>
+      <TheFooter />
     </main>
   </div>
 </template>
@@ -129,6 +134,10 @@ const navigation = [
 
 .sidebar-item {
   @apply flex items-center rounded-lg py-2 text-white font-medium hover:bg-[var(--primary)] px-3;
+}
+
+.sidebar-item-link {
+  @apply flex items-center rounded-lg my-1.5 font-medium hover:bg-[var(--secondary)] text-[var(--text-light)] dark:text-[var(--text-light)] dark:hover:bg-[var(--primary-variant)];
 }
 
 .sidebar-item-text {

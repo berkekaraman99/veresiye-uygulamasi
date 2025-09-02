@@ -12,7 +12,7 @@ export const useReceiptStore = defineStore("receipt", () => {
   const receipt = ref<IReceipt>();
   const receipts = ref<Array<IReceipt>>([]);
   const lastReceipts = ref<Array<DashboardReceipt>>([]);
-  const debtReceivableResult = ref();
+  const debtReceivableResult = ref<{ alacak: number; borc: number }>();
   const report = ref<Array<IReport>>([]);
   const statusCode = ref<number>(0);
 
@@ -158,7 +158,7 @@ export const useReceiptStore = defineStore("receipt", () => {
       const res = await instance.get("/receipt/get-debt-and-receivable");
       statusCode.value = res.data.statusCode;
 
-      debtReceivableResult.value = res.data.data;
+      debtReceivableResult.value = res.data.data[0];
       console.log(res.data);
     } catch (error: unknown) {
       if (error instanceof Error) {

@@ -192,15 +192,18 @@
     </div>
 
     <Teleport to="body">
-      <UModal v-model:open="open" :dismissible="false" title="Silme Onayı">
+      <UModal v-model:open="open" :dismissible="false">
+        <template #header>
+          <h3 class="text-xl font-bold">Silme Onayı</h3>
+        </template>
         <template #body>
           <p class="text-base">'Bu dekontu silmek istediğinize emin misiniz?</p>
           <p class="text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
         </template>
         <template #footer>
           <div class="w-full flex items-center justify-end">
-            <UButton color="neutral" variant="solid" @click="open = false">Vazgeç</UButton>
-            <UButton color="success" variant="solid" class="ms-2" @click="removeReceipt(selectedReceipt)"> Onayla </UButton>
+            <UButton color="neutral" variant="solid" class="rounded-full px-6 py-3 me-2" @click="open = false">Vazgeç</UButton>
+            <UButton color="success" variant="solid" class="rounded-full px-6 py-3" @click="removeReceipt(selectedReceipt)"> Onayla </UButton>
           </div>
         </template>
       </UModal>
@@ -252,14 +255,14 @@ const pageRange = computed(() => {
 });
 
 const selectPage = async (no: number) => {
-  offset.value = (no - 1) * 15;
+  offset.value = (no - 1) * 10;
   await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
   currentPage.value = no;
 };
 
 const previousPage = async () => {
   if (currentPage.value > 1) {
-    offset.value = offset.value - 15;
+    offset.value = offset.value - 10;
     await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
     currentPage.value = currentPage.value - 1;
   }
@@ -267,7 +270,7 @@ const previousPage = async () => {
 
 const nextPage = async () => {
   if (currentPage.value < customerReceiptsPageCount.value) {
-    offset.value = offset.value + 15;
+    offset.value = offset.value + 10;
     await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
     currentPage.value = currentPage.value + 1;
   }
@@ -348,9 +351,5 @@ onMounted(async () => {
 
 .paging-item {
   @apply relative cursor-pointer inline-flex items-center px-4 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:z-20 focus:outline-offset-0;
-}
-
-.dropdown-icon {
-  width: 24px;
 }
 </style>

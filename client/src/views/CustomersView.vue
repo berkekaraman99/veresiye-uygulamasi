@@ -156,6 +156,9 @@
 
     <Teleport to="body">
       <UModal v-model:open="open" :dismissible="false" title="Silme Onayı">
+        <template #header>
+          <h3 class="text-xl font-bold">Silme Onayı</h3>
+        </template>
         <template #body>
           <p class="text-base">'{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek istediğinizden emin misiniz?</p>
           <p class="text-red-700 dark:text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
@@ -163,7 +166,7 @@
         <template #footer>
           <div class="flex items-center justify-end w-full">
             <UButton color="neutral" variant="solid" class="rounded-full px-6 py-3 me-2" @click="open = false">Vazgeç</UButton>
-            <UButton color="success" variant="solid" class="rounded-full px-6 py-3" @click="removeCustomer(selectedCustomer!.customer_id)">
+            <UButton color="secondary" variant="solid" class="rounded-full px-6 py-3" @click="removeCustomer(selectedCustomer!.customer_id)">
               Onayla
             </UButton>
           </div>
@@ -338,8 +341,5 @@ onMounted(async () => {
 
 .paging-item {
   @apply relative cursor-pointer inline-flex items-center px-4 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:z-20 focus:outline-offset-0;
-}
-.dropdown-icon {
-  width: 24px;
 }
 </style>

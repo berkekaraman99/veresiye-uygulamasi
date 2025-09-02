@@ -96,8 +96,8 @@ export const getReceiptReportService = async () => {
   try {
     const [report] = await db.query<RowDataPacket[]>({
       sql: `SELECT c.customer_name as "Müşteri",
-          SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) AS "Alacak",
-          SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) AS "Borç",
+          SUM(CASE WHEN r.receipt_type = 1 AND r.is_deleted = 0 THEN price ELSE 0 END) AS "Alacak",
+          SUM(CASE WHEN r.receipt_type = 0 AND r.is_deleted = 0 THEN price ELSE 0 END) AS "Borç",
         SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) as "Net Bakiye",
         MAX(r.created_at) as "Son Fatura Tarihi"
         FROM receipts r INNER JOIN customers c ON c.customer_id = r.customer_id
@@ -114,8 +114,8 @@ export const downloadReportExcelServicce = async () => {
   try {
     const [report] = await db.query<RowDataPacket[]>({
       sql: `SELECT c.customer_name as "Müşteri",
-          SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) AS "Alacak",
-          SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) AS "Borç",
+          SUM(CASE WHEN r.receipt_type = 1 AND r.is_deleted = 0 THEN price ELSE 0 END) AS "Alacak",
+          SUM(CASE WHEN r.receipt_type = 0 AND r.is_deleted = 0 THEN price ELSE 0 END) AS "Borç",
         SUM(CASE WHEN r.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN r.receipt_type = 0 THEN price ELSE 0 END) as "Net Bakiye",
         MAX(r.created_at) as "Son Fatura Tarihi"
         FROM receipts r INNER JOIN customers c ON c.customer_id = r.customer_id

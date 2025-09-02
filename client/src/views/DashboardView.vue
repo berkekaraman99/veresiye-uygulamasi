@@ -205,7 +205,7 @@ const rOpen = ref(false);
 const { lastCustomers } = storeToRefs(customerStore);
 const { lastReceipts, debtReceivableResult } = storeToRefs(receiptStore);
 
-const data = ref([]);
+const data = ref<Array<number>>([]);
 let ctx: HTMLElement | null;
 
 const selCustomer = (customer: unknown) => {
@@ -243,22 +243,8 @@ onMounted(async () => {
   receiptStore.getLastReceipts();
   await receiptStore.getDebtAndReceivable().then(() => {
     ctx = document.getElementById("myChart");
-    data.value.push(debtReceivableResult.value[0].alacak, debtReceivableResult.value[0].borc);
-
-    // new Chart(ctx as ChartItem, {
-    //   type: "doughnut",
-    //   data: {
-    //     labels: ["Alacak", "Borç"],
-    //     datasets: [
-    //       {
-    //         label: "Result",
-    //         data: data.value,
-    //         backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
-    //         hoverOffset: 4,
-    //       },
-    //     ],
-    //   },
-    // });
+    data.value.push(debtReceivableResult.value!.alacak);
+    data.value.push(debtReceivableResult.value!.borc);
 
     new Chart(ctx as ChartItem, {
       type: "bar",

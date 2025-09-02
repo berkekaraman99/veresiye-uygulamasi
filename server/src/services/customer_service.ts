@@ -75,8 +75,8 @@ export const getCustomersService = async (offset: number) => {
             c.customer_name, 
             c.created_at, 
             c.customer_address, 
-            SUM(CASE WHEN r.receipt_type = 1 THEN r.price ELSE 0 END) - 
-            SUM(CASE WHEN r.receipt_type = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
+            SUM(CASE WHEN r.receipt_type = 1 AND r.is_deleted = 0 THEN r.price ELSE 0 END) - 
+            SUM(CASE WHEN r.receipt_type = 0 AND r.is_deleted = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
         FROM 
             customers AS c
         LEFT JOIN 
@@ -116,7 +116,7 @@ export const getCustomerByIdService = async (customer_id: string) => {
         C.created_at, 
         C.is_deleted, 
         C.customer_address, 
-        SUM(CASE WHEN R.receipt_type = 1 THEN price ELSE 0 END) - SUM(CASE WHEN R.receipt_type = 0 THEN price ELSE 0 END) as "net_bakiye"
+        SUM(CASE WHEN R.receipt_type = 1 AND r.is_deleted = 0 THEN price ELSE 0 END) - SUM(CASE WHEN R.receipt_type = 0 AND r.is_deleted = 0 THEN price ELSE 0 END) as "net_bakiye"
       FROM 
         customers AS C 
       LEFT JOIN 
@@ -144,7 +144,7 @@ export const getCustomerByNameService = async (customer_name: string) => {
         C.created_at, 
         C.is_deleted, 
         C.customer_address, 
-        COALESCE(SUM(CASE WHEN R.receipt_type = 1 THEN price ELSE 0 END)) - COALESCE(SUM(CASE WHEN R.receipt_type = 0 THEN price ELSE 0 END)) as "net_bakiye"
+        COALESCE(SUM(CASE WHEN R.receipt_type = 1 AND r.is_deleted = 0 THEN price ELSE 0 END)) - COALESCE(SUM(CASE WHEN R.receipt_type = 0 AND r.is_deleted = 0 THEN price ELSE 0 END)) as "net_bakiye"
       FROM 
         customers AS C 
       LEFT JOIN 
@@ -184,7 +184,7 @@ export const getCustomerReceiptsService = async (query: any) => {
     const [receipts] = await db.query<RowDataPacket[]>({
       sql: `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? ORDER BY created_at ASC LIMIT 10 OFFSET ${offset};
             SELECT COUNT(*) AS total FROM receipts WHERE is_deleted = 0 AND customer_id = ?;
-            SELECT CEIL(COUNT(*) / 15) AS totalPages FROM receipts WHERE is_deleted = 0 AND customer_id = ?;`,
+            SELECT CEIL(COUNT(*) / 10) AS totalPages FROM receipts WHERE is_deleted = 0 AND customer_id = ?;`,
       values: [customer_id, customer_id, customer_id],
     });
 
@@ -202,8 +202,8 @@ export const getLastCustomersService = async () => {
             c.customer_name, 
             c.created_at, 
             c.customer_address, 
-            SUM(CASE WHEN r.receipt_type = 1 THEN r.price ELSE 0 END) - 
-            SUM(CASE WHEN r.receipt_type = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
+            SUM(CASE WHEN r.receipt_type = 1 AND r.is_deleted = 0 THEN r.price ELSE 0 END) - 
+            SUM(CASE WHEN r.receipt_type = 0 AND r.is_deleted = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
         FROM 
             customers AS c
         LEFT JOIN 

@@ -9,30 +9,19 @@
         </h1>
       </div>
       <div class="bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-950">
-        <FormKit
-          type="form"
-          id="customer-updating"
-          @submit="updateCustomer"
-          :actions="false"
-          :config="{
-            classes: {
-              outer: 'mx-auto',
-            },
-          }"
-        >
-          <FormKit
-            type="text"
-            name="customer_name"
-            label="Müşteri Adı"
-            placeholder="Müşteri adı"
-            validation="required"
-            v-model="customerForm.customer_name"
-            autofocus
-          />
-          <FormKit type="text" name="customer_address" label="Müşteri Adresi" placeholder="Müşteri Adresi" v-model="customerForm.customer_address" />
+        <UForm :schema="schema" :state="state" @submit="updateCustomer" class="space-y-6 mx-4">
+          <UFormField label="Müşteri Adı" name="customer_name">
+            <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" placeholder="Müşteri Adı" v-model="state.customer_name" type="text" />
+          </UFormField>
 
-          <FormKit type="submit" label="Güncelle" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
-        </FormKit>
+          <UFormField label="Müşteri Adresi" name="customer_address">
+            <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" placeholder="Müşteri Adresi" v-model="state.customer_address" type="text" />
+          </UFormField>
+
+          <div class="text-center">
+            <UButton class="px-4 py-3 font-bold" color="secondary" :disabled="statusCode === 200" type="submit"> Müşteri Güncelle </UButton>
+          </div>
+        </UForm>
       </div>
     </div>
   </div>
@@ -42,10 +31,11 @@
 import { ResponseStatus } from "@/constants/response_status_enum";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
-import { onMounted, reactive } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAppToast } from "@/composables/useAppToast";
 import { useDuration } from "@/composables/useDuration";
+import { object, string } from "yup";
 
 interface Props {
   customer_id: string;
@@ -57,15 +47,22 @@ const props = defineProps<Props>();
 const router = useRouter();
 const customerStore = useCustomerStore();
 const { customer, statusCode } = storeToRefs(customerStore);
-const customerForm = reactive({
+
+const schema = object({
+  customer_name: string().required("Müşteri adı gereklidir."),
+  customer_address: string(),
+});
+
+const initialState = {
   customer_name: "",
   customer_address: "",
-});
+};
+const state = ref({ ...initialState });
 
 //FUNCTIONS
 const updateCustomer = async () => {
-  if (customerForm.customer_name !== "") {
-    await customerStore.updateCustomer({ ...customerForm, customer_id: props.customer_id }).then(() => {
+  if (state.value.customer_name !== "") {
+    await customerStore.updateCustomer({ ...state.value, customer_id: props.customer_id }).then(() => {
       if (statusCode.value === ResponseStatus.SUCCESS) {
         toastSuccess({ title: "Müşteri bilgileri güncellendi!" });
         setTimeout(() => {
@@ -83,8 +80,8 @@ const updateCustomer = async () => {
 
 onMounted(async () => {
   await customerStore.getCustomerById(props.customer_id).then(() => {
-    customerForm.customer_name = customer.value?.customer_name ?? "";
-    customerForm.customer_address = customer.value?.customer_address ?? "";
+    state.value.customer_name = customer.value?.customer_name ?? "";
+    state.value.customer_address = customer.value?.customer_address ?? "";
   });
 });
 </script>
