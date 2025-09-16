@@ -22,8 +22,12 @@
                   <td class="px-2 py-2">{{ customer?.customer_address }}</td>
                 </tr>
                 <tr>
-                  <th class="px-2 py-2">Müşterinin Eklenme Tarihi:</th>
+                  <th class="px-2 py-2">Müşteri Eklenme Tarihi:</th>
                   <td class="px-2 py-2">{{ customer?.created_at }}</td>
+                </tr>
+                <tr v-if="customer?.phone_number != null && customer?.phone_number !== ''">
+                  <th class="px-2 py-2">Müşteri Telefon Numarası:</th>
+                  <td class="px-2 py-2">{{ customer?.phone_number }}</td>
                 </tr>
                 <tr v-if="customer?.net_bakiye != null">
                   <th class="px-2 py-2">Güncel Bakiye:</th>
