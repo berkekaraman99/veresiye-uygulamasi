@@ -23,7 +23,7 @@
               />
             </UFormField>
 
-            <UFormField label="Müşteri Adı" name="customer_name">
+            <UFormField label="Müşteri Adı" name="customer_name" :required="true">
               <UInput
                 class="w-full"
                 :ui="{ base: 'h-12 text-lg' }"
@@ -38,7 +38,7 @@
               <option v-for="customer in searchedCustomers" :value="customer.customer_name" :key="customer.customer_id"></option>
             </datalist>
 
-            <UFormField label="Fiyat" name="price">
+            <UFormField label="Fiyat" name="price" :required="true">
               <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" v-model="state.price" type="number" />
             </UFormField>
 
@@ -67,11 +67,21 @@
         </div>
         <div
           v-if="customer"
-          class="bg-white dark:bg-slate-900 my-4 dark:text-white rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-950 xl:absolute xl:w-fit xl:-right-80 xl:top-1/6"
+          id="customer-popup"
+          :class="[isPopupHidden ? 'p-2' : 'p-6']"
+          class="bg-white dark:bg-slate-900 my-4 dark:text-white rounded-lg shadow-lg border-2 border-slate-200 dark:border-slate-950 fixed bottom-2 right-4"
         >
-          <h2 class="text-2xl font-medium mb-4">{{ customer.customer_name }}</h2>
-          <p v-if="customer.customer_address">{{ customer.customer_address }}</p>
-          <p>Bakiye: {{ customer.net_bakiye }}₺</p>
+          <div v-if="!isPopupHidden">
+            <div class="flex items-center mb-4 justify-between">
+              <h2 class="text-xl font-medium pe-4">{{ customer.customer_name }}</h2>
+              <UButton icon="fluent:dismiss-24-regular" variant="outline" color="neutral" @click="closePopup" />
+            </div>
+            <div class="text-sm">
+              <p v-if="customer.customer_address">{{ customer.customer_address }}</p>
+              <p>Bakiye: {{ customer.net_bakiye }}₺</p>
+            </div>
+          </div>
+          <div v-else><UButton icon="fluent:chevron-left-24-regular" size="xl" variant="outline" color="neutral" @click="closePopup" /></div>
         </div>
       </div>
     </div>
@@ -107,6 +117,7 @@ const customerName = ref();
 const today = new Date().toISOString().slice(0, 16);
 let timer: ReturnType<typeof setTimeout> | null = null;
 let timer2: ReturnType<typeof setTimeout> | null = null;
+const isPopupHidden = ref(false);
 
 const schema = object({
   customer_id: string(),
@@ -133,6 +144,10 @@ const receiptTypeReturn = computed(() => {
 const buttonDisabled = computed(() => {
   return !!(statusCode.value === 200 || state.value.price == "0" || state.value.price == "");
 });
+
+const closePopup = () => {
+  isPopupHidden.value = !isPopupHidden.value;
+};
 
 const createReceipt = async () => {
   if (customerName.value !== "") {

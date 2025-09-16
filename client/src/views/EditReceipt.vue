@@ -26,7 +26,7 @@
             <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" placeholder="Müşteri Adı" v-model="customerName" type="text" disabled />
           </UFormField>
 
-          <UFormField label="Fiyat" name="price">
+          <UFormField label="Fiyat" name="price" :required="true">
             <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" v-model="state.price" type="number" />
           </UFormField>
 
