@@ -95,6 +95,7 @@ export const useCustomerStore = defineStore("customer", () => {
     try {
       const res = await instance.get(`/customer/get-customer-by-id?customer_id=${customer_id}`);
       customer.value = res.data.data[0];
+      console.log(customer.value);
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error(error.message);

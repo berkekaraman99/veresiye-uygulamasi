@@ -5,4 +5,5 @@ export interface ICustomer {
   net_bakiye: number;
   created_at: string;
   updated_at?: string;
+  phone_number?: string;
 }

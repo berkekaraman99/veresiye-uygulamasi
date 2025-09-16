@@ -8,11 +8,12 @@ interface ICreateCustomer {
   customer_address?: string;
   customer_id: string;
   created_at: string;
+  phone_number: string;
 }
 
 export const createCustomerService = async (body: ICreateCustomer) => {
   try {
-    const { customer_name, customer_address, customer_id, created_at } = body;
+    const { customer_name, customer_address, customer_id, created_at, phone_number } = body;
     await createCustomerValidator
       .validate({
         customer_name,
@@ -29,8 +30,8 @@ export const createCustomerService = async (body: ICreateCustomer) => {
     }
 
     await db.query({
-      sql: "INSERT INTO customers (customer_id, customer_name, customer_address, created_at) VALUES (?, ?, ?, ?)",
-      values: [customer_id, customer_name, customer_address, created_at],
+      sql: "INSERT INTO customers (customer_id, customer_name, customer_address, created_at, phone_number) VALUES (?, ?, ?, ?, ?)",
+      values: [customer_id, customer_name, customer_address, created_at, phone_number],
     });
     return { status: 200, data: "Customer created successfully", responseStatus: ResponseStatus.SUCCESS };
   } catch (error: any) {
@@ -53,10 +54,10 @@ export const deleteCustomerService = async (customer_id: string) => {
 
 export const updateCustomerService = async (body: any) => {
   try {
-    const { customer_name, customer_address, customer_id } = body;
+    const { customer_name, customer_address, phone_number, customer_id } = body;
     await db.query<RowDataPacket[]>({
-      sql: "UPDATE customers SET customer_name = ?, customer_address = ? WHERE customer_id = ?",
-      values: [customer_name, customer_address, customer_id],
+      sql: "UPDATE customers SET customer_name = ?, customer_address = ?, phone_number = ? WHERE customer_id = ?",
+      values: [customer_name, customer_address, phone_number, customer_id],
     });
 
     return { status: 200, data: "Customer updated successfully!", responseStatus: ResponseStatus.SUCCESS };
@@ -115,7 +116,8 @@ export const getCustomerByIdService = async (customer_id: string) => {
         C.customer_name, 
         C.created_at, 
         C.is_deleted, 
-        C.customer_address, 
+        C.customer_address,
+        C.phone_number, 
         SUM(CASE WHEN R.receipt_type = 1 AND r.is_deleted = 0 THEN price ELSE 0 END) - SUM(CASE WHEN R.receipt_type = 0 AND r.is_deleted = 0 THEN price ELSE 0 END) as "net_bakiye"
       FROM 
         customers AS C 
@@ -144,6 +146,7 @@ export const getCustomerByNameService = async (customer_name: string) => {
         C.created_at, 
         C.is_deleted, 
         C.customer_address, 
+        C.phone_number,
         COALESCE(SUM(CASE WHEN R.receipt_type = 1 AND r.is_deleted = 0 THEN price ELSE 0 END)) - COALESCE(SUM(CASE WHEN R.receipt_type = 0 AND r.is_deleted = 0 THEN price ELSE 0 END)) as "net_bakiye"
       FROM 
         customers AS C 

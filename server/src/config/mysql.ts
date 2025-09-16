@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS customers (
   created_at varchar(255) DEFAULT NULL,
   updated_at varchar(255) DEFAULT NULL,
   is_deleted tinyint unsigned NOT NULL DEFAULT '0',
+  phone_number varchar(45) DEFAULT NULL,
   PRIMARY KEY (customer_id),
   UNIQUE KEY customer_id_UNIQUE (customer_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
