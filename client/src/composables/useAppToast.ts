@@ -20,5 +20,17 @@ export const useAppToast = () => {
         duration: 2000,
       });
     },
+    toastInfo: ({ title, description }: { title: string; description?: string }) => {
+      toast.add({
+        title: title,
+        description: description,
+        icon: "i-heroicons-exclamation-circle",
+        color: "info",
+        progress: false,
+      });
+    },
+    toastRemove: () => {
+      toast.clear();
+    },
   };
 };
