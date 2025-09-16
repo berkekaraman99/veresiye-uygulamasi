@@ -13,4 +13,16 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  build: {
+    sourcemap: false,
+    minify: "esbuild",
+    rollupOptions: {
+      output: {
+        manualChunks: () => "everything.js",
+      },
+    },
+    target: "es2015",
+    cssCodeSplit: false,
+    assetsInlineLimit: 100_000,
+  },
 });

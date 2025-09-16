@@ -10,8 +10,8 @@
               Müşteri Bilgileri
             </h1>
           </div>
-          <div class="p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg shadow-lg">
-            <table class="table w-full">
+          <div class="p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg">
+            <table>
               <tbody>
                 <tr>
                   <th class="px-2 py-2">Müşteri Adı:</th>
@@ -22,8 +22,12 @@
                   <td class="px-2 py-2">{{ customer?.customer_address }}</td>
                 </tr>
                 <tr>
-                  <th class="px-2 py-2">Müşterinin Eklenme Tarihi:</th>
+                  <th class="px-2 py-2">Müşteri Eklenme Tarihi:</th>
                   <td class="px-2 py-2">{{ customer?.created_at }}</td>
+                </tr>
+                <tr v-if="customer?.phone_number != null && customer?.phone_number !== ''">
+                  <th class="px-2 py-2">Müşteri Telefon Numarası:</th>
+                  <td class="px-2 py-2">{{ customer?.phone_number }}</td>
                 </tr>
                 <tr v-if="customer?.net_bakiye != null">
                   <th class="px-2 py-2">Güncel Bakiye:</th>
@@ -46,7 +50,7 @@
               Faturalar
             </h1>
           </div>
-          <table id="receiptsTable" class="table w-full shadow-sm">
+          <table id="receiptsTable">
             <thead class="text-xs bg-gradient-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] h-12">
               <tr>
                 <th scope="col" class="px-3 py-2" @click="sortTable(0)">Fatura No</th>
@@ -57,7 +61,7 @@
                 <th scope="col" class="px-3 py-2">İşlem</th>
               </tr>
             </thead>
-            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border dark:border-slate-950">
+            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950">
               <tr v-for="receipt in customerReceipts" v-bind:key="receipt.receipt_id">
                 <td class="px-3 py-2">{{ receipt.receipt_id }}</td>
                 <td class="px-3 py-2">{{ receipt.created_at?.slice(0, 10) }}</td>
@@ -130,7 +134,7 @@
                   <nav class="isolate inline-flex -space-x-px rounded-md shadow-2xs" aria-label="Pagination">
                     <a
                       @click="previousPage()"
-                      class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                      class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
                     >
                       <span class="sr-only">Previous</span>
                       <UIcon
@@ -142,39 +146,38 @@
                     <a
                       v-if="customerReceiptsPageCount !== 0"
                       @click="selectPage(1)"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-current dark:text-gray-200 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                      :class="{ 'font-bold underline bg-violet-600': currentPage == 1 }"
+                      class="paging-item"
+                      :class="[
+                        currentPage === 1 ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500' : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                      ]"
                       >1</a
                     >
-                    <span
-                      v-if="currentPage > 4"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-gray-900 dark:text-gray-200 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
-                      s
-                      >...</span
-                    >
+                    <span v-if="currentPage > 4" class="paging-item">...</span>
                     <a
                       v-for="page in pageRange"
                       :key="page"
                       @click="selectPage(page)"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-black dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                      :class="{ 'font-bold underline bg-violet-600': currentPage === page }"
+                      class="paging-item"
+                      :class="[
+                        currentPage === page ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500' : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                      ]"
                       >{{ page }}</a
                     >
-                    <span
-                      v-if="currentPage < customerReceiptsPageCount - 3"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-gray-900 dark:text-gray-200 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
-                      >...</span
-                    >
+                    <span v-if="currentPage < customerReceiptsPageCount - 3" class="paging-item">...</span>
                     <a
-                      v-if="customerReceiptsPageCount !== 0"
+                      v-if="customerReceiptsPageCount !== 0 && customerReceiptsPageCount > 1"
                       @click="selectPage(customerReceiptsPageCount)"
-                      class="relative cursor-pointer inline-flex items-center px-4 py-2 text-sm text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                      :class="{ 'font-bold underline bg-violet-600': currentPage == customerReceiptsPageCount }"
+                      class="paging-item"
+                      :class="[
+                        currentPage === customerReceiptsPageCount
+                          ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                      ]"
                       >{{ customerReceiptsPageCount }}</a
                     >
                     <a
                       @click="nextPage()"
-                      class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                      class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
                     >
                       <span class="sr-only">Next</span>
                       <UIcon
@@ -193,15 +196,18 @@
     </div>
 
     <Teleport to="body">
-      <UModal v-model:open="open" :dismissible="false" title="Silme Onayı">
+      <UModal v-model:open="open" :dismissible="false">
+        <template #header>
+          <h3 class="text-xl font-bold">Silme Onayı</h3>
+        </template>
         <template #body>
           <p class="text-base">'Bu dekontu silmek istediğinize emin misiniz?</p>
           <p class="text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
         </template>
         <template #footer>
           <div class="w-full flex items-center justify-end">
-            <UButton color="neutral" variant="solid" @click="open = false">Vazgeç</UButton>
-            <UButton color="success" variant="solid" class="ms-2" @click="removeReceipt(selectedReceipt)"> Onayla </UButton>
+            <UButton color="neutral" variant="solid" class="rounded-full px-6 py-3 me-2" @click="open = false">Vazgeç</UButton>
+            <UButton color="success" variant="solid" class="rounded-full px-6 py-3" @click="removeReceipt(selectedReceipt)"> Onayla </UButton>
           </div>
         </template>
       </UModal>
@@ -217,6 +223,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { reformatReceiptType } from "@/utils/receipt_helper";
 import { useAppToast } from "@/composables/useAppToast";
+import type { CustomerReceipt } from "@/models/customer_receipt_model";
 
 interface Props {
   customer_id: string;
@@ -252,23 +259,23 @@ const pageRange = computed(() => {
 });
 
 const selectPage = async (no: number) => {
-  offset.value = (no - 1) * 15;
-  await customerStore.getCustomerReceipts(customer.value.customer_id, offset.value);
+  offset.value = (no - 1) * 10;
+  await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
   currentPage.value = no;
 };
 
 const previousPage = async () => {
   if (currentPage.value > 1) {
-    offset.value = offset.value - 15;
-    await customerStore.getCustomerReceipts(customer.value.customer_id, offset.value);
+    offset.value = offset.value - 10;
+    await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
     currentPage.value = currentPage.value - 1;
   }
 };
 
 const nextPage = async () => {
   if (currentPage.value < customerReceiptsPageCount.value) {
-    offset.value = offset.value + 15;
-    await customerStore.getCustomerReceipts(customer.value.customer_id, offset.value);
+    offset.value = offset.value + 10;
+    await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
     currentPage.value = currentPage.value + 1;
   }
 };
@@ -334,7 +341,7 @@ const sortTable = (n: number) => {
 onMounted(async () => {
   await customerStore.getCustomerById(props.customer_id);
   await customerStore.getCustomerReceipts(props.customer_id).then(() => {
-    customerReceipts.value.forEach((element: any) => {
+    customerReceipts.value.forEach((element: CustomerReceipt) => {
       if (element.description !== "") {
         isHaveDescription.value = true;
       }
@@ -344,7 +351,9 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.dropdown-icon {
-  width: 24px;
+@reference "@/index.css";
+
+.paging-item {
+  @apply relative cursor-pointer inline-flex items-center px-4 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:z-20 focus:outline-offset-0;
 }
 </style>

@@ -10,20 +10,14 @@
           </h1>
         </div>
         <div class="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-900">
-          <FormKit
-            type="form"
-            id="report-form"
-            @submit="getReceiptReport"
-            :actions="false"
-            :config="{
-              classes: {
-                outer: '$reset mx-auto my-2',
-              },
-            }"
-          >
-            <FormKit type="submit" label="Raporu Oluştur" :wrapper-class="report_btn" />
-            <FormKit type="button" :wrapper-class="report_btn" @click="downloadReport"> Excel Formatında İndir </FormKit>
-          </FormKit>
+          <UFormField class="text-center mb-4">
+            <UButton color="secondary" class="py-3 px-6 font-bold" type="button" @click="getReceiptReport">Raporu Oluştur</UButton>
+          </UFormField>
+          <UFormField class="text-center">
+            <UButton color="secondary" variant="outline" class="py-3 px-6 font-bold" type="button" @click="downloadReport"
+              >Excel Formatında İndir</UButton
+            >
+          </UFormField>
         </div>
       </div>
     </div>
@@ -31,25 +25,25 @@
     <the-loading v-if="isLoading" />
     <div class="grid grid-cols-12 mt-8" v-if="report.length !== 0">
       <div class="col-span-12">
-        <div>
-          <div class="flex justify-center">
-            <h1
-              class="font-semibold text-2xl mb-6 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-            >
-              Rapor
-            </h1>
-          </div>
-          <table id="reportTable" class="table w-full shadow-md">
+        <div class="flex justify-center">
+          <h1
+            class="font-semibold text-2xl mb-6 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+          >
+            Rapor
+          </h1>
+        </div>
+        <div class="block h-[600px] overflow-y-auto">
+          <table id="reportTable" class="min-w-full">
             <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-light)]">
               <tr>
-                <th scope="col" class="px-3 py-4" @click="sortTable(0)">Müşteri</th>
-                <th scope="col" class="px-3 py-4" @click="sortTable(1)">Alacak</th>
-                <th scope="col" class="px-3 py-4" @click="sortTable(2)">Borç</th>
-                <th scope="col" class="px-3 py-4" @click="sortTable(3)">Son Fatura Tarihi</th>
-                <th scope="col" class="px-3 py-4" @click="sortTable(4)">Net Bakiye</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(0)">Müşteri</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(1)">Alacak</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(2)">Borç</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(3)">Son Fatura Tarihi</th>
+                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(4)">Net Bakiye</th>
               </tr>
             </thead>
-            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border dark:border-slate-950">
+            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950">
               <template v-for="customer in report" v-bind:key="customer['Müşteri']">
                 <tr v-if="customer['Net Bakiye'] !== 0" class="hover:bg-slate-100 dark:hover:bg-slate-800">
                   <td class="px-4 py-3">{{ customer["Müşteri"] }}</td>
@@ -153,6 +147,4 @@ onBeforeUnmount(() => {
     report: [],
   });
 });
-
-const report_btn = "flex justify-center";
 </script>

@@ -31,17 +31,17 @@ const items = [
   {
     name: "Alacak Ekle",
     href: { name: "create-receipt", params: { receipt_type: routerReceiptType.alacak } },
-    component: "heroicons:document-plus-solid",
+    component: "fluent:document-add-24-filled",
   },
   {
     name: "Ödeme Ekle",
     href: { name: "create-receipt", params: { receipt_type: routerReceiptType.borc } },
-    component: "heroicons:document-minus-solid",
+    component: "fluent:document-arrow-down-24-filled",
   },
-  { name: "Müşteri Ekle", href: { name: "create-customer" }, component: "heroicons:user-plus-solid" },
-  { name: "Müşteriler", href: { name: "customers" }, component: "heroicons:users-solid" },
-  { name: "Rapor Al", href: { name: "report" }, component: "heroicons:document-duplicate-solid" },
-  { name: "Müşteri Arama", href: { name: "search-customer" }, component: "heroicons:magnifying-glass-solid" },
+  { name: "Müşteri Ekle", href: { name: "create-customer" }, component: "fluent:person-add-24-filled" },
+  { name: "Müşteriler", href: { name: "customers" }, component: "fluent:people-24-filled" },
+  { name: "Rapor Al", href: { name: "report" }, component: "fluent:document-multiple-24-filled" },
+  { name: "Müşteri Arama", href: { name: "search-customer" }, component: "fluent:search-24-filled" },
 ];
 </script>
 
@@ -53,21 +53,16 @@ const items = [
 }
 
 .interactive-card {
-  @apply cursor-pointer flex border-2 border-slate-100 dark:border-slate-900 bg-slate-50 dark:bg-slate-900 hover:bg-white dark:hover:bg-slate-800 text-[var(--secondary)] hover:text-[var(--primary)] text-2xl;
-
-  margin: 0.5rem 0rem;
-  transition: 0.3s ease;
-  border-radius: 1rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  @apply cursor-pointer transition rounded-2xl shadow ease-in-out duration-300 flex border-2 my-2 border-slate-100 dark:border-slate-900 bg-slate-50 dark:bg-slate-900 hover:bg-white dark:hover:bg-slate-800 text-[var(--secondary)] hover:text-[var(--primary)] text-2xl;
 }
 
 .interactive-card:hover {
-  transform: translateY(-8px);
+  @apply translate-y-[-8px];
   box-shadow: 0px 4px 1rem -6px black;
 }
 
 .interactive-card:active {
-  transform: scale(95%);
+  @apply transform scale-95;
 }
 
 @media screen and (max-width: 768px) {

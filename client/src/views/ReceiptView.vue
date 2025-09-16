@@ -1,49 +1,50 @@
 <template>
-  <div class="grid grid-cols-12">
+  <div>
     <RouterLink class="create-btn-wrapper" :to="{ name: 'edit-receipt' }">
       <div class="bg-[var(--secondary)] hover:bg-[var(--secondary-variant)] create-btn text-white">
         <UIcon name="heroicons:pencil-solid" class="size-8" />
       </div>
     </RouterLink>
-
-    <div class="col-start-2 col-span-10">
-      <div>
-        <div class="flex justify-center">
-          <h1
-            class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-          >
-            Fatura Bilgileri
-          </h1>
-        </div>
-        <div class="p-4 bg-white dark:bg-slate-900 dark:text-white border-2 dark:border-slate-950 rounded-lg shadow-lg">
-          <table class="table w-full">
-            <tbody>
-              <tr>
-                <th class="px-2 py-2">Müşteri Adı:</th>
-                <td class="px-2 py-2">{{ receipt?.customer_name }}</td>
-              </tr>
-              <tr>
-                <th class="px-2 py-2">Fatura No:</th>
-                <td class="px-2 py-2">{{ receipt?.receipt_id }}</td>
-              </tr>
-              <tr>
-                <th class="px-2 py-2">Fatura Türü</th>
-                <td class="px-2 py-2">{{ reformatReceiptType(receipt?.receipt_type ?? 0) }}</td>
-              </tr>
-              <tr>
-                <th class="px-2 py-2">Fatura Oluşturulma Tarihi:</th>
-                <td class="px-2 py-2">{{ receipt?.created_at }}</td>
-              </tr>
-              <tr v-if="receipt?.description !== ''">
-                <th class="px-2 py-2">Açıklama:</th>
-                <td class="px-2 py-2">{{ receipt?.description }}</td>
-              </tr>
-              <tr>
-                <th class="px-2 py-2">Bakiye:</th>
-                <td class="px-2 py-2">{{ receipt?.price + " TL" }}</td>
-              </tr>
-            </tbody>
-          </table>
+    <div class="grid grid-cols-12">
+      <div class="col-start-2 col-span-10">
+        <div>
+          <div class="flex justify-center">
+            <h1
+              class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+            >
+              Fatura Bilgileri
+            </h1>
+          </div>
+          <div class="p-4 bg-white dark:bg-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-950 rounded-lg shadow-lg">
+            <table>
+              <tbody>
+                <tr>
+                  <th class="px-2 py-2">Müşteri Adı:</th>
+                  <td class="px-2 py-2">{{ receipt?.customer_name }}</td>
+                </tr>
+                <tr>
+                  <th class="px-2 py-2">Fatura No:</th>
+                  <td class="px-2 py-2">{{ receipt?.receipt_id }}</td>
+                </tr>
+                <tr>
+                  <th class="px-2 py-2">Fatura Türü</th>
+                  <td class="px-2 py-2">{{ reformatReceiptType(receipt?.receipt_type ?? 0) }}</td>
+                </tr>
+                <tr>
+                  <th class="px-2 py-2">Fatura Oluşturulma Tarihi:</th>
+                  <td class="px-2 py-2">{{ receipt?.created_at }}</td>
+                </tr>
+                <tr v-if="receipt?.description !== ''">
+                  <th class="px-2 py-2">Açıklama:</th>
+                  <td class="px-2 py-2">{{ receipt?.description }}</td>
+                </tr>
+                <tr>
+                  <th class="px-2 py-2">Bakiye:</th>
+                  <td class="px-2 py-2">{{ receipt?.price + " TL" }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

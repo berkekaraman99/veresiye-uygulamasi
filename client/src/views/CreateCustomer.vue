@@ -9,76 +9,81 @@
         </h1>
       </div>
       <div class="bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-950">
-        <FormKit
-          type="form"
-          id="customer-registration"
-          @submit="createCustomer"
-          :actions="false"
-          :config="{
-            classes: {
-              outer: 'mx-auto',
-            },
-          }"
-        >
-          <FormKit
-            type="text"
-            name="customer_name"
-            label="Müşteri Adı"
-            placeholder="Müşteri adı"
-            validation="required"
-            v-model="customerForm.customer_name"
-            autofocus
-          />
-          <FormKit type="text" name="customer_address" label="Müşteri Adresi" placeholder="Müşteri Adresi" v-model="customerForm.customer_address" />
+        <UForm :schema="schema" :state="state" @submit="createCustomer" class="space-y-6 mx-4">
+          <UFormField label="Müşteri Adı" name="customer_name" :required="true">
+            <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" placeholder="Müşteri Adı" v-model="state.customer_name" type="text" />
+          </UFormField>
 
-          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
-        </FormKit>
+          <UFormField label="Müşteri Adresi" name="customer_address">
+            <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" placeholder="Müşteri Adresi" v-model="state.customer_address" type="text" />
+          </UFormField>
+
+          <UFormField label="Telefon Numarası" name="phone_number">
+            <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" placeholder="Telefon Numarası" v-model="state.phone_number" type="text" />
+          </UFormField>
+
+          <div class="text-center">
+            <UButton class="px-4 py-3 font-bold" color="secondary" :disabled="statusCode === 200" type="submit"> Müşteri Oluştur </UButton>
+          </div>
+        </UForm>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
-import moment from "moment";
+import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
-import { useRouter } from "vue-router";
 import { ResponseStatus } from "@/constants/response_status_enum";
 import { useAppToast } from "@/composables/useAppToast";
+import { useDuration } from "@/composables/useDuration";
+import { object, string } from "yup";
 
 //STATES
 const { toastSuccess, toastError } = useAppToast();
-const router = useRouter();
+const { shortTime } = useDuration();
 const customerStore = useCustomerStore();
 const { statusCode } = storeToRefs(customerStore);
-const customerForm = reactive({
+const today = new Date().toISOString().slice(0, 16);
+
+const schema = object({
+  customer_name: string().required("Müşteri adı gereklidir."),
+  customer_address: string(),
+  phone_number: string(),
+});
+
+const initialState = {
   customer_name: "",
   customer_address: "",
-});
+  phone_number: "",
+};
+const state = ref({ ...initialState });
 
 //FUNCTIONS
 const createCustomer = async () => {
-  if (customerForm.customer_name !== "") {
+  if (state.value.customer_name !== "") {
     const customer_id = uuidv4();
-    const created_date = moment().format("YYYY-MM-DD HH:mm:ss");
+    const created_date = today;
 
     await customerStore
       .createCustomer({
-        ...customerForm,
+        ...state.value,
         customer_id: customer_id,
         created_at: created_date,
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {
           toastSuccess({ title: "Müşteri oluşturuldu!" });
+
+          Object.assign(state.value, initialState);
+
           setTimeout(() => {
             customerStore.$patch({
               statusCode: 0,
             });
-            router.push({ name: "customers" });
-          }, 2000);
+          }, shortTime);
         } else {
           toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
         }

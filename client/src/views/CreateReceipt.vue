@@ -8,63 +8,81 @@
           {{ receiptTypeReturn }}
         </h1>
       </div>
-      <div class="bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-950">
-        <FormKit
-          type="form"
-          id="receipt-form"
-          @submit="createReceipt"
-          :actions="false"
-          :config="{
-            classes: {
-              outer: 'mx-auto',
-            },
-          }"
+      <div class="relative">
+        <div class="bg-white dark:bg-slate-900 dark:text-white rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-950">
+          <UForm :schema="schema" :state="state" @submit="createReceipt" class="space-y-6 mx-4">
+            <UFormField label="Dekont Türü" name="receipt_type">
+              <USelect
+                class="w-full"
+                :ui="{ base: 'h-12 text-lg' }"
+                v-model="state.receipt_type"
+                :items="[
+                  { label: 'Ödeme', value: 0 },
+                  { label: 'Alacak', value: 1 },
+                ]"
+              />
+            </UFormField>
+
+            <UFormField label="Müşteri Adı" name="customer_name" :required="true">
+              <UInput
+                class="w-full"
+                :ui="{ base: 'h-12 text-lg' }"
+                placeholder="Müşteri Adı"
+                v-model="customerName"
+                type="text"
+                list="customers"
+                @input="searchCustomer"
+              />
+            </UFormField>
+            <datalist id="customers">
+              <option v-for="customer in searchedCustomers" :value="customer.customer_name" :key="customer.customer_id"></option>
+            </datalist>
+
+            <UFormField label="Fiyat" name="price" :required="true">
+              <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" v-model="state.price" type="number" />
+            </UFormField>
+
+            <UFormField label="Tarih" name="date">
+              <UInput
+                class="w-full"
+                :ui="{ base: 'h-12 text-lg' }"
+                @change="
+                  () => {
+                    console.log(state.created_at);
+                  }
+                "
+                v-model="state.created_at"
+                type="datetime-local"
+              />
+            </UFormField>
+
+            <UFormField label="Açıklama" name="description">
+              <UTextarea class="w-full" :ui="{ base: 'h-12 text-lg' }" v-model="state.description" />
+            </UFormField>
+
+            <div class="text-center">
+              <UButton class="px-4 py-3 font-bold" color="secondary" :disabled="buttonDisabled" type="submit"> Fatura Oluştur </UButton>
+            </div>
+          </UForm>
+        </div>
+        <div
+          v-if="customer"
+          id="customer-popup"
+          :class="[isPopupHidden ? 'p-2' : 'p-6']"
+          class="bg-white dark:bg-slate-900 my-4 dark:text-white rounded-lg shadow-lg border-2 border-slate-200 dark:border-slate-950 fixed bottom-2 right-4"
         >
-          <FormKit
-            type="select"
-            name="receipt_type"
-            label="Dekont Türü"
-            placeholder="Dekont türünü seçiniz"
-            :options="[
-              { label: 'Ödeme', value: 0 },
-              { label: 'Alacak', value: 1 },
-            ]"
-            v-model="receiptForm.receipt_type"
-          />
-
-          <FormKit
-            type="text"
-            name="customer_name"
-            label="Müşteri"
-            placeholder="Müşteri Adı"
-            validation="required"
-            v-model="customerName"
-            list="customers"
-            @input="searchCustomer()"
-            autofocus
-          />
-          <datalist id="customers">
-            <option v-for="customer in searchedCustomers" :value="customer.customer_name" :key="customer.customer_id"></option>
-          </datalist>
-
-          <!-- <select v-show="showSelect" ref="customerSelect" class="form-select" aria-label="Default select example">
-            <option v-for="customer in searchedCustomers" :value="customer.customer_id">{{ customer.customer_name }}</option>
-          </select> -->
-          <FormKit
-            type="number"
-            name="price"
-            label="Fiyat"
-            placeholder="Fiyat"
-            min="0"
-            step="0.1"
-            validation="required"
-            v-model="receiptForm.price"
-          />
-          <FormKit type="datetime-local" label="Tarih" :validation="'required|date_before' + maxDate" v-model="receiptForm.created_at" />
-          <FormKit type="textarea" name="description" label="Açıklama" placeholder="Açıklama" v-model="receiptForm.description" />
-
-          <FormKit type="submit" label="Oluştur" :disabled="statusCode === 200" :wrapper-class="{ 'flex justify-center': true }" />
-        </FormKit>
+          <div v-if="!isPopupHidden">
+            <div class="flex items-center mb-4 justify-between">
+              <h2 class="text-xl font-medium pe-4">{{ customer.customer_name }}</h2>
+              <UButton icon="fluent:dismiss-24-regular" variant="outline" color="neutral" @click="closePopup" />
+            </div>
+            <div class="text-sm">
+              <p v-if="customer.customer_address">{{ customer.customer_address }}</p>
+              <p>Bakiye: {{ customer.net_bakiye }}₺</p>
+            </div>
+          </div>
+          <div v-else><UButton icon="fluent:chevron-left-24-regular" size="xl" variant="outline" color="neutral" @click="closePopup" /></div>
+        </div>
       </div>
     </div>
   </div>
@@ -73,71 +91,93 @@
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { computed, reactive, ref } from "vue";
-import { useRouter } from "vue-router";
-import moment from "moment";
+import { computed, ref, onBeforeUnmount, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
 import { ResponseStatus } from "@/constants/response_status_enum";
 import { useAppToast } from "@/composables/useAppToast";
+import { useDuration } from "@/composables/useDuration";
+import { object, string, number } from "yup";
 
 interface Props {
   receipt_type?: number;
 }
 
-const receiptTypeReturn = computed(() => {
-  return receiptForm.receipt_type === 0 ? "Ödeme Dekontu" : "Alacak Dekontu";
-});
-
 //STATES
 const props = withDefaults(defineProps<Props>(), {
   receipt_type: 0,
 });
-const router = useRouter();
+const { toastSuccess, toastError } = useAppToast();
+const { shortTime } = useDuration();
 const customerStore = useCustomerStore();
 const receiptStore = useReceiptStore();
 const { statusCode } = storeToRefs(receiptStore);
-const { searchedCustomers } = storeToRefs(customerStore);
-const receiptForm = reactive({
+const { searchedCustomers, customer } = storeToRefs(customerStore);
+const customerName = ref();
+const today = new Date().toISOString().slice(0, 16);
+let timer: ReturnType<typeof setTimeout> | null = null;
+let timer2: ReturnType<typeof setTimeout> | null = null;
+const isPopupHidden = ref(false);
+
+const schema = object({
+  customer_id: string(),
+  price: string().required(),
+  description: string(),
+  created_at: string().required(),
+  receipt_type: number().required(),
+});
+
+const initialState = {
   customer_id: "",
   price: "0",
   description: "",
-  created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+  created_at: today,
   receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
-});
-let timer: any = null;
-const customerName = ref("");
-const latestDate = new Date();
-latestDate.setDate(latestDate.getDate() + 1);
-const maxDate = latestDate.toISOString().slice(0, 10);
-const { toastSuccess, toastError } = useAppToast();
+};
+const state = ref({ ...initialState });
 
 //FUNCTIONS
+const receiptTypeReturn = computed(() => {
+  return state.value.receipt_type === 0 ? "Ödeme Dekontu" : "Alacak Dekontu";
+});
+
+const buttonDisabled = computed(() => {
+  return !!(statusCode.value === 200 || state.value.price == "0" || state.value.price == "");
+});
+
+const closePopup = () => {
+  isPopupHidden.value = !isPopupHidden.value;
+};
+
 const createReceipt = async () => {
   if (customerName.value !== "") {
-    receiptForm.customer_id = searchedCustomers.value[0].customer_id;
+    state.value.customer_id = searchedCustomers.value[0].customer_id;
     const receipt_id = uuidv4();
-    // const created_date = moment().format("DD-MM-YYYY HH:mm");
 
     await receiptStore
       .createReceipt({
-        ...receiptForm,
+        ...state.value,
         receipt_id: receipt_id,
       })
       .then(() => {
         if (statusCode.value === ResponseStatus.SUCCESS) {
           toastSuccess({ title: "Dekont oluşturuldu!" });
+          Object.assign(state.value, initialState);
+          customerName.value = undefined;
           setTimeout(() => {
             receiptStore.$patch({
               statusCode: 0,
             });
-            router.push({ name: "home" });
-          }, 2000);
+          }, shortTime);
         } else {
           toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
         }
       });
   }
+};
+
+const getCustomerInfo = async () => {
+  await customerStore.getCustomerByName(customerName.value);
 };
 
 const searchCustomer = async () => {
@@ -148,4 +188,20 @@ const searchCustomer = async () => {
     await customerStore.searchCustomers(customerName.value);
   }, 500);
 };
+
+watch(customerName, () => {
+  if (timer2) {
+    clearTimeout(timer2);
+  }
+  let sleep = 500;
+  timer2 = setTimeout(() => {
+    getCustomerInfo();
+  }, sleep);
+});
+
+onBeforeUnmount(() => {
+  customerStore.$patch({
+    searchedCustomers: [],
+  });
+});
 </script>

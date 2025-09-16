@@ -4,7 +4,7 @@ import cors, { CorsOptions } from "cors";
 import bodyParser from "body-parser";
 
 // ROUTES
-import RootRoutes from "./api/_routes";
+import RootRoutes from "./routes/index";
 
 dotenv.config();
 const PORT = process.env.PORT || 3000;
@@ -19,10 +19,15 @@ const app: Express = express();
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/api", RootRoutes);
 
 app.listen(PORT, () => {
-  console.log(`[server]: Server is running on port`, PORT);
+  console.log(`[server]: Server is running on port `, PORT);
+});
+
+process.on("SIGTERM", () => {
+  console.log("Backend kapanıyor...");
+  process.exit(0);
 });

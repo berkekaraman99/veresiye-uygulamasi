@@ -1,29 +1,36 @@
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 import { instance } from "@/utils/network_manager";
 import type { ICustomer } from "@/models/customer_model";
-import type { ICustomerReceipt } from "@/models/customer_receipt_model";
-import type { ICustomers } from "@/models/customers_model";
-import type { ISearchedCustomer } from "@/models/searched_customer_model";
+import type { CreateCustomer } from "@/models/create_customer_model";
+import type { UpdateCustomer } from "@/models/update_customer_model";
+import type { Customers } from "@/models/customers_model";
+import type { DashboardCustomer } from "@/models/dashboard_customer_model";
+import type { SearchedCustomer } from "@/models/searched_customer_model";
+import type { CustomerReceipt } from "@/models/customer_receipt_model";
 
 export const useCustomerStore = defineStore("customer", () => {
   //STATES
   const customer = ref<ICustomer>();
-  const customers = ref<Array<ICustomers>>([]);
+  const customers = ref<Array<Customers>>([]);
+  const lastCustomers = ref<Array<DashboardCustomer>>([]);
   const statusCode = ref<number>(0);
-  const searchedCustomers = ref<Array<ISearchedCustomer>>([]);
-  const customerReceipts = ref<Array<ICustomerReceipt>>([]);
+  const searchedCustomers = ref<Array<SearchedCustomer>>([]);
+  const customerReceipts = ref<Array<CustomerReceipt>>([]);
   const customersPageCount = ref<number>(0);
   const customerReceiptsPageCount = ref<number>(0);
 
   //ACTIONS
-  const createCustomer = async (customerForm: any) => {
+  const createCustomer = async (customerForm: CreateCustomer) => {
     try {
       const res = await instance.post("/customer/create-customer", customerForm);
-      // console.log(res.data);
       statusCode.value = res.data.statusCode;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -34,10 +41,13 @@ export const useCustomerStore = defineStore("customer", () => {
   const deleteCustomer = async (customer_id: string) => {
     try {
       const res = await instance.post("/customer/delete-customer", { customer_id });
-      // console.log(res.data);
       statusCode.value = res.data.statusCode;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -45,13 +55,16 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
-  const updateCustomer = async (customer: any) => {
+  const updateCustomer = async (customer: UpdateCustomer) => {
     try {
       const res = await instance.post("/customer/update-customer", customer);
-      // console.log(res.data);
       statusCode.value = res.data.statusCode;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -63,11 +76,14 @@ export const useCustomerStore = defineStore("customer", () => {
     try {
       const res = await instance.get(`/customer/get-customers?offset=${offset}`);
       customers.value = res.data.data[0];
-      console.log(res);
       customersPageCount.value = res.data.data[2][0].totalPages;
       statusCode.value = res.data.statusCode;
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -78,10 +94,32 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomerById = async (customer_id: string) => {
     try {
       const res = await instance.get(`/customer/get-customer-by-id?customer_id=${customer_id}`);
-      console.log(res.data.data);
       customer.value = res.data.data[0];
-    } catch (error: any) {
-      console.error(error.response);
+      console.log(customer.value);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
+    }
+  };
+
+  const getCustomerByName = async (customer_name: string) => {
+    try {
+      const res = await instance.get(`/customer/get-customer-by-name?customer_name=${customer_name}`);
+      customer.value = res.data.data[0];
+      console.log(res.data);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -92,10 +130,13 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomersPageCount = async () => {
     try {
       const res = await instance.get(`/customer/get-customer-page-count`);
-      //   console.log(res.data);
       customersPageCount.value = Number(res.data.data[0].count);
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     }
   };
 
@@ -104,9 +145,12 @@ export const useCustomerStore = defineStore("customer", () => {
       const res = await instance.get(`/customer/search-customers?text=${searchValue}`);
       statusCode.value = res.data.statusCode;
       searchedCustomers.value = res.data.data;
-      console.log(res.data);
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -120,9 +164,12 @@ export const useCustomerStore = defineStore("customer", () => {
       statusCode.value = res.data.statusCode;
       customerReceipts.value = res.data.data[0];
       customerReceiptsPageCount.value = res.data.data[2][0].totalPages;
-      console.log(res.data.data);
-    } catch (error: any) {
-      console.error(error.response);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
     } finally {
       setTimeout(() => {
         statusCode.value = 0;
@@ -130,9 +177,26 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
+  const getLastCustomers = async () => {
+    try {
+      const res = await instance.get("/customer/get-last-customers");
+      statusCode.value = res.data.statusCode;
+
+      lastCustomers.value = res.data.data;
+      // console.log(res.data);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
+    }
+  };
+
   return {
     customer,
     customers,
+    lastCustomers,
     searchedCustomers,
     statusCode,
     customerReceipts,
@@ -143,8 +207,10 @@ export const useCustomerStore = defineStore("customer", () => {
     updateCustomer,
     getCustomers,
     getCustomerById,
+    getCustomerByName,
     searchCustomers,
     getCustomerReceipts,
     getCustomersPageCount,
+    getLastCustomers,
   };
 });
