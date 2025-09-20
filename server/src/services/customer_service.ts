@@ -107,6 +107,40 @@ export const getCustomersService = async (offset: number) => {
   }
 };
 
+export const getAllCustomersService = async () => {
+  try {
+    const [result] = await db.query<RowDataPacket[]>({
+      sql: `
+        SELECT 
+            c.customer_id, 
+            c.customer_name, 
+            SUM(CASE WHEN r.receipt_type = 1 AND r.is_deleted = 0 THEN r.price ELSE 0 END) - 
+            SUM(CASE WHEN r.receipt_type = 0 AND r.is_deleted = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
+        FROM 
+            customers AS c
+        LEFT JOIN 
+            receipts AS r 
+        ON 
+            c.customer_id = r.customer_id
+        WHERE 
+            c.is_deleted = 0
+        GROUP BY 
+            c.customer_id, c.customer_name, c.created_at, c.customer_address
+        ORDER BY 
+            c.customer_name
+        ;
+        SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0;
+        SELECT CEIL(COUNT(*) / 15) AS totalPages FROM customers;
+      `,
+      values: [],
+    });
+
+    return { status: 200, data: result, responseStatus: ResponseStatus.SUCCESS };
+  } catch (error: any) {
+    return { status: 500, data: error.message, responseStatus: error.statusCode };
+  }
+};
+
 export const getCustomerByIdService = async (customer_id: string) => {
   try {
     const [customer] = await db.query<RowDataPacket[]>({

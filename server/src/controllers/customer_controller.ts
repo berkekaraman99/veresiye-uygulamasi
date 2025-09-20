@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import {
   createCustomerService,
   deleteCustomerService,
+  getAllCustomersService,
   getCustomerByIdService,
   getCustomerByNameService,
   getCustomerReceiptsService,
@@ -48,6 +49,16 @@ export const getCustomers = async (req: Request, res: Response, next: NextFuncti
   try {
     const { offset } = req.query;
     const result = await getCustomersService(Number(offset));
+
+    res.status(result.status).json(BaseResponse.success(result.data, result.responseStatus));
+  } catch (error: any) {
+    res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+  }
+};
+
+export const getAllCustomers = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await getAllCustomersService();
 
     res.status(result.status).json(BaseResponse.success(result.data, result.responseStatus));
   } catch (error: any) {

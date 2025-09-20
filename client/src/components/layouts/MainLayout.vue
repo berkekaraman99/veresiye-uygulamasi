@@ -52,7 +52,7 @@ const navigation = [
     <div
       v-if="width > 640"
       id="SideNav"
-      class="fixed z-0 transition-all duration-300 ease-in-out bg-[var(--sidebar-color)]/80 backdrop-blur-md ml-[6px] top-[76px] bottom-2 rounded-xl border-r border-b border-white dark:border-gray-600 shadow-lg"
+      class="fixed z-0 transition-all duration-300 ease-in-out bg-[var(--sidebar-color)]/80 backdrop-blur-md ml-[6px] top-[76px] bottom-2 rounded-xl shadow-lg"
       :style="{ width: openSideNav ? '240px' : '70px' }"
     >
       <ul class="w-full" :class="[!openSideNav ? 'p-2' : 'px-2 pb-2 pt-[7px]']">
@@ -91,10 +91,10 @@ const navigation = [
     <div
       id="SideNavOverlay"
       ref="sideNavOverlay"
-      class="h-[100%] fixed z-50 bg-transparent backdrop-blur-lg border-r border-gray-200/30 w-[240px] animate__animated"
+      class="h-[100%] fixed z-50 bg-transparent backdrop-blur-lg border-r border-gray-200/10 w-[240px] animate__animated"
       :class="[openSideNavOverlay ? 'animate__slideInLeft animate__faster' : 'animate__slideOutLeft animate__faster']"
     >
-      <div class="flex items-center mx-2 my-3">
+      <div class="flex items-center mx-4 mb-3 mt-5">
         <button
           @click="isNavOverlay()"
           class="relative inline-flex items-center justify-center rounded-md p-2 text-[var(--text-light)] hover:bg-[var(--primary)] focus:outline-hidden focus:ring-2 focus:ring-inset focus:ring-white transition ease-in-out"
@@ -106,10 +106,21 @@ const navigation = [
       </div>
 
       <ul class="mt-4 w-full px-3 pb-2 pt-[7px]">
-        <RouterLink v-for="item in navigation" :key="item.name" :to="{ name: item.href }">
+        <RouterLink
+          v-for="item in navigation"
+          :key="item.name"
+          :to="{ name: item.href }"
+          @click="
+            () => {
+              openSideNavOverlay = false;
+            }
+          "
+        >
           <li class="sidebar-item group">
-            <div class="my-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-              <UIcon :name="item.icon" class="h-6 w-6 size-6 text-gray-600 group-hover:text-[var(--primary-variant)]" aria-hidden="true" />
+            <div
+              class="my-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 group-hover:bg-white dark:group-hover:bg-slate-900"
+            >
+              <UIcon :name="item.icon" class="h-6 w-6 size-6 text-gray-600 dark:text-gray-200" aria-hidden="true" />
             </div>
             <div class="font-semibold text-[14px] ms-4">{{ item.name }}</div>
           </li>

@@ -2,7 +2,7 @@
   <header
     class="text-[var(--text-light)] dark:text-[var(--text-light)] z-20 fixed top-0 left-0 right-0 sm:left-[6px] sm:right-[6px] sm:top-1 h-[64px]"
   >
-    <div class="px-2 sm:px-3.5 bg-[var(--navbar-color)]/80 border-r border-b border-white dark:border-gray-600 backdrop-blur-md sm:rounded-xl">
+    <div class="px-2 shadow-lg sm:px-3.5 bg-[var(--navbar-color)]/80 backdrop-blur-md sm:rounded-xl">
       <div class="relative flex h-16 items-center justify-between">
         <div class="flex items-center">
           <div class="inset-y-0 flex items-center" @click="emit('openSideNav')">
