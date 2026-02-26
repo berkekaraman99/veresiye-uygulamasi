@@ -1,7 +1,6 @@
 {
   "name": "veresiye-app",
   "version": "0.0.1",
-  "main": "main.js",
   "type": "module",
   "build": {
     "appId": "com.beko.veresiyeapp",
@@ -38,16 +37,12 @@
     "client": "cd client && npm run dev",
     "server": "cd server && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "electron": "electron .",
-    "build-client": "npm run build-only --prefix client",
-    "build": "electron-builder"
+    "build-client": "npm run build-only --prefix client"
   },
   "dependencies": {
     "concurrently": "^9.1.2"
   },
   "devDependencies": {
-    "electron": "^37.2.0",
-    "electron-builder": "^26.0.12",
     "ts-node": "^10.9.2"
   }
 }

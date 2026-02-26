@@ -36,7 +36,9 @@ export const useReceiptStore = defineStore("receipt", () => {
 
   const deleteReceipt = async (receipt_id: string) => {
     try {
-      const res = await instance.post("/receipt/delete-receipt", { receipt_id });
+      const res = await instance.post("/receipt/delete-receipt", {
+        receipt_id,
+      });
       statusCode.value = res.data.statusCode;
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -88,7 +90,9 @@ export const useReceiptStore = defineStore("receipt", () => {
 
   const getReceiptById = async (id: string) => {
     try {
-      const res = await instance.get(`/receipt/get-receipt-by-id?receipt_id=${id}`);
+      const res = await instance.get(
+        `/receipt/get-receipt-by-id?receipt_id=${id}`,
+      );
       receipt.value = res.data.data;
     } catch (error: unknown) {
       if (error instanceof Error) {
