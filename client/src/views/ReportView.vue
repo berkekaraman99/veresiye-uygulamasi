@@ -4,17 +4,19 @@
       <div class="col-start-4 col-span-6">
         <div class="flex items-center justify-center">
           <h1
-            class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
+            class="font-semibold text-4xl text-center mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
           >
             Rapor Görünümü
           </h1>
         </div>
         <div class="bg-white dark:bg-slate-900 rounded-lg shadow-lg p-8 border-2 border-slate-200 dark:border-slate-900">
           <UFormField class="text-center mb-4">
-            <UButton color="secondary" class="py-3 px-6 font-bold" type="button" @click="getReceiptReport">Raporu Oluştur</UButton>
+            <UButton color="neutral" variant="soft" class="py-3 px-6 font-bold gradient-button" type="button" @click="getReceiptReport"
+              >Raporu Oluştur</UButton
+            >
           </UFormField>
           <UFormField class="text-center">
-            <UButton color="secondary" variant="outline" class="py-3 px-6 font-bold" type="button" @click="downloadReport"
+            <UButton color="neutral" variant="soft" class="py-3 px-6 font-bold gradient-button" type="button" @click="downloadReport"
               >Excel Formatında İndir</UButton
             >
           </UFormField>
@@ -34,7 +36,7 @@
         </div>
         <div class="block h-[600px] overflow-y-auto">
           <table id="reportTable" class="min-w-full">
-            <thead class="text-xs bg-[var(--primary-variant)] text-[var(--text-light)]">
+            <thead class="text-xs bg-(--primary-variant) text-(--text-light)">
               <tr>
                 <th scope="col" class="px-3 py-4 sticky" @click="sortTable(0)">Müşteri</th>
                 <th scope="col" class="px-3 py-4 sticky" @click="sortTable(1)">Alacak</th>
@@ -45,7 +47,7 @@
             </thead>
             <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950">
               <template v-for="customer in report" v-bind:key="customer['Müşteri']">
-                <tr v-if="customer['Net Bakiye'] !== 0" class="hover:bg-slate-100 dark:hover:bg-slate-800">
+                <tr class="hover:bg-slate-100 dark:hover:bg-slate-800">
                   <td class="px-4 py-3">{{ customer["Müşteri"] }}</td>
                   <td class="px-3 py-3 text-center">{{ customer["Alacak"].toFixed(2) }}</td>
                   <td class="px-3 py-3 text-center">{{ customer["Borç"].toFixed(2) }}</td>

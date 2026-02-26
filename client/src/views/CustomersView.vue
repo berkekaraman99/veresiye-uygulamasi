@@ -27,21 +27,21 @@
       </div>
 
       <RouterLink v-if="!loading" class="create-btn-wrapper" :to="{ name: 'create-customer' }">
-        <div class="backdrop-blur-lg bg-[var(--secondary)]/85 hover:bg-[var(--secondary-variant)]/85 create-btn text-white">
+        <div class="backdrop-blur-lg bg-(--secondary)/85 hover:bg-(--secondary-variant)/85 create-btn text-white">
           <UIcon name="heroicons:user-plus-16-solid" class="size-8" />
         </div>
       </RouterLink>
       <the-loading v-if="loading"></the-loading>
 
       <CompactList
-        v-if="isCompactMode"
+        v-if="isCompactMode && !loading"
         :width="width"
         :compact-customers="compactCustomers"
         @remove-customer="removeCustomer"
         @select-customer="selCustomer"
       />
       <DetailedList
-        v-else
+        v-else-if="!isCompactMode && !loading"
         :is-have-address="isHaveAddress"
         :width="width"
         :detailed-customers="detailedCustomers"

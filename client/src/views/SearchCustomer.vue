@@ -74,7 +74,7 @@
               content: 'w-48 bg-transparent backdrop-blur-md',
             }"
           >
-            <UButton icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+            <UButton class="gradient-button" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
           </UDropdownMenu>
         </div>
       </TransitionGroup>

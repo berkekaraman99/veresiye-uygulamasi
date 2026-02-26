@@ -3,16 +3,17 @@
 @reference '@/index.css';
 
 :root {
-  --primary: #6200ee;
-  --primary-variant: #3700b3;
-  --secondary: #3f5eef;
-  --secondary-variant: #21327c;
+  --primary: #3c467b;
+  --primary-variant: #50589c;
+  --secondary: #636ccb;
+  --secondary-variant: #6e8cfb;
   --text-light: #ffffff;
   --text-dark: #000000;
   --dark-mode-color: #1f1f1f;
   --light-mode-color: #f9f9f9;
-  --sidebar-color: #21327c;
-  --navbar-color: #21327c;
+  --gradient-left: #2a7b9b;
+  --gradient-middle: #a757c7;
+  --gradient-right: #fc466b;
 }
 
 * {
@@ -68,4 +69,10 @@ td {
 
 table {
   @apply table-auto w-full;
+}
+
+.gradient-button {
+  background: linear-gradient(45deg, var(--gradient-left) 0%, var(--gradient-middle) 50%, var(--gradient-right) 100%);
+  cursor: pointer;
+  color: white;
 }

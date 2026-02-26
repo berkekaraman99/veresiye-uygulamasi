@@ -40,12 +40,36 @@ const sortTableItems = (n: number) => {
 
 <template>
   <table id="customersTable" class="mt-3">
-    <thead class="text-xs bg-linear-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] h-12">
+    <thead class="text-xs bg-linear-to-r from-(--primary-variant) to-(--primary) text-(--text-light) h-12">
       <tr>
         <th scope="col" class="px-3 py-2" @click="sortTableItems(0)">Müşteri</th>
         <th v-if="isHaveAddress" scope="col" class="px-3 py-2" @click="sortTableItems(1)">Müşteri Adresi</th>
-        <th scope="col" class="px-3 py-2" @click="sortTableItems(2)">Oluşturulma Tarihi</th>
-        <th scope="col" class="px-3 py-2" @click="sortTableItems(3)">Net Bakiye</th>
+        <th
+          scope="col"
+          class="px-3 py-2"
+          @click="
+            () => {
+              if (isHaveAddress) {
+                sortTableItems(2);
+              } else sortTableItems(1);
+            }
+          "
+        >
+          Oluşturulma Tarihi
+        </th>
+        <th
+          scope="col"
+          class="px-3 py-2"
+          @click="
+            () => {
+              if (isHaveAddress) {
+                sortTableItems(3);
+              } else sortTableItems(2);
+            }
+          "
+        >
+          Net Bakiye
+        </th>
         <th scope="col" class="px-3 py-2">İşlem</th>
       </tr>
     </thead>
@@ -96,7 +120,13 @@ const sortTableItems = (n: number) => {
               content: 'w-48 bg-transparent backdrop-blur-md',
             }"
           >
-            <UButton :label="width > 640 ? 'Seçenekler' : undefined" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+            <UButton
+              class="gradient-button"
+              :label="width > 640 ? 'Seçenekler' : undefined"
+              icon="fluent:chevron-down-32-filled"
+              color="neutral"
+              variant="outline"
+            />
           </UDropdownMenu>
         </td>
       </tr>

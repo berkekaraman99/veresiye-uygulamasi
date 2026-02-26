@@ -51,7 +51,7 @@
             </h1>
           </div>
           <table id="receiptsTable">
-            <thead class="text-xs bg-gradient-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] h-12">
+            <thead class="text-xs bg-linear-to-r from-(--primary-variant) to-(--primary) text-(--text-light) h-12">
               <tr>
                 <th scope="col" class="px-3 py-2" @click="sortTable(0)">Fatura No</th>
                 <th scope="col" class="px-3 py-2" @click="sortTable(1)">Tarih</th>
@@ -68,7 +68,7 @@
                 <td class="px-3 py-2">{{ reformatReceiptType(receipt.receipt_type) }}</td>
                 <td v-if="isHaveDescription" class="px-3 py-2">{{ receipt.description }}</td>
                 <td class="px-3 py-2">{{ receipt.price + " ₺" }}</td>
-                <td class="px-3 py-2">
+                <td class="px-3 py-2 text-center">
                   <UDropdownMenu
                     arrow
                     :content="{
@@ -105,10 +105,10 @@
                       ],
                     ]"
                     :ui="{
-                      content: 'w-48',
+                      content: 'w-48 bg-transparent backdrop-blur-md',
                     }"
                   >
-                    <UButton label="Seçenekler" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+                    <UButton label="Seçenekler" icon="fluent:chevron-down-32-filled" class="gradient-button" color="neutral" variant="outline" />
                   </UDropdownMenu>
                 </td>
               </tr>

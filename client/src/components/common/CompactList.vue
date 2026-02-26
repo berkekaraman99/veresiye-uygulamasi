@@ -56,7 +56,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="flex items-center justify-between bg-linear-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] py-3 px-4 mt-3 rounded-t-xl text-xs"
+    class="flex items-center justify-between bg-linear-to-r from-(--primary-variant) to-(--primary) text-(--text-light) py-3 px-4 mt-3 rounded-t-xl text-xs"
   >
     <div class="font-bold">Müşteri Adı</div>
     <div class="font-bold">İşlemler</div>
@@ -111,7 +111,13 @@ onBeforeUnmount(() => {
             content: 'w-48 bg-transparent backdrop-blur-md',
           }"
         >
-          <UButton :label="width > 640 ? 'Seçenekler' : undefined" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+          <UButton
+            :label="width > 640 ? 'Seçenekler' : undefined"
+            icon="fluent:chevron-down-32-filled"
+            color="neutral"
+            variant="soft"
+            class="gradient-button"
+          />
         </UDropdownMenu>
       </div>
     </li>

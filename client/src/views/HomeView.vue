@@ -53,11 +53,11 @@ const items = [
 }
 
 .interactive-card {
-  @apply cursor-pointer transition rounded-2xl shadow ease-in-out duration-300 flex border-2 my-2 border-slate-100 dark:border-slate-900 bg-slate-50 dark:bg-slate-900 hover:bg-white dark:hover:bg-slate-800 text-[var(--secondary)] hover:text-[var(--primary)] text-2xl;
+  @apply cursor-pointer transition rounded-2xl shadow ease-in-out duration-300 flex border-2 my-2 border-slate-100 dark:border-slate-900 bg-slate-50 dark:bg-slate-900 hover:bg-white dark:hover:bg-slate-800 text-(--text-dark) dark:text-(--text-light)  text-2xl;
 }
 
 .interactive-card:hover {
-  @apply translate-y-[-8px];
+  @apply -translate-y-2;
   box-shadow: 0px 4px 1rem -6px black;
 }
 
