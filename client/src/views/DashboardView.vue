@@ -6,7 +6,7 @@
       Dashboard
     </h1>
     <div class="grid grid-cols-12 gap-4">
-      <div class="bg-white dark:bg-slate-900 rounded-lg p-4 col-span-12 lg:col-span-6 min-h-[240px]">
+      <div class="bg-white dark:bg-slate-900 rounded-lg p-4 col-span-12 lg:col-span-6 min-h-60">
         <canvas id="myChart" class=""></canvas>
       </div>
       <!-- <div class="bg-white rounded-lg p-4 col-span-12 md:col-span-6">test2</div> -->
@@ -17,7 +17,7 @@
           Yeni Müşteriler
         </h3>
         <table>
-          <thead class="text-xs bg-linear-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] h-12">
+          <thead class="text-xs bg-linear-to-r from-(--primary-variant) to-(--primary) text-(--text-light) h-12">
             <tr>
               <th scope="col" class="px-3 py-2">Müşteri Adı</th>
               <th scope="col" class="px-3 py-2">Net Bakiye</th>
@@ -71,7 +71,7 @@
                     content: 'w-48 bg-transparent backdrop-blur-md',
                   }"
                 >
-                  <UButton icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+                  <UButton class="gradient-button" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
                 </UDropdownMenu>
               </td>
             </tr>
@@ -85,7 +85,7 @@
           Yeni Dekontlar
         </h3>
         <table>
-          <thead class="text-xs bg-linear-to-r from-[var(--primary-variant)] to-[var(--primary)] text-[var(--text-light)] h-12">
+          <thead class="text-xs bg-linear-to-r from-(--primary-variant) to-(--primary) text-(--text-light) h-12">
             <tr>
               <th scope="col" class="px-3 py-2">Müşteri Adı</th>
               <th scope="col" class="px-3 py-2">Dekont Türü</th>
@@ -138,10 +138,10 @@
                     ],
                   ]"
                   :ui="{
-                    content: 'w-48',
+                    content: 'w-48 bg-transparent backdrop-blur-md',
                   }"
                 >
-                  <UButton icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+                  <UButton class="gradient-button" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
                 </UDropdownMenu>
               </td>
             </tr>

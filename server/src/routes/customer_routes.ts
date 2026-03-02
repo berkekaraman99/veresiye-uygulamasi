@@ -6,6 +6,7 @@ import {
   getCustomerByName,
   getCustomerReceipts,
   getCustomers,
+  getAllCustomers,
   getLastCustomers,
   searchCustomers,
   updateCustomer,
@@ -17,6 +18,7 @@ CustomerRoutes.post("/create-customer", createCustomer);
 CustomerRoutes.post("/delete-customer", deleteCustomer);
 CustomerRoutes.post("/update-customer", updateCustomer);
 CustomerRoutes.get("/get-customers", getCustomers);
+CustomerRoutes.get("/get-all-customers", getAllCustomers);
 CustomerRoutes.get("/get-customer-by-id", getCustomerById);
 CustomerRoutes.get("/get-customer-by-name", getCustomerByName);
 CustomerRoutes.get("/search-customers", searchCustomers);

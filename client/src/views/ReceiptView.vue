@@ -1,7 +1,7 @@
 <template>
   <div>
     <RouterLink class="create-btn-wrapper" :to="{ name: 'edit-receipt' }">
-      <div class="bg-[var(--secondary)] hover:bg-[var(--secondary-variant)] create-btn text-white">
+      <div class="bg-(--secondary) hover:bg-(--secondary-variant) create-btn text-white">
         <UIcon name="heroicons:pencil-solid" class="size-8" />
       </div>
     </RouterLink>

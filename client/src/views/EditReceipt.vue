@@ -8,7 +8,7 @@
           Faturayı Düzenle
         </h1>
       </div>
-      <div class="bg-white dark:bg-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-950 rounded-lg shadow-lg p-8">
+      <div class="bg-white dark:bg-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-950 rounded-3xl shadow-lg px-4 py-8">
         <UForm :schema="schema" :state="state" @submit="updateReceipt" class="space-y-6 mx-4">
           <UFormField label="Dekont Türü" name="receipt_type">
             <USelect
@@ -23,19 +23,29 @@
           </UFormField>
 
           <UFormField label="Müşteri Adı" name="customer_name">
-            <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" placeholder="Müşteri Adı" v-model="customerName" type="text" disabled />
+            <UInput
+              class="w-full"
+              color="neutral"
+              :ui="{ base: 'h-12 text-lg' }"
+              placeholder="Müşteri Adı"
+              v-model="customerName"
+              type="text"
+              disabled
+            />
           </UFormField>
 
           <UFormField label="Fiyat" name="price" :required="true">
-            <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" v-model="state.price" type="number" />
+            <UInput class="w-full" color="neutral" :ui="{ base: 'h-12 text-lg' }" v-model="state.price" type="number" />
           </UFormField>
 
           <UFormField label="Açıklama" name="description">
-            <UTextarea class="w-full" :ui="{ base: 'h-12 text-lg' }" v-model="state.description" />
+            <UTextarea class="w-full" color="neutral" :ui="{ base: 'h-12 text-lg' }" v-model="state.description" />
           </UFormField>
 
           <div class="text-center">
-            <UButton class="px-4 py-3 font-bold" color="secondary" :disabled="buttonDisabled" type="submit"> Fatura Güncelle </UButton>
+            <UButton class="px-4 py-3 font-bold gradient-button" color="neutral" variant="soft" :disabled="buttonDisabled" type="submit">
+              Fatura Güncelle
+            </UButton>
           </div>
         </UForm>
       </div>

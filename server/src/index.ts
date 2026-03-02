@@ -7,9 +7,9 @@ import bodyParser from "body-parser";
 import RootRoutes from "./routes/index";
 
 dotenv.config();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 const corsOptions: CorsOptions = {
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: ["http://localhost:5173"],
   methods: "GET, POST, PUT, PATCH, DELETE",
   allowedHeaders: "Content-Type,Authorization",
   optionsSuccessStatus: 200,
@@ -25,9 +25,4 @@ app.use("/api", RootRoutes);
 
 app.listen(PORT, () => {
   console.log(`[server]: Server is running on port `, PORT);
-});
-
-process.on("SIGTERM", () => {
-  console.log("Backend kapanıyor...");
-  process.exit(0);
 });

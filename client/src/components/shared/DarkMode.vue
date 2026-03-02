@@ -24,6 +24,6 @@ const themeText = computed(() => {
 @reference "@/index.css";
 
 .theme-change-btn {
-  @apply p-2  rounded-lg cursor-pointer bg-[var(--light-color-mode)] hover:bg-[var(--secondary)];
+  @apply p-2  rounded-lg cursor-pointer bg-(--light-color-mode) hover:bg-(--secondary);
 }
 </style>

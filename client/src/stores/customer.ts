@@ -13,6 +13,8 @@ export const useCustomerStore = defineStore("customer", () => {
   //STATES
   const customer = ref<ICustomer>();
   const customers = ref<Array<Customers>>([]);
+  const detailedCustomers = ref<Array<Customers>>([]);
+  const compactCustomers = ref<Array<Customers>>([]);
   const lastCustomers = ref<Array<DashboardCustomer>>([]);
   const statusCode = ref<number>(0);
   const searchedCustomers = ref<Array<SearchedCustomer>>([]);
@@ -75,7 +77,25 @@ export const useCustomerStore = defineStore("customer", () => {
   const getCustomers = async (offset: number = 0) => {
     try {
       const res = await instance.get(`/customer/get-customers?offset=${offset}`);
-      customers.value = res.data.data[0];
+      detailedCustomers.value = res.data.data[0];
+      customersPageCount.value = +res.data.data[2][0].totalPages;
+      statusCode.value = res.data.statusCode;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Bilinmeyen bir hata oluştu");
+      }
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
+    }
+  };
+  const getAllCustomers = async () => {
+    try {
+      const res = await instance.get(`/customer/get-all-customers`);
+      compactCustomers.value = res.data.data[0];
       customersPageCount.value = res.data.data[2][0].totalPages;
       statusCode.value = res.data.statusCode;
     } catch (error: unknown) {
@@ -196,6 +216,8 @@ export const useCustomerStore = defineStore("customer", () => {
   return {
     customer,
     customers,
+    compactCustomers,
+    detailedCustomers,
     lastCustomers,
     searchedCustomers,
     statusCode,
@@ -206,6 +228,7 @@ export const useCustomerStore = defineStore("customer", () => {
     deleteCustomer,
     updateCustomer,
     getCustomers,
+    getAllCustomers,
     getCustomerById,
     getCustomerByName,
     searchCustomers,
