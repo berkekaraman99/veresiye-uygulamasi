@@ -36,8 +36,8 @@
   "scripts": {
     "client": "cd client && npm run dev",
     "server": "cd server && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build-client": "npm run build-only --prefix client"
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "build-client": "npm run build-only --prefix frontend"
   },
   "dependencies": {
     "concurrently": "^9.1.2"
