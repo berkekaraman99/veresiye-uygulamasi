@@ -154,6 +154,10 @@ export const useReceiptStore = defineStore("receipt", () => {
       } else {
         console.error("Bilinmeyen bir hata oluştu");
       }
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
     }
   };
 
@@ -170,6 +174,10 @@ export const useReceiptStore = defineStore("receipt", () => {
       } else {
         console.error("Bilinmeyen bir hata oluştu");
       }
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
     }
   };
 

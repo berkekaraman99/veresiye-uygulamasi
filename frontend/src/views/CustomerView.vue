@@ -1,16 +1,16 @@
 <template>
   <div>
     <div class="grid grid-cols-12">
-      <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-start-3 md:col-span-8 lg:col-start-4 lg:col-span-6">
+      <div
+        class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-start-3 md:col-span-8 lg:col-start-4 lg:col-span-6"
+      >
         <div>
           <div class="flex justify-center">
-            <h1
-              class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-            >
-              Müşteri Bilgileri
-            </h1>
+            <page-header heading-text="Müşteri Bilgileri" />
           </div>
-          <div class="p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg">
+          <div
+            class="p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg"
+          >
             <table>
               <tbody>
                 <tr>
@@ -25,13 +25,20 @@
                   <th class="px-2 py-2">Müşteri Eklenme Tarihi:</th>
                   <td class="px-2 py-2">{{ customer?.created_at }}</td>
                 </tr>
-                <tr v-if="customer?.phone_number != null && customer?.phone_number !== ''">
+                <tr
+                  v-if="
+                    customer?.phone_number != null &&
+                    customer?.phone_number !== ''
+                  "
+                >
                   <th class="px-2 py-2">Müşteri Telefon Numarası:</th>
                   <td class="px-2 py-2">{{ customer?.phone_number }}</td>
                 </tr>
                 <tr v-if="customer?.net_bakiye != null">
                   <th class="px-2 py-2">Güncel Bakiye:</th>
-                  <td class="px-2 py-2">{{ customer?.net_bakiye.toString() + " TL" }}</td>
+                  <td class="px-2 py-2">
+                    {{ customer?.net_bakiye.toString() + " TL" }}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -51,22 +58,50 @@
             </h1>
           </div>
           <table id="receiptsTable">
-            <thead class="text-xs bg-linear-to-r from-(--primary-variant) to-(--primary) text-(--text-light) h-12">
+            <thead
+              class="text-xs bg-linear-to-r from-(--primary) to-(--primary) text-(--text-light) h-12"
+            >
               <tr>
-                <th scope="col" class="px-3 py-2" @click="sortTable(0)">Fatura No</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(1)">Tarih</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(2)">Fatura Türü</th>
-                <th v-if="isHaveDescription" scope="col" class="px-3 py-2" @click="sortTable(3)">Açıklama</th>
-                <th scope="col" class="px-3 py-2" @click="sortTable(4)">Bakiye</th>
+                <th scope="col" class="px-3 py-2" @click="sortTable(0)">
+                  Fatura No
+                </th>
+                <th scope="col" class="px-3 py-2" @click="sortTable(1)">
+                  Tarih
+                </th>
+                <th scope="col" class="px-3 py-2" @click="sortTable(2)">
+                  Fatura Türü
+                </th>
+                <th
+                  v-if="isHaveDescription"
+                  scope="col"
+                  class="px-3 py-2"
+                  @click="sortTable(3)"
+                >
+                  Açıklama
+                </th>
+                <th scope="col" class="px-3 py-2" @click="sortTable(4)">
+                  Bakiye
+                </th>
                 <th scope="col" class="px-3 py-2">İşlem</th>
               </tr>
             </thead>
-            <tbody class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950">
-              <tr v-for="receipt in customerReceipts" v-bind:key="receipt.receipt_id">
+            <tbody
+              class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950"
+            >
+              <tr
+                v-for="receipt in customerReceipts"
+                v-bind:key="receipt.receipt_id"
+              >
                 <td class="px-3 py-2">{{ receipt.receipt_id }}</td>
-                <td class="px-3 py-2">{{ receipt.created_at?.slice(0, 10) }}</td>
-                <td class="px-3 py-2">{{ reformatReceiptType(receipt.receipt_type) }}</td>
-                <td v-if="isHaveDescription" class="px-3 py-2">{{ receipt.description }}</td>
+                <td class="px-3 py-2">
+                  {{ receipt.created_at?.slice(0, 10) }}
+                </td>
+                <td class="px-3 py-2">
+                  {{ reformatReceiptType(receipt.receipt_type) }}
+                </td>
+                <td v-if="isHaveDescription" class="px-3 py-2">
+                  {{ receipt.description }}
+                </td>
                 <td class="px-3 py-2">{{ receipt.price + " ₺" }}</td>
                 <td class="px-3 py-2 text-center">
                   <UDropdownMenu
@@ -82,14 +117,20 @@
                           label: 'Fatura Bilgileri',
                           icon: 'fluent:receipt-32-regular',
                           onSelect() {
-                            router.push({ name: 'receipt', params: { receipt_id: receipt.receipt_id } });
+                            router.push({
+                              name: 'receipt',
+                              params: { receipt_id: receipt.receipt_id },
+                            });
                           },
                         },
                         {
                           label: 'Faturayı Güncelle',
                           icon: 'fluent:edit-32-filled',
                           onSelect() {
-                            router.push({ name: 'edit-receipt', params: { receipt_id: receipt.receipt_id } });
+                            router.push({
+                              name: 'edit-receipt',
+                              params: { receipt_id: receipt.receipt_id },
+                            });
                           },
                         },
                       ],
@@ -105,18 +146,30 @@
                       ],
                     ]"
                     :ui="{
-                      content: 'w-48 bg-transparent backdrop-blur-md',
+                      content:
+                        'w-48 bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-md',
                     }"
                   >
-                    <UButton label="Seçenekler" icon="fluent:chevron-down-32-filled" class="gradient-button" color="neutral" variant="outline" />
+                    <UButton
+                      label="Seçenekler"
+                      icon="fluent:chevron-down-32-filled"
+                      class="gradient-button"
+                      color="neutral"
+                      variant="outline"
+                    />
                   </UDropdownMenu>
                 </td>
               </tr>
             </tbody>
           </table>
 
-          <div v-if="customerReceiptsPageCount !== 0" class="block sm:flex items-center justify-between sm:justify-center my-3">
-            <div class="bg-white dark:bg-slate-900 p-2 rounded-md border-gray-200 dark:border-slate-700 border shadow-sm">
+          <div
+            v-if="customerReceiptsPageCount !== 0"
+            class="block sm:flex items-center justify-between sm:justify-center my-3"
+          >
+            <div
+              class="bg-white dark:bg-slate-900 p-2 rounded-md border-gray-200 dark:border-slate-700 border shadow-sm"
+            >
               <div class="flex flex-1 justify-between sm:hidden">
                 <a
                   @click="previousPage()"
@@ -129,9 +182,14 @@
                   >Next</a
                 >
               </div>
-              <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-center">
+              <div
+                class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-center"
+              >
                 <div>
-                  <nav class="isolate inline-flex -space-x-px rounded-md shadow-2xs" aria-label="Pagination">
+                  <nav
+                    class="isolate inline-flex -space-x-px rounded-md shadow-2xs"
+                    aria-label="Pagination"
+                  >
                     <a
                       @click="previousPage()"
                       class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 dark:text-gray-500 ring-1 ring-inset ring-gray-300 dark:ring-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0"
@@ -140,7 +198,10 @@
                       <UIcon
                         name="heroicons:chevron-left-16-solid"
                         class="h-5 w-5 size-6"
-                        :class="{ 'text-black dark:text-white': currentPage !== customerReceiptsPageCount }"
+                        :class="{
+                          'text-black dark:text-white':
+                            currentPage !== customerReceiptsPageCount,
+                        }"
                       />
                     </a>
                     <a
@@ -148,7 +209,9 @@
                       @click="selectPage(1)"
                       class="paging-item"
                       :class="[
-                        currentPage === 1 ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500' : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                        currentPage === 1
+                          ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700',
                       ]"
                       >1</a
                     >
@@ -159,13 +222,22 @@
                       @click="selectPage(page)"
                       class="paging-item"
                       :class="[
-                        currentPage === page ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500' : 'hover:bg-gray-50 dark:hover:bg-gray-700',
+                        currentPage === page
+                          ? 'font-bold  text-white bg-violet-600 hover:bg-violet-500'
+                          : 'hover:bg-gray-50 dark:hover:bg-gray-700',
                       ]"
                       >{{ page }}</a
                     >
-                    <span v-if="currentPage < customerReceiptsPageCount - 3" class="paging-item">...</span>
+                    <span
+                      v-if="currentPage < customerReceiptsPageCount - 3"
+                      class="paging-item"
+                      >...</span
+                    >
                     <a
-                      v-if="customerReceiptsPageCount !== 0 && customerReceiptsPageCount > 1"
+                      v-if="
+                        customerReceiptsPageCount !== 0 &&
+                        customerReceiptsPageCount > 1
+                      "
                       @click="selectPage(customerReceiptsPageCount)"
                       class="paging-item"
                       :class="[
@@ -183,7 +255,10 @@
                       <UIcon
                         name="heroicons:chevron-right-16-solid"
                         class="h-5 w-5 size-6"
-                        :class="{ 'text-black dark:text-white': currentPage !== customerReceiptsPageCount }"
+                        :class="{
+                          'text-black dark:text-white':
+                            currentPage !== customerReceiptsPageCount,
+                        }"
                       />
                     </a>
                   </nav>
@@ -206,8 +281,25 @@
         </template>
         <template #footer>
           <div class="w-full flex items-center justify-end">
-            <UButton color="neutral" variant="solid" class="rounded-full px-6 py-3 me-2" @click="open = false">Vazgeç</UButton>
-            <UButton color="success" variant="solid" class="rounded-full px-6 py-3" @click="removeReceipt(selectedReceipt)"> Onayla </UButton>
+            <UButton
+              color="neutral"
+              variant="solid"
+              class="rounded-full px-6 py-3 me-2"
+              @click="
+                () => {
+                  open = false;
+                }
+              "
+              >Vazgeç</UButton
+            >
+            <UButton
+              color="success"
+              variant="solid"
+              class="rounded-full px-6 py-3"
+              @click="removeReceipt(selectedReceipt)"
+            >
+              Onayla
+            </UButton>
           </div>
         </template>
       </UModal>
@@ -235,7 +327,8 @@ const props = defineProps<Props>();
 const isHaveDescription = ref<boolean>(false);
 const receiptStore = useReceiptStore();
 const customerStore = useCustomerStore();
-const { customer, customerReceipts, customerReceiptsPageCount } = storeToRefs(customerStore);
+const { customer, customerReceipts, customerReceiptsPageCount } =
+  storeToRefs(customerStore);
 const selectedReceipt = ref<string>("");
 const currentPage = ref<number>(1);
 const offset = ref(0);
@@ -251,7 +344,10 @@ const selReceipt = (receipt_id: string) => {
 const pageRange = computed(() => {
   const range = [];
   const start = Math.max(2, currentPage.value - 2);
-  const end = Math.min(customerReceiptsPageCount.value - 1, currentPage.value + 2);
+  const end = Math.min(
+    customerReceiptsPageCount.value - 1,
+    currentPage.value + 2,
+  );
   for (let index = start; index <= end; index++) {
     range.push(index);
   }
@@ -260,14 +356,20 @@ const pageRange = computed(() => {
 
 const selectPage = async (no: number) => {
   offset.value = (no - 1) * 10;
-  await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
+  await customerStore.getCustomerReceipts(
+    customer.value!.customer_id,
+    offset.value,
+  );
   currentPage.value = no;
 };
 
 const previousPage = async () => {
   if (currentPage.value > 1) {
     offset.value = offset.value - 10;
-    await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
+    await customerStore.getCustomerReceipts(
+      customer.value!.customer_id,
+      offset.value,
+    );
     currentPage.value = currentPage.value - 1;
   }
 };
@@ -275,7 +377,10 @@ const previousPage = async () => {
 const nextPage = async () => {
   if (currentPage.value < customerReceiptsPageCount.value) {
     offset.value = offset.value + 10;
-    await customerStore.getCustomerReceipts(customer.value!.customer_id, offset.value);
+    await customerStore.getCustomerReceipts(
+      customer.value!.customer_id,
+      offset.value,
+    );
     currentPage.value = currentPage.value + 1;
   }
 };

@@ -25,7 +25,10 @@ export const useCustomerStore = defineStore("customer", () => {
   //ACTIONS
   const createCustomer = async (customerForm: CreateCustomer) => {
     try {
-      const res = await instance.post("/customer/create-customer", customerForm);
+      const res = await instance.post(
+        "/customer/create-customer",
+        customerForm,
+      );
       statusCode.value = res.data.statusCode;
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -42,7 +45,9 @@ export const useCustomerStore = defineStore("customer", () => {
 
   const deleteCustomer = async (customer_id: string) => {
     try {
-      const res = await instance.post("/customer/delete-customer", { customer_id });
+      const res = await instance.post("/customer/delete-customer", {
+        customer_id,
+      });
       statusCode.value = res.data.statusCode;
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -76,7 +81,9 @@ export const useCustomerStore = defineStore("customer", () => {
 
   const getCustomers = async (offset: number = 0) => {
     try {
-      const res = await instance.get(`/customer/get-customers?offset=${offset}`);
+      const res = await instance.get(
+        `/customer/get-customers?offset=${offset}`,
+      );
       detailedCustomers.value = res.data.data[0];
       customersPageCount.value = +res.data.data[2][0].totalPages;
       statusCode.value = res.data.statusCode;
@@ -113,7 +120,9 @@ export const useCustomerStore = defineStore("customer", () => {
 
   const getCustomerById = async (customer_id: string) => {
     try {
-      const res = await instance.get(`/customer/get-customer-by-id?customer_id=${customer_id}`);
+      const res = await instance.get(
+        `/customer/get-customer-by-id?customer_id=${customer_id}`,
+      );
       customer.value = res.data.data[0];
       console.log(customer.value);
     } catch (error: unknown) {
@@ -131,7 +140,9 @@ export const useCustomerStore = defineStore("customer", () => {
 
   const getCustomerByName = async (customer_name: string) => {
     try {
-      const res = await instance.get(`/customer/get-customer-by-name?customer_name=${customer_name}`);
+      const res = await instance.get(
+        `/customer/get-customer-by-name?customer_name=${customer_name}`,
+      );
       customer.value = res.data.data[0];
       console.log(res.data);
     } catch (error: unknown) {
@@ -157,12 +168,18 @@ export const useCustomerStore = defineStore("customer", () => {
       } else {
         console.error("Bilinmeyen bir hata oluştu");
       }
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
     }
   };
 
   const searchCustomers = async (searchValue: string) => {
     try {
-      const res = await instance.get(`/customer/search-customers?text=${searchValue}`);
+      const res = await instance.get(
+        `/customer/search-customers?text=${searchValue}`,
+      );
       statusCode.value = res.data.statusCode;
       searchedCustomers.value = res.data.data;
     } catch (error: unknown) {
@@ -178,9 +195,14 @@ export const useCustomerStore = defineStore("customer", () => {
     }
   };
 
-  const getCustomerReceipts = async (customer_id: string, offset: number = 0) => {
+  const getCustomerReceipts = async (
+    customer_id: string,
+    offset: number = 0,
+  ) => {
     try {
-      const res = await instance.get(`/customer/get-customer-receipts?customer_id=${customer_id}&offset=${offset}`);
+      const res = await instance.get(
+        `/customer/get-customer-receipts?customer_id=${customer_id}&offset=${offset}`,
+      );
       statusCode.value = res.data.statusCode;
       customerReceipts.value = res.data.data[0];
       customerReceiptsPageCount.value = res.data.data[2][0].totalPages;
@@ -210,6 +232,10 @@ export const useCustomerStore = defineStore("customer", () => {
       } else {
         console.error("Bilinmeyen bir hata oluştu");
       }
+    } finally {
+      setTimeout(() => {
+        statusCode.value = 0;
+      }, 2000);
     }
   };
 

@@ -1,15 +1,20 @@
 <template>
   <div class="grid grid-cols-12">
-    <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6">
+    <div
+      class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6"
+    >
       <div class="flex justify-center">
-        <h1
-          class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-        >
-          Faturayı Düzenle
-        </h1>
+        <page-header heading-text="Faturayı Düzenle" />
       </div>
-      <div class="bg-white dark:bg-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-950 rounded-3xl shadow-lg px-4 py-8">
-        <UForm :schema="schema" :state="state" @submit="updateReceipt" class="space-y-6 mx-4">
+      <div
+        class="bg-white dark:bg-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-950 rounded-3xl shadow-lg px-4 py-8"
+      >
+        <UForm
+          :schema="schema"
+          :state="state"
+          @submit="updateReceipt"
+          class="space-y-6 mx-4"
+        >
           <UFormField label="Dekont Türü" name="receipt_type">
             <USelect
               class="w-full"
@@ -35,15 +40,32 @@
           </UFormField>
 
           <UFormField label="Fiyat" name="price" :required="true">
-            <UInput class="w-full" color="neutral" :ui="{ base: 'h-12 text-lg' }" v-model="state.price" type="number" />
+            <UInput
+              class="w-full"
+              color="neutral"
+              :ui="{ base: 'h-12 text-lg' }"
+              v-model="state.price"
+              type="number"
+            />
           </UFormField>
 
           <UFormField label="Açıklama" name="description">
-            <UTextarea class="w-full" color="neutral" :ui="{ base: 'h-12 text-lg' }" v-model="state.description" />
+            <UTextarea
+              class="w-full"
+              color="neutral"
+              :ui="{ base: 'h-12 text-lg' }"
+              v-model="state.description"
+            />
           </UFormField>
 
           <div class="text-center">
-            <UButton class="px-4 py-3 font-bold gradient-button" color="neutral" variant="soft" :disabled="buttonDisabled" type="submit">
+            <UButton
+              class="px-4 py-3 font-bold gradient-button"
+              color="neutral"
+              variant="soft"
+              :disabled="buttonDisabled"
+              type="submit"
+            >
               Fatura Güncelle
             </UButton>
           </div>
@@ -92,7 +114,11 @@ const initialState = {
 const state = ref({ ...initialState });
 
 const buttonDisabled = computed(() => {
-  return !!(statusCode.value === 200 || state.value.price == "0" || state.value.price == "");
+  return !!(
+    statusCode.value === 200 ||
+    state.value.price == "0" ||
+    state.value.price == ""
+  );
 });
 
 //FUNCTIONS
@@ -107,7 +133,9 @@ const updateReceipt = async () => {
         router.push({ name: "home" });
       }, shortTime);
     } else {
-      toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
+      toastError({
+        title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+      });
     }
   });
 };

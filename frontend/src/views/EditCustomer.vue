@@ -1,15 +1,20 @@
 <template>
   <div class="grid grid-cols-12">
-    <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6">
+    <div
+      class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6"
+    >
       <div class="flex justify-center">
-        <h1
-          class="font-semibold text-3xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-        >
-          Müşteri Güncelleme
-        </h1>
+        <page-header heading-text="Müşteri Güncelleme" />
       </div>
-      <div class="bg-white dark:bg-slate-900 dark:text-white rounded-3xl shadow-lg px-4 py-8 border-2 border-slate-200 dark:border-slate-950">
-        <UForm :schema="schema" :state="state" @submit="updateCustomer" class="space-y-6 mx-4">
+      <div
+        class="bg-white dark:bg-slate-900 dark:text-white rounded-3xl shadow-lg px-4 py-8 border-2 border-slate-200 dark:border-slate-950"
+      >
+        <UForm
+          :schema="schema"
+          :state="state"
+          @submit="updateCustomer"
+          class="space-y-6 mx-4"
+        >
           <UFormField label="Müşteri Adı" name="customer_name" :required="true">
             <UInput
               class="w-full"
@@ -44,7 +49,13 @@
           </UFormField>
 
           <div class="text-center">
-            <UButton class="px-4 py-3 font-bold gradient-button" color="neutral" variant="soft" :disabled="statusCode === 200" type="submit">
+            <UButton
+              class="px-4 py-3 font-bold gradient-button"
+              color="neutral"
+              variant="soft"
+              :disabled="statusCode === 200"
+              type="submit"
+            >
               Müşteri Güncelle
             </UButton>
           </div>
@@ -91,19 +102,23 @@ const state = ref({ ...initialState });
 //FUNCTIONS
 const updateCustomer = async () => {
   if (state.value.customer_name !== "") {
-    await customerStore.updateCustomer({ ...state.value, customer_id: props.customer_id }).then(() => {
-      if (statusCode.value === ResponseStatus.SUCCESS) {
-        toastSuccess({ title: "Müşteri bilgileri güncellendi!" });
-        setTimeout(() => {
-          customerStore.$patch({
-            statusCode: 0,
+    await customerStore
+      .updateCustomer({ ...state.value, customer_id: props.customer_id })
+      .then(() => {
+        if (statusCode.value === ResponseStatus.SUCCESS) {
+          toastSuccess({ title: "Müşteri bilgileri güncellendi!" });
+          setTimeout(() => {
+            customerStore.$patch({
+              statusCode: 0,
+            });
+            router.push({ name: "customers" });
+          }, shortTime);
+        } else {
+          toastError({
+            title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
           });
-          router.push({ name: "customers" });
-        }, shortTime);
-      } else {
-        toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
-      }
-    });
+        }
+      });
   }
 };
 

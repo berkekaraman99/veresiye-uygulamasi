@@ -1,16 +1,21 @@
 <template>
   <div class="grid grid-cols-12">
-    <div class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6">
+    <div
+      class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6"
+    >
       <div class="flex items-center justify-center">
-        <h1
-          class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-        >
-          {{ receiptTypeReturn }}
-        </h1>
+        <page-header :heading-text="receiptTypeReturn" />
       </div>
       <div class="relative">
-        <div class="bg-white dark:bg-slate-900 dark:text-white rounded-3xl shadow-lg px-4 py-8 border-2 border-slate-200 dark:border-slate-950">
-          <UForm :schema="schema" :state="state" @submit="createReceipt" class="space-y-6 mx-4">
+        <div
+          class="bg-white dark:bg-slate-900 dark:text-white rounded-3xl shadow-lg px-4 py-8 border-2 border-slate-200 dark:border-slate-950"
+        >
+          <UForm
+            :schema="schema"
+            :state="state"
+            @submit="createReceipt"
+            class="space-y-6 mx-4"
+          >
             <UFormField label="Dekont Türü" name="receipt_type">
               <USelect
                 class="w-full"
@@ -23,7 +28,11 @@
               />
             </UFormField>
 
-            <UFormField label="Müşteri Adı" name="customer_name" :required="true">
+            <UFormField
+              label="Müşteri Adı"
+              name="customer_name"
+              :required="true"
+            >
               <UInput
                 class="w-full"
                 :ui="{ base: 'h-12 text-lg' }"
@@ -36,11 +45,21 @@
               />
             </UFormField>
             <datalist id="customers">
-              <option v-for="customer in searchedCustomers" :value="customer.customer_name" :key="customer.customer_id"></option>
+              <option
+                v-for="customer in searchedCustomers"
+                :value="customer.customer_name"
+                :key="customer.customer_id"
+              ></option>
             </datalist>
 
             <UFormField label="Fiyat" name="price" :required="true">
-              <UInput class="w-full" :ui="{ base: 'h-12 text-lg' }" v-model="state.price" type="number" color="neutral" />
+              <UInput
+                class="w-full"
+                :ui="{ base: 'h-12 text-lg' }"
+                v-model="state.price"
+                type="number"
+                color="neutral"
+              />
             </UFormField>
 
             <UFormField label="Tarih" name="date">
@@ -59,11 +78,22 @@
             </UFormField>
 
             <UFormField label="Açıklama" name="description">
-              <UTextarea class="w-full" :ui="{ base: 'h-12 text-lg' }" color="neutral" v-model="state.description" />
+              <UTextarea
+                class="w-full"
+                :ui="{ base: 'h-12 text-lg' }"
+                color="neutral"
+                v-model="state.description"
+              />
             </UFormField>
 
             <div class="text-center">
-              <UButton class="px-4 py-3 font-bold gradient-button" color="neutral" variant="soft" :disabled="buttonDisabled" type="submit">
+              <UButton
+                class="px-4 py-3 font-bold gradient-button"
+                color="neutral"
+                variant="soft"
+                :disabled="buttonDisabled"
+                type="submit"
+              >
                 Fatura Oluştur
               </UButton>
             </div>
@@ -77,15 +107,32 @@
         >
           <div v-if="!isPopupHidden">
             <div class="flex items-center mb-4 justify-between">
-              <h2 class="text-xl font-medium pe-4">{{ customer.customer_name }}</h2>
-              <UButton icon="fluent:dismiss-24-regular" variant="outline" color="neutral" @click="closePopup" />
+              <h2 class="text-xl font-medium pe-4">
+                {{ customer.customer_name }}
+              </h2>
+              <UButton
+                icon="fluent:dismiss-24-regular"
+                variant="outline"
+                color="neutral"
+                @click="closePopup"
+              />
             </div>
             <div class="text-sm">
-              <p v-if="customer.customer_address">{{ customer.customer_address }}</p>
+              <p v-if="customer.customer_address">
+                {{ customer.customer_address }}
+              </p>
               <p>Bakiye: {{ customer.net_bakiye }}₺</p>
             </div>
           </div>
-          <div v-else><UButton icon="fluent:chevron-left-24-regular" size="xl" variant="outline" color="neutral" @click="closePopup" /></div>
+          <div v-else>
+            <UButton
+              icon="fluent:chevron-left-24-regular"
+              size="xl"
+              variant="outline"
+              color="neutral"
+              @click="closePopup"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -146,7 +193,11 @@ const receiptTypeReturn = computed(() => {
 });
 
 const buttonDisabled = computed(() => {
-  return !!(statusCode.value === 200 || state.value.price == "0" || state.value.price == "");
+  return !!(
+    statusCode.value === 200 ||
+    state.value.price == "0" ||
+    state.value.price == ""
+  );
 });
 
 const closePopup = () => {
@@ -174,7 +225,9 @@ const createReceipt = async () => {
             });
           }, shortTime);
         } else {
-          toastError({ title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz" });
+          toastError({
+            title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+          });
         }
       });
   }

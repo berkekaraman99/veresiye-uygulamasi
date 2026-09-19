@@ -1,11 +1,7 @@
 <template>
   <div>
     <div class="flex items-center justify-center">
-      <h1
-        class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-      >
-        Arama
-      </h1>
+      <page-header heading-text="Arama" />
     </div>
     <div class="flex items-center justify-center mb-6">
       <div class="relative max-w-lg w-full">
@@ -18,21 +14,26 @@
           size="xl"
           icon="fluent:search-24-filled"
           class="w-full"
-          :ui="{ base: 'py-4 rounded-full' }"
+          :ui="{ base: 'py-4 rounded-lg' }"
           v-model="searchQuery"
           @input="searchCustomer()"
         />
       </div>
     </div>
 
-    <h3 class="text-center fs-5 fw-light my-5" v-if="isSearched && searchedCustomers.length === 0">Müşteri bulunamadı</h3>
     <div class="grid grid-cols-12 h-full">
-      <TransitionGroup appear name="fade">
+      <div
+        class="my-5 p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 shadow-md rounded-lg col-span-12 md:col-start-3 md:col-span-8"
+        v-if="isSearched && searchedCustomers.length === 0"
+      >
+        <h3 class="text-center fs-5 fw-light">Müşteri bulunamadı</h3>
+      </div>
+
+      <TransitionGroup appear name="searchItem">
         <div
-          class="flex items-center justify-between border-2 border-slate-200 dark:border-slate-950 dark:text-white bg-white dark:bg-slate-900 my-2 p-4 shadow-md rounded-lg col-span-12 md:col-start-3 md:col-span-8"
-          v-for="(customer, index) in searchedCustomers"
-          v-bind:key="customer.customer_id"
-          :data-index="index"
+          class="relative flex items-center justify-between border border-slate-200 dark:border-slate-950 dark:text-white bg-white dark:bg-slate-900 my-2 p-4 shadow-md rounded-lg col-span-12 md:col-start-3 md:col-span-8"
+          v-for="customer in searchedCustomers"
+          :key="customer.customer_id"
         >
           <div class="text-sm font-semibold">{{ customer.customer_name }}</div>
           <UDropdownMenu
@@ -48,14 +49,20 @@
                   label: 'Müşteri Bilgileri',
                   icon: 'fluent:person-32-regular',
                   onSelect() {
-                    router.push({ name: 'customer', params: { customer_id: customer.customer_id } });
+                    router.push({
+                      name: 'customer',
+                      params: { customer_id: customer.customer_id },
+                    });
                   },
                 },
                 {
                   label: 'Müşteri Güncelle',
                   icon: 'fluent:edit-32-filled',
                   onSelect() {
-                    router.push({ name: 'edit-customer', params: { customer_id: customer.customer_id } });
+                    router.push({
+                      name: 'edit-customer',
+                      params: { customer_id: customer.customer_id },
+                    });
                   },
                 },
               ],
@@ -71,10 +78,16 @@
               ],
             ]"
             :ui="{
-              content: 'w-48 bg-transparent backdrop-blur-md',
+              content:
+                'w-48 bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-md',
             }"
           >
-            <UButton class="gradient-button" icon="fluent:chevron-down-32-filled" color="neutral" variant="outline" />
+            <UButton
+              class="gradient-button"
+              icon="fluent:chevron-down-32-filled"
+              color="neutral"
+              variant="outline"
+            />
           </UDropdownMenu>
         </div>
       </TransitionGroup>
@@ -83,13 +96,34 @@
     <Teleport to="body">
       <UModal v-model:open="open" :dismissible="false" title="Silme Onayı">
         <template #body>
-          <p class="text-base">'{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek istediğinizden emin misiniz?</p>
-          <p class="text-red-700 dark:text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
+          <p class="text-base">
+            '{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek
+            istediğinizden emin misiniz?
+          </p>
+          <p class="text-red-700 dark:text-red-600 italic text-sm">
+            Bu işlem geri alınamaz
+          </p>
         </template>
         <template #footer>
           <div class="w-full flex items-center justify-end-safe">
-            <UButton color="neutral" variant="solid" @click="open = false">Vazgeç</UButton>
-            <UButton color="success" variant="solid" class="ms-2" @click="removeCustomer(selectedCustomer!.customer_id)"> Onayla </UButton>
+            <UButton
+              color="neutral"
+              variant="solid"
+              @click="
+                () => {
+                  open = false;
+                }
+              "
+              >Vazgeç</UButton
+            >
+            <UButton
+              color="success"
+              variant="solid"
+              class="ms-2"
+              @click="removeCustomer(selectedCustomer!.customer_id)"
+            >
+              Onayla
+            </UButton>
           </div>
         </template>
       </UModal>
@@ -169,14 +203,19 @@ onBeforeUnmount(() => {
   border-radius: 0.5rem;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.3s ease;
+.searchItem-move,
+.searchItem-enter-active,
+.searchItem-leave-active {
+  transition: all 0.5s ease;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  transform: translateX(20px);
+.searchItem-enter-from,
+.searchItem-leave-to {
   opacity: 0;
+  transform: translateX(30px);
+}
+
+.searchItem-leave-active {
+  position: absolute;
 }
 </style>

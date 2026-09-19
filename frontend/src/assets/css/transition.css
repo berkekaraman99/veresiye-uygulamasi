@@ -18,7 +18,19 @@
 .routeAnimation-enter-from,
 .routeAnimation-leave-to {
   opacity: 0;
-  filter: blur(1rem);
+  filter: blur(0.5rem);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s;
+  transform: translateY(0px);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(1rem);
 }
 
 .themeIcon-enter-active,
@@ -33,7 +45,7 @@
 
 .fadeTransition-enter-active,
 .fadeTransition-leave-active {
-  transition: 0.2 ease;
+  transition: all 0.2;
 }
 
 .fadeTransition-enter-from,

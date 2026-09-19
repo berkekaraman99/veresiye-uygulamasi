@@ -1,23 +1,27 @@
 <template>
   <div class="grid grid-cols-12">
     <div class="col-span-12 md:col-start-2 md:col-span-10">
-      <h1
-        class="font-semibold text-4xl mb-8 inline-block bg-white dark:bg-slate-900 dark:text-white px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-950"
-      >
-        Müşteriler
-      </h1>
+      <page-header heading-text="Müşteriler" />
 
       <div class="flex items-center justify-center-safe">
-        <div class="flex items-center bg-white dark:bg-slate-900 rounded-xl px-2 py-2">
+        <div class="customers-toggle">
           <h3
-            :class="[isCompactMode ? 'bg-slate-200 dark:bg-slate-700 font-bold ' : null]"
+            :class="[
+              isCompactMode
+                ? 'bg-white shadow dark:bg-slate-900 font-bold'
+                : null,
+            ]"
             class="px-2 py-2 me-1 text-sm rounded-lg cursor-pointer ease-in-out transition-all duration-200"
             @click="handleCompactMode(true)"
           >
             Kompakt Görünüm
           </h3>
           <h3
-            :class="[!isCompactMode ? 'bg-slate-200 dark:bg-slate-700 font-bold ' : null]"
+            :class="[
+              !isCompactMode
+                ? 'bg-white shadow dark:bg-slate-900 font-bold'
+                : null,
+            ]"
             class="px-2 py-2 ms-1 text-sm rounded-lg cursor-pointer ease-in-out transition-all duration-200"
             @click="handleCompactMode(false)"
           >
@@ -26,34 +30,42 @@
         </div>
       </div>
 
-      <RouterLink v-if="!loading" class="create-btn-wrapper" :to="{ name: 'create-customer' }">
-        <div class="backdrop-blur-lg bg-(--secondary)/85 hover:bg-(--secondary-variant)/85 create-btn text-white">
+      <RouterLink
+        v-if="!loading"
+        class="create-btn-wrapper"
+        :to="{ name: 'create-customer' }"
+      >
+        <div
+          class="backdrop-blur-lg bg-(--secondary)/85 hover:bg-(--secondary)/85 create-btn text-white"
+        >
           <UIcon name="heroicons:user-plus-16-solid" class="size-8" />
         </div>
       </RouterLink>
       <the-loading v-if="loading"></the-loading>
 
-      <CompactList
-        v-if="isCompactMode && !loading"
-        :width="width"
-        :compact-customers="compactCustomers"
-        @remove-customer="removeCustomer"
-        @select-customer="selCustomer"
-      />
-      <DetailedList
-        v-else-if="!isCompactMode && !loading"
-        :is-have-address="isHaveAddress"
-        :width="width"
-        :detailed-customers="detailedCustomers"
-        :customers-page-count="customersPageCount"
-        :page-range="pageRange"
-        :current-page="currentPage"
-        @remove-customer="removeCustomer"
-        @select-customer="selCustomer"
-        @select-page="selectPage"
-        @previous-page="previousPage"
-        @next-page="nextPage"
-      />
+      <Transition name="fade" mode="out-in">
+        <CompactList
+          v-if="isCompactMode && !loading"
+          :width="width"
+          :compact-customers="compactCustomers"
+          @remove-customer="removeCustomer"
+          @select-customer="selCustomer"
+        />
+        <DetailedList
+          v-else-if="!isCompactMode && !loading"
+          :is-have-address="isHaveAddress"
+          :width="width"
+          :detailed-customers="detailedCustomers"
+          :customers-page-count="customersPageCount"
+          :page-range="pageRange"
+          :current-page="currentPage"
+          @remove-customer="removeCustomer"
+          @select-customer="selCustomer"
+          @select-page="selectPage"
+          @previous-page="previousPage"
+          @next-page="nextPage"
+        />
+      </Transition>
     </div>
 
     <Teleport to="body">
@@ -62,13 +74,33 @@
           <h3 class="text-xl font-bold">Silme Onayı</h3>
         </template>
         <template #body>
-          <p class="text-base">'{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek istediğinizden emin misiniz?</p>
-          <p class="text-red-700 dark:text-red-600 italic text-sm">Bu işlem geri alınamaz</p>
+          <p class="text-base">
+            '{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek
+            istediğinizden emin misiniz?
+          </p>
+          <p class="text-red-700 dark:text-red-600 italic text-sm">
+            Bu işlem geri alınamaz
+          </p>
         </template>
         <template #footer>
           <div class="flex items-center justify-end w-full">
-            <UButton color="neutral" variant="solid" class="rounded-full px-6 py-3 me-2" @click="open = false">Vazgeç</UButton>
-            <UButton color="secondary" variant="solid" class="rounded-full px-6 py-3" @click="removeCustomer(selectedCustomer!.customer_id)">
+            <UButton
+              color="neutral"
+              variant="solid"
+              class="rounded-full px-6 py-3 me-2"
+              @click="
+                () => {
+                  open = false;
+                }
+              "
+              >Vazgeç</UButton
+            >
+            <UButton
+              color="secondary"
+              variant="solid"
+              class="rounded-full px-6 py-3"
+              @click="removeCustomer(selectedCustomer!.customer_id)"
+            >
               Onayla
             </UButton>
           </div>
@@ -94,7 +126,8 @@ const customerStore = useCustomerStore();
 const isHaveAddress = ref(false);
 const selectedCustomer = ref<ICustomer>();
 const offset = ref(0);
-const { compactCustomers, detailedCustomers, customersPageCount } = storeToRefs(customerStore);
+const { compactCustomers, detailedCustomers, customersPageCount } =
+  storeToRefs(customerStore);
 const currentPage = ref<number>(1);
 const loading = ref<boolean>(true);
 const open = ref(false);
@@ -187,5 +220,9 @@ onMounted(async () => {
 
 .create-btn {
   @apply w-16 h-16 rounded-full p-4;
+}
+
+.customers-toggle {
+  @apply flex items-center bg-white dark:bg-slate-900 rounded-xl px-2 py-2;
 }
 </style>

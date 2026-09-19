@@ -13,8 +13,16 @@ const themeText = computed(() => {
 <template>
   <div @click="toggleDark()" class="theme-change-btn">
     <div class="flex items-center">
-      <UIcon name="fluent:weather-moon-24-filled" class="w-6 size-6" v-if="isDark" />
-      <UIcon name="fluent:weather-sunny-24-filled" class="w-6 size-6" v-else />
+      <UIcon
+        name="fluent:weather-moon-24-filled"
+        class="w-6 size-6 text-purple-700"
+        v-if="isDark"
+      />
+      <UIcon
+        name="fluent:weather-sunny-24-filled"
+        class="w-6 size-6 text-orange-400"
+        v-else
+      />
       <span class="ms-2 text-sm">{{ themeText }}</span>
     </div>
   </div>
@@ -24,6 +32,6 @@ const themeText = computed(() => {
 @reference "@/index.css";
 
 .theme-change-btn {
-  @apply p-2  rounded-lg cursor-pointer bg-(--light-color-mode) hover:bg-(--secondary);
+  @apply p-2 transition ease-linear duration-200 rounded-lg cursor-pointer border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-800;
 }
 </style>

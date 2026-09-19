@@ -37,11 +37,20 @@ const resize = () => {
   <div class="relative">
     <TheNavbar @open-side-nav="isNavOverlay" />
 
-    <TheSidebar @open-side-nav-or-overlay="isNavOverlay" :width="width" :open-side-nav="openSideNav" :open-side-nav-overlay="openSideNavOverlay" />
+    <TheSidebar
+      @open-side-nav-or-overlay="isNavOverlay"
+      :width="width"
+      :open-side-nav="openSideNav"
+      :open-side-nav-overlay="openSideNavOverlay"
+    />
 
     <main
-      class="h-[calc(100vh-64px)] absolute right-0 top-16 px-4 transition-all duration-300 flex flex-col justify-between"
-      :class="{ 'w-[calc(100%-76px)]': !openSideNav && width > 640, 'w-[calc(100%-240px)]': openSideNav, 'w-screen': width < 639 }"
+      class="h-[calc(100vh-64px)] absolute right-0 px-4 top-12 transition-all duration-300 flex flex-col justify-between"
+      :class="{
+        'w-[calc(100%-76px)]': !openSideNav && width > 640,
+        'w-[calc(100%-240px)]': openSideNav,
+        'w-full': width < 640,
+      }"
     >
       <div class="max-w-6xl mx-auto w-full">
         <slot />

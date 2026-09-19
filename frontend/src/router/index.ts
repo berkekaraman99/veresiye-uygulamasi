@@ -1,4 +1,8 @@
-import { createRouter, createWebHashHistory, type RouteLocation } from "vue-router";
+import {
+  createRouter,
+  createWebHashHistory,
+  type RouteLocation,
+} from "vue-router";
 
 const routes = [
   {
@@ -15,7 +19,9 @@ const routes = [
     path: "/customer/:customer_id",
     name: "customer",
     component: () => import("@/views/CustomerView.vue"),
-    props: (route: RouteLocation) => ({ customer_id: route.params.customer_id }),
+    props: (route: RouteLocation) => ({
+      customer_id: route.params.customer_id,
+    }),
   },
   {
     path: "/customers",
@@ -26,7 +32,9 @@ const routes = [
     path: "/create-receipt/:receipt_type?",
     name: "create-receipt",
     component: () => import("@/views/CreateReceipt.vue"),
-    props: (route: RouteLocation) => ({ receipt_type: Number(route.params.receipt_type) }),
+    props: (route: RouteLocation) => ({
+      receipt_type: Number(route.params.receipt_type),
+    }),
   },
   {
     path: "/create-customer",
@@ -37,7 +45,9 @@ const routes = [
     path: "/edit-customer/:customer_id",
     name: "edit-customer",
     component: () => import("@/views/EditCustomer.vue"),
-    props: (route: RouteLocation) => ({ customer_id: route.params.customer_id }),
+    props: (route: RouteLocation) => ({
+      customer_id: route.params.customer_id,
+    }),
   },
   {
     path: "/edit-receipt/:receipt_id",
@@ -48,7 +58,7 @@ const routes = [
   {
     path: "/search-customer",
     name: "search-customer",
-    component: () => import("@/views/SearchCustomer.vue"),
+    component: () => import("@/views/SearchView.vue"),
   },
   {
     path: "/receipt/:receipt_id",
