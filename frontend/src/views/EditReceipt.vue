@@ -14,6 +14,7 @@
           :state="state"
           @submit="updateReceipt"
           class="space-y-6 mx-4"
+          v-if="ready"
         >
           <UFormField label="Dekont Türü" name="receipt_type">
             <USelect
@@ -44,7 +45,7 @@
               class="w-full"
               color="neutral"
               :ui="{ base: 'h-12 text-lg' }"
-              v-model="state.price"
+              v-model.number="state.price"
               type="number"
             />
           </UFormField>
@@ -79,7 +80,7 @@
 <script setup lang="ts">
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAppToast } from "@/composables/useAppToast";
 import { useDuration } from "@/composables/useDuration";
@@ -96,7 +97,7 @@ const props = defineProps<Props>();
 const router = useRouter();
 const receiptStore = useReceiptStore();
 const { receipt } = storeToRefs(receiptStore);
-const customerName = ref("");
+const customerName = computed(() => receipt.value?.customer_name ?? "");
 
 const schema = object({
   receipt_id: string().required(),
@@ -113,6 +114,7 @@ const initialState = {
 };
 const state = ref({ ...initialState });
 const loading = ref(false);
+const ready = ref(false);
 
 //FUNCTIONS
 const updateReceipt = async () => {
@@ -121,7 +123,7 @@ const updateReceipt = async () => {
     await receiptStore.updateReceipt(state.value).then(() => {
       toastSuccess({ title: "Fatura güncellendi!" });
       setTimeout(() => {
-        router.push({ name: "home" });
+        router.back();
       }, shortTime);
     });
   } catch {
@@ -147,6 +149,8 @@ onMounted(async () => {
       price: r.price,
       receipt_type: r.receipt_type,
     });
+
+    ready.value = true;
   } catch {
     toastError({ title: "Dekont yüklenemedi" });
     router.back();

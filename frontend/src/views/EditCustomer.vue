@@ -14,6 +14,7 @@
           :state="state"
           @submit="updateCustomer"
           class="space-y-6 mx-4"
+          v-if="ready"
         >
           <UFormField label="Müşteri Adı" name="customer_name" :required="true">
             <UInput
@@ -99,6 +100,7 @@ const initialState = {
 };
 const state = ref({ ...initialState });
 const loading = ref(false);
+const ready = ref(false);
 
 //FUNCTIONS
 const updateCustomer = async () => {
@@ -110,7 +112,7 @@ const updateCustomer = async () => {
         .then(() => {
           toastSuccess({ title: "Müşteri bilgileri güncellendi!" });
           setTimeout(() => {
-            router.push({ name: "customers" });
+            router.back();
           }, shortTime);
         });
     }
@@ -138,6 +140,7 @@ onMounted(async () => {
       customer_address: c.customer_address ?? "",
       phone_number: c.phone_number ?? "",
     });
+    ready.value = true;
   } catch {
     toastError({ title: "Müşteri yüklenemedi" });
     router.back();
