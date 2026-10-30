@@ -48,19 +48,39 @@
               class="text-xs bg-(--primary) text-(--text-light) sticky top-0"
             >
               <tr>
-                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(0)">
+                <th
+                  scope="col"
+                  class="px-3 py-4 sticky"
+                  @click="sortBy('Müşteri')"
+                >
                   Müşteri
                 </th>
-                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(1)">
+                <th
+                  scope="col"
+                  class="px-3 py-4 sticky"
+                  @click="sortBy('Alacak')"
+                >
                   Alacak
                 </th>
-                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(2)">
+                <th
+                  scope="col"
+                  class="px-3 py-4 sticky"
+                  @click="sortBy('Borç')"
+                >
                   Borç
                 </th>
-                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(3)">
+                <th
+                  scope="col"
+                  class="px-3 py-4 sticky"
+                  @click="sortBy('Son Fatura Tarihi')"
+                >
                   Son Fatura Tarihi
                 </th>
-                <th scope="col" class="px-3 py-4 sticky" @click="sortTable(4)">
+                <th
+                  scope="col"
+                  class="px-3 py-4 sticky"
+                  @click="sortBy('Net Bakiye')"
+                >
                   Net Bakiye
                 </th>
               </tr>
@@ -69,22 +89,22 @@
               class="text-sm dark:text-white bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-950"
             >
               <template
-                v-for="customer in report"
+                v-for="customer in sortedRows"
                 v-bind:key="customer['Müşteri']"
               >
                 <tr class="hover:bg-slate-100 dark:hover:bg-slate-800">
                   <td class="px-4 py-3">{{ customer["Müşteri"] }}</td>
                   <td class="px-3 py-3 text-center">
-                    {{ customer["Alacak"].toFixed(2) }}
+                    {{ customer["Alacak"].toFixed(2) }} ₺
                   </td>
                   <td class="px-3 py-3 text-center">
-                    {{ customer["Borç"].toFixed(2) }}
+                    {{ customer["Borç"].toFixed(2) }} ₺
                   </td>
                   <td class="px-3 py-3 text-center">
                     {{ customer["Son Fatura Tarihi"].slice(0, 10) }}
                   </td>
                   <td class="px-3 py-3 text-center">
-                    {{ customer["Net Bakiye"].toFixed(2) + " ₺" }}
+                    {{ customer["Net Bakiye"].toFixed(2) }} ₺
                   </td>
                 </tr>
               </template>
@@ -97,6 +117,7 @@
 </template>
 
 <script setup lang="ts">
+import { useSortedRows } from "@/composables/useSortedRows";
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
@@ -106,6 +127,7 @@ import { onBeforeUnmount } from "vue";
 const receiptStore = useReceiptStore();
 const { report } = storeToRefs(receiptStore);
 const isLoading = ref(false);
+const { sortedRows, sortBy } = useSortedRows(report);
 
 //FUNCTIONS
 const changeLoading = (value: boolean) => {
@@ -114,67 +136,12 @@ const changeLoading = (value: boolean) => {
 
 const downloadReport = async () => {
   changeLoading(true);
-  await receiptStore
-    .downloadReceipt()
-    .then((href) => {
-      if (href != null) {
-        window.location.replace(href);
-      }
-    })
-    .finally(() => changeLoading(false));
+  await receiptStore.downloadReceipt().finally(() => changeLoading(false));
 };
 
 const getReceiptReport = async () => {
   changeLoading(true);
   await receiptStore.getReceiptReport().finally(() => changeLoading(false));
-};
-
-const sortTable = (n: number) => {
-  let table: HTMLTableElement,
-    rows,
-    switching,
-    i,
-    x,
-    y,
-    shouldSwitch,
-    dir,
-    switchcount = 0;
-  table = document.getElementById("reportTable") as HTMLTableElement;
-  switching = true;
-  dir = "asc";
-
-  while (switching) {
-    switching = false;
-    rows = table.rows;
-
-    for (i = 1; i < rows.length - 1; i++) {
-      shouldSwitch = false;
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
-
-      if (dir == "asc") {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      } else if (dir == "desc") {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          shouldSwitch = true;
-          break;
-        }
-      }
-    }
-    if (shouldSwitch) {
-      rows[i].parentNode!.insertBefore(rows[i + 1], rows[i]);
-      switching = true;
-      switchcount++;
-    } else {
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
-        switching = true;
-      }
-    }
-  }
 };
 
 onBeforeUnmount(() => {

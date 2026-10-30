@@ -5,9 +5,9 @@
         <div class="flex items-center">
           <div class="inset-y-0 flex items-center" @click="emit('openSideNav')">
             <div
-              class="rounded-md p-2 hover:bg-(--secondary) transition ease-in-out duration-200"
+              class="rounded-md p-2 hover:bg-(--secondary)/85 dark:hover:bg-(--secondary) cursor-pointer transition ease-in-out duration-200"
             >
-              <UIcon name="heroicons:bars-3" class="block size-6 h-6 w-6" />
+              <UIcon name="heroicons:bars-3" class="size-8 h-6 w-6" />
             </div>
           </div>
           <div class="mx-2">
@@ -36,7 +36,7 @@ const emit = defineEmits(["openSideNav"]);
 }
 
 .inner-navbar {
-  @apply px-2 shadow-lg sm:px-3.5 bg-white dark:bg-slate-950;
+  @apply px-2 sm:px-3.5 bg-white dark:bg-slate-950;
 }
 
 .navbar-brand {

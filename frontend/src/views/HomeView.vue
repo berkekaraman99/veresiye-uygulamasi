@@ -81,15 +81,27 @@ const items = [
 }
 
 .interactive-card {
-  @apply cursor-pointer border transition rounded-2xl shadow ease-in-out duration-200 flex my-2 border-slate-200 dark:border-slate-950 bg-white dark:bg-slate-900  text-(--text-dark) dark:text-(--text-light) text-2xl;
+  @apply cursor-pointer border transition rounded-2xl shadow ease-in-out duration-200 flex my-2 border-slate-200 dark:border-slate-950 bg-slate-50 dark:bg-slate-900  text-(--text-dark) dark:text-(--text-light) text-2xl;
 }
 
 .interactive-card:hover {
-  @apply -translate-y-2 shadow-xl bg-slate-50 dark:bg-slate-800;
+  @apply -translate-y-2 shadow-xl bg-slate-100 dark:bg-slate-800;
 }
 
+/* .interactive-card:hover div .action-icon svg {
+  background: linear-gradient(
+    45deg,
+    var(--gradient-left) 0%,
+    var(--gradient-middle) 50%,
+    var(--gradient-right) 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+} */
+
 .interactive-card:active {
-  @apply transform scale-95 bg-white;
+  @apply transform scale-95 bg-white dark:bg-slate-900;
 }
 
 @media screen and (max-width: 768px) {

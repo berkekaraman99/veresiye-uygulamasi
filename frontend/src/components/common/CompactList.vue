@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Customers } from "@/models/customers_model";
+import type { DropdownMenuItem } from "@nuxt/ui";
 import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 
@@ -14,7 +15,7 @@ const props = defineProps({
   },
 });
 
-const emits = defineEmits(["removeCustomer", "selectCustomer"]);
+const emits = defineEmits(["removeCustomer"]);
 
 const router = useRouter();
 const visibleCustomers = ref<Array<Customers>>([]);
@@ -34,6 +35,37 @@ const loadMoreItems = () => {
   visibleCustomers.value.push(...customers);
   page.value++;
 };
+
+const menuItems = (customer: Customers): DropdownMenuItem[][] => [
+  [
+    {
+      label: "Müşteri Bilgileri",
+      icon: "fluent:person-32-regular",
+      onSelect: () =>
+        router.push({
+          name: "customer",
+          params: { customer_id: customer.customer_id },
+        }),
+    },
+    {
+      label: "Müşteri Güncelle",
+      icon: "fluent:edit-32-filled",
+      onSelect: () =>
+        router.push({
+          name: "edit-customer",
+          params: { customer_id: customer.customer_id },
+        }),
+    },
+  ],
+  [
+    {
+      label: "Müşteriyi Sil",
+      color: "error",
+      icon: "fluent:person-subtract-24-regular",
+      onSelect: () => emits("removeCustomer", customer),
+    },
+  ],
+];
 
 onMounted(() => {
   loadMoreItems();
@@ -81,45 +113,7 @@ onBeforeUnmount(() => {
               side: 'bottom',
               sideOffset: 8,
             }"
-            :items="[
-              [
-                {
-                  label: 'Müşteri Bilgileri',
-                  icon: 'fluent:person-32-regular',
-                  onSelect() {
-                    router.push({
-                      name: 'customer',
-                      params: { customer_id: customer.customer_id },
-                    });
-                  },
-                },
-                {
-                  label: 'Müşteri Güncelle',
-                  icon: 'fluent:edit-32-filled',
-                  onSelect() {
-                    router.push({
-                      name: 'edit-customer',
-                      params: { customer_id: customer.customer_id },
-                    });
-                  },
-                },
-                {
-                  label: `${customer.net_bakiye} ₺`,
-                  icon: 'fluent:money-24-filled',
-                  disabled: true,
-                },
-              ],
-              [
-                {
-                  label: 'Müşteriyi Sil',
-                  color: 'error',
-                  icon: 'fluent:person-subtract-24-regular',
-                  onSelect() {
-                    emits('selectCustomer', customer);
-                  },
-                },
-              ],
-            ]"
+            :items="menuItems(customer)"
             :ui="{
               content:
                 'w-48 bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-md',

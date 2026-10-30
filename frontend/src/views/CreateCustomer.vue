@@ -53,8 +53,9 @@
               class="px-4 py-3 font-bold gradient-button"
               color="neutral"
               variant="soft"
-              :disabled="statusCode === 200"
+              :disabled="loading"
               type="submit"
+              :loading="loading"
             >
               Müşteri Oluştur
             </UButton>
@@ -69,18 +70,12 @@
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
-import { storeToRefs } from "pinia";
-import { ResponseStatus } from "@/constants/response_status_enum";
 import { useAppToast } from "@/composables/useAppToast";
-import { useDuration } from "@/composables/useDuration";
 import { object, string } from "yup";
 
 //STATES
 const { toastSuccess, toastError } = useAppToast();
-const { shortTime } = useDuration();
 const customerStore = useCustomerStore();
-const { statusCode } = storeToRefs(customerStore);
-const today = new Date().toISOString().slice(0, 16);
 
 const schema = object({
   customer_name: string().required("Müşteri adı gereklidir."),
@@ -94,36 +89,31 @@ const initialState = {
   phone_number: "",
 };
 const state = ref({ ...initialState });
+const loading = ref(false);
 
 //FUNCTIONS
 const createCustomer = async () => {
-  if (state.value.customer_name !== "") {
-    const customer_id = uuidv4();
-    const created_date = today;
+  try {
+    loading.value = true;
+    if (state.value.customer_name.length >= 2) {
+      const customer_id = uuidv4();
 
-    await customerStore
-      .createCustomer({
-        ...state.value,
-        customer_id: customer_id,
-        created_at: created_date,
-      })
-      .then(() => {
-        if (statusCode.value === ResponseStatus.SUCCESS) {
+      await customerStore
+        .createCustomer({
+          ...state.value,
+          customer_id: customer_id,
+        })
+        .then(() => {
           toastSuccess({ title: "Müşteri oluşturuldu!" });
-
           Object.assign(state.value, initialState);
-
-          setTimeout(() => {
-            customerStore.$patch({
-              statusCode: 0,
-            });
-          }, shortTime);
-        } else {
-          toastError({
-            title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
-          });
-        }
-      });
+        });
+    }
+  } catch {
+    toastError({
+      title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+    });
+  } finally {
+    loading.value = false;
   }
 };
 </script>

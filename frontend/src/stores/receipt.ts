@@ -12,186 +12,67 @@ export const useReceiptStore = defineStore("receipt", () => {
   const receipt = ref<IReceipt>();
   const receipts = ref<Array<IReceipt>>([]);
   const lastReceipts = ref<Array<DashboardReceipt>>([]);
-  const debtReceivableResult = ref<{ alacak: number; borc: number }>();
+  const debtReceivableResult = ref<{ alacak: number; odeme: number }>();
   const report = ref<Array<IReport>>([]);
-  const statusCode = ref<number>(0);
 
   //ACTIONS
   const createReceipt = async (receiptForm: CreateReceipt) => {
-    try {
-      const res = await instance.post("/receipt/create-receipt", receiptForm);
-      statusCode.value = res.data.statusCode;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
+    await instance.post("/receipt/create-receipt", receiptForm);
   };
 
   const deleteReceipt = async (receipt_id: string) => {
-    try {
-      const res = await instance.post("/receipt/delete-receipt", {
-        receipt_id,
-      });
-      statusCode.value = res.data.statusCode;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
+    await instance.post("/receipt/delete-receipt", {
+      receipt_id,
+    });
   };
 
   const updateReceipt = async (receiptForm: UpdateReceipt) => {
-    try {
-      const res = await instance.post("/receipt/update-receipt", receiptForm);
-      statusCode.value = res.data.statusCode;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
-  };
-
-  const fetchReceipts = async () => {
-    try {
-      const res = await instance.get("/receipt/get-receipts");
-      receipts.value = res.data.data;
-      statusCode.value = res.data.statusCode;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
+    await instance.post("/receipt/update-receipt", receiptForm);
   };
 
   const getReceiptById = async (id: string) => {
-    try {
-      const res = await instance.get(
-        `/receipt/get-receipt-by-id?receipt_id=${id}`,
-      );
-      receipt.value = res.data.data;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
+    const res = await instance.get("/receipt/get-receipt-by-id", {
+      params: { receipt_id: id },
+    });
+    receipt.value = res.data.data;
   };
 
   const getReceiptReport = async () => {
-    try {
-      const res = await instance.get("/receipt/report");
-      report.value = res.data.data;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
+    const res = await instance.get("/receipt/report");
+    report.value = res.data.data;
   };
 
   const downloadReceipt = async () => {
-    try {
-      const url = instance.defaults.baseURL + "/receipt/download-report";
-      return url;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
+    const res = await instance.get("/receipt/download-report", {
+      responseType: "blob",
+    });
+    const url = URL.createObjectURL(res.data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Report.xlsx";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const getLastReceipts = async () => {
-    try {
-      const res = await instance.get("/receipt/get-last-receipts");
-      statusCode.value = res.data.statusCode;
-
-      lastReceipts.value = res.data.data;
-      // console.log(res.data);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
+    const res = await instance.get("/receipt/get-last-receipts");
+    lastReceipts.value = res.data.data;
   };
 
   const getDebtAndReceivable = async () => {
-    try {
-      const res = await instance.get("/receipt/get-debt-and-receivable");
-      statusCode.value = res.data.statusCode;
-
-      debtReceivableResult.value = res.data.data[0];
-      console.log(res.data);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error(error.message);
-      } else {
-        console.error("Bilinmeyen bir hata oluştu");
-      }
-    } finally {
-      setTimeout(() => {
-        statusCode.value = 0;
-      }, 2000);
-    }
+    const res = await instance.get("/receipt/get-debt-and-receivable");
+    debtReceivableResult.value = res.data.data[0];
   };
 
   return {
     receipt,
     receipts,
     lastReceipts,
-    statusCode,
     report,
     debtReceivableResult,
     createReceipt,
     updateReceipt,
     deleteReceipt,
-    fetchReceipts,
     getReceiptById,
     getReceiptReport,
     downloadReceipt,

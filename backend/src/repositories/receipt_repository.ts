@@ -262,7 +262,7 @@ export class ReceiptRepository implements IReceiptRepository {
       const result = await db.query(
         `SELECT 
             FLOOR(SUM(CASE WHEN receipt_type = 1 THEN price ELSE 0 END)) as alacak, 
-            SUM(CASE WHEN receipt_type = 0 THEN price ELSE 0 END) as borc 
+            SUM(CASE WHEN receipt_type = 0 THEN price ELSE 0 END) as odeme 
             FROM receipts WHERE is_deleted = 0;`,
       );
 

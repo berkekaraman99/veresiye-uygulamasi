@@ -9,13 +9,9 @@ import { createCustomerValidator } from "../models/create_customer_validator";
 export class CustomerRepository implements ICustomerRepository {
   async createCustomerAsync(body: ICreateCustomer) {
     try {
-      const {
-        customer_name,
-        customer_address,
-        customer_id,
-        created_at,
-        phone_number,
-      } = body;
+      const { customer_name, customer_address, customer_id, phone_number } =
+        body;
+      const created_at = new Date().toISOString().slice(0, 16);
 
       await createCustomerValidator
         .validate({
@@ -61,6 +57,7 @@ export class CustomerRepository implements ICustomerRepository {
       };
     }
   }
+
   async deleteCustomerAsync(customer_id: string) {
     try {
       await db.query(
@@ -81,6 +78,7 @@ export class CustomerRepository implements ICustomerRepository {
       };
     }
   }
+
   async updateCustomerAsync(body: IUpdateCustomer) {
     try {
       const { customer_name, customer_address, phone_number, customer_id } =
@@ -103,12 +101,14 @@ export class CustomerRepository implements ICustomerRepository {
       };
     }
   }
+
   async getCustomersAsync(offset: number) {
     try {
-      const page = offset;
-      const result = await db.query(
-        `
-        SELECT 
+      const pageOffset = offset;
+
+      const [customers, totalRows] = await Promise.all([
+        db.query(
+          `SELECT 
             c.customer_id, 
             c.customer_name, 
             c.created_at, 
@@ -130,17 +130,20 @@ export class CustomerRepository implements ICustomerRepository {
         LIMIT 
             15 
         OFFSET 
-            ?
-        ;
-        SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0;
-        SELECT CEIL(COUNT(*) / 15) AS totalPages FROM customers;
-      `,
-        [page],
-      );
+            ?`,
+          [pageOffset],
+        ),
+        db.query(
+          `SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0`,
+        ),
+      ]);
+
+      const total = totalRows[0].total;
+      const totalPages = Math.ceil(total / 15);
 
       return {
         status: 200,
-        data: result,
+        data: { customers, total, totalPages },
         responseStatus: ResponseStatus.SUCCESS,
       };
     } catch (error: any) {
@@ -151,10 +154,12 @@ export class CustomerRepository implements ICustomerRepository {
       };
     }
   }
+
   async getAllCustomersAsync() {
     try {
-      const result = await db.query(
-        `
+      const [customers, totalRows] = await Promise.all([
+        db.query(
+          `
         SELECT 
             c.customer_id, 
             c.customer_name, 
@@ -172,15 +177,19 @@ export class CustomerRepository implements ICustomerRepository {
             c.customer_id, c.customer_name, c.created_at, c.customer_address
         ORDER BY 
             c.customer_name
-        ;
-        SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0;
-        SELECT CEIL(COUNT(*) / 15) AS totalPages FROM customers;
       `,
-      );
+        ),
+        db.query(
+          "SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0",
+        ),
+      ]);
+
+      const total = totalRows[0].total;
+      const totalPages = Math.ceil(total / 15);
 
       return {
         status: 200,
-        data: result,
+        data: { customers, total, totalPages },
         responseStatus: ResponseStatus.SUCCESS,
       };
     } catch (error: any) {
@@ -191,6 +200,7 @@ export class CustomerRepository implements ICustomerRepository {
       };
     }
   }
+
   async getCustomerByIdAsync(customer_id: string) {
     try {
       const customer = await db.query(
@@ -227,44 +237,7 @@ export class CustomerRepository implements ICustomerRepository {
       };
     }
   }
-  async getCustomerByNameAsync(customer_name: string) {
-    try {
-      const customer = await db.query(
-        `
-      SELECT 
-        C.customer_id, 
-        C.customer_name, 
-        C.created_at, 
-        C.is_deleted, 
-        C.customer_address, 
-        C.phone_number,
-        COALESCE(SUM(CASE WHEN R.receipt_type = 1 AND R.is_deleted = 0 THEN price ELSE 0 END)) - COALESCE(SUM(CASE WHEN R.receipt_type = 0 AND R.is_deleted = 0 THEN price ELSE 0 END)) as "net_bakiye"
-      FROM 
-        customers AS C 
-      LEFT JOIN 
-        receipts AS R 
-      ON 
-        C.customer_id = R.customer_id 
-      WHERE 
-        C.customer_name = ?
-      GROUP BY 
-        C.customer_id, C.customer_name, C.created_at, C.is_deleted, C.customer_address;`,
-        [customer_name],
-      );
 
-      return {
-        status: 200,
-        data: customer,
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
-  }
   async searchCustomersAsync(text: string) {
     try {
       const textQuery = `%${text}%`;
@@ -289,16 +262,24 @@ export class CustomerRepository implements ICustomerRepository {
   async getCustomerReceiptsAsync(query: QueryObject) {
     try {
       const { customer_id, offset } = query;
-      const receipts = await db.query(
-        `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? ORDER BY created_at ASC LIMIT 10 OFFSET ${offset};
-            SELECT COUNT(*) AS total FROM receipts WHERE is_deleted = 0 AND customer_id = ?;
-            SELECT CEIL(COUNT(*) / 10) AS totalPages FROM receipts WHERE is_deleted = 0 AND customer_id = ?;`,
-        [customer_id, customer_id, customer_id],
-      );
+
+      const [receipts, totalRows] = await Promise.all([
+        db.query(
+          `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? ORDER BY created_at ASC LIMIT 10 OFFSET ${offset}`,
+          [customer_id, offset],
+        ),
+        db.query(
+          `SELECT COUNT(*) AS total FROM receipts WHERE is_deleted = 0 AND customer_id = ?`,
+          [customer_id],
+        ),
+      ]);
+
+      const total = totalRows[0].total;
+      const totalPages = Math.ceil(total / 10);
 
       return {
         status: 200,
-        data: receipts,
+        data: { receipts, total, totalPages },
         responseStatus: ResponseStatus.SUCCESS,
       };
     } catch (error: any) {

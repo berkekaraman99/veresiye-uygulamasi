@@ -1,12 +1,5 @@
 <template>
   <div>
-    <RouterLink class="create-btn-wrapper" :to="{ name: 'edit-receipt' }">
-      <div
-        class="bg-(--secondary) hover:bg-(--secondary) create-btn text-white"
-      >
-        <UIcon name="heroicons:pencil-solid" class="size-8" />
-      </div>
-    </RouterLink>
     <div class="grid grid-cols-12">
       <div class="col-start-2 col-span-10">
         <div>
@@ -14,7 +7,7 @@
             <page-header heading-text="Fatura Bilgileri" />
           </div>
           <div
-            class="p-4 bg-white dark:bg-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-950 rounded-lg shadow-lg"
+            class="p-4 relative bg-white dark:bg-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-950 rounded-lg shadow-lg"
           >
             <table>
               <tbody>
@@ -42,10 +35,18 @@
                 </tr>
                 <tr>
                   <th class="px-2 py-2">Bakiye:</th>
-                  <td class="px-2 py-2">{{ receipt?.price + " TL" }}</td>
+                  <td class="px-2 py-2">{{ receipt?.price }} ₺</td>
                 </tr>
               </tbody>
             </table>
+            <RouterLink
+              class="create-btn-wrapper"
+              :to="{ name: 'edit-receipt' }"
+            >
+              <div class="create-btn">
+                <UIcon name="heroicons:pencil-solid" class="size-6" />
+              </div>
+            </RouterLink>
           </div>
         </div>
       </div>
@@ -57,7 +58,7 @@
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
 import { onMounted } from "vue";
-import { reformatReceiptType } from "@/utils/receipt_helper";
+import { reformatReceiptType } from "@/helpers/receipt_helper";
 
 interface Props {
   receipt_id: string;
@@ -79,10 +80,10 @@ th {
   text-align: end;
 }
 .create-btn-wrapper {
-  @apply fixed bottom-14 right-2/4 translate-x-2/4 translate-y-2/4 sm:right-4 sm:bottom-3 sm:translate-x-0 sm:translate-y-0 z-50;
+  @apply absolute bottom-14 right-2/4 translate-x-2/4 translate-y-2/4 sm:right-4 sm:bottom-3 sm:translate-x-0 sm:translate-y-0 z-50;
 }
 
 .create-btn {
-  @apply w-16 h-16 rounded-full p-4;
+  @apply w-12 h-12 rounded-full p-2 transition duration-300 ease-in-out hover:scale-110 flex items-center justify-center text-white bg-(--secondary) hover:bg-(--secondary)/85;
 }
 </style>

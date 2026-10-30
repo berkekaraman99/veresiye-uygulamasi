@@ -83,7 +83,7 @@ export const db = mariadb.createPool({
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
   connectionLimit: 5,
-  multipleStatements: true,
+  multipleStatements: false,
   bigIntAsNumber: true,
   decimalAsNumber: true,
 });

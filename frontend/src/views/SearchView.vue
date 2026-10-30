@@ -43,40 +43,7 @@
               side: 'bottom',
               sideOffset: 8,
             }"
-            :items="[
-              [
-                {
-                  label: 'Müşteri Bilgileri',
-                  icon: 'fluent:person-32-regular',
-                  onSelect() {
-                    router.push({
-                      name: 'customer',
-                      params: { customer_id: customer.customer_id },
-                    });
-                  },
-                },
-                {
-                  label: 'Müşteri Güncelle',
-                  icon: 'fluent:edit-32-filled',
-                  onSelect() {
-                    router.push({
-                      name: 'edit-customer',
-                      params: { customer_id: customer.customer_id },
-                    });
-                  },
-                },
-              ],
-              [
-                {
-                  label: 'Müşteriyi Sil',
-                  color: 'error',
-                  icon: 'fluent:person-subtract-24-regular',
-                  onSelect() {
-                    selCustomer(customer);
-                  },
-                },
-              ],
-            ]"
+            :items="menuItems(customer)"
             :ui="{
               content:
                 'w-48 bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-md',
@@ -93,41 +60,12 @@
       </TransitionGroup>
     </div>
 
-    <Teleport to="body">
-      <UModal v-model:open="open" :dismissible="false" title="Silme Onayı">
-        <template #body>
-          <p class="text-base">
-            '{{ selectedCustomer?.customer_name }}' adlı müşteriyi silmek
-            istediğinizden emin misiniz?
-          </p>
-          <p class="text-red-700 dark:text-red-600 italic text-sm">
-            Bu işlem geri alınamaz
-          </p>
-        </template>
-        <template #footer>
-          <div class="w-full flex items-center justify-end-safe">
-            <UButton
-              color="neutral"
-              variant="solid"
-              @click="
-                () => {
-                  open = false;
-                }
-              "
-              >Vazgeç</UButton
-            >
-            <UButton
-              color="success"
-              variant="solid"
-              class="ms-2"
-              @click="removeCustomer(selectedCustomer!.customer_id)"
-            >
-              Onayla
-            </UButton>
-          </div>
-        </template>
-      </UModal>
-    </Teleport>
+    <ConfirmDeleteModal
+      v-model="open"
+      :message="`'${selectedCustomer?.customer_name}' adlı müşteriyi silmek istediğinizden emin misiniz?`"
+      :loading="loading"
+      @confirm="confirm"
+    />
   </div>
 </template>
 
@@ -138,16 +76,32 @@ import { onBeforeUnmount, ref } from "vue";
 import { useAppToast } from "@/composables/useAppToast";
 import { useRouter } from "vue-router";
 import type { SearchedCustomer } from "@/models/searched_customer_model";
+import { useConfirmDelete } from "@/composables/useConfirmDelete";
+import type { DropdownMenuItem } from "@nuxt/ui";
 
-const { toastSuccess } = useAppToast();
+const { toastSuccess, toastError } = useAppToast();
 const customerStore = useCustomerStore();
 const { searchedCustomers } = storeToRefs(customerStore);
 const searchQuery = ref("");
-const selectedCustomer = ref<SearchedCustomer>();
 const isSearched = ref(false);
 let timer: ReturnType<typeof setTimeout> | null = null;
 const router = useRouter();
-const open = ref(false);
+
+const {
+  open,
+  item: selectedCustomer,
+  loading,
+  ask,
+  confirm,
+} = useConfirmDelete<SearchedCustomer>(async (customer) => {
+  try {
+    await customerStore.deleteCustomer(customer.customer_id);
+    toastSuccess({ title: "Müşteri başarıyla silindi!" });
+    await customerStore.getCustomers();
+  } catch {
+    toastError({ title: "Müşteri silinemedi" });
+  }
+});
 
 const searchCustomer = () => {
   if (timer != null) {
@@ -169,20 +123,36 @@ const searchCustomer = () => {
   }, 500);
 };
 
-const selCustomer = (customer: SearchedCustomer) => {
-  selectedCustomer.value = customer;
-  open.value = true;
-};
-
-const removeCustomer = async (customer_id: string) => {
-  await customerStore
-    .deleteCustomer(customer_id)
-    .then(async () => {
-      toastSuccess({ title: "Müşteri Başarıyla Silindi!" });
-      await customerStore.getCustomers();
-    })
-    .finally(() => (open.value = false));
-};
+const menuItems = (customer: SearchedCustomer): DropdownMenuItem[][] => [
+  [
+    {
+      label: "Müşteri Bilgileri",
+      icon: "fluent:person-32-regular",
+      onSelect: () =>
+        router.push({
+          name: "customer",
+          params: { customer_id: customer.customer_id },
+        }),
+    },
+    {
+      label: "Müşteri Güncelle",
+      icon: "fluent:edit-32-filled",
+      onSelect: () =>
+        router.push({
+          name: "edit-customer",
+          params: { customer_id: customer.customer_id },
+        }),
+    },
+  ],
+  [
+    {
+      label: "Müşteriyi Sil",
+      color: "error",
+      icon: "fluent:person-subtract-24-regular",
+      onSelect: () => ask(customer),
+    },
+  ],
+];
 
 onBeforeUnmount(() => {
   customerStore.$patch({

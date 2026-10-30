@@ -14,10 +14,6 @@ CustomerRoutes.post("/update-customer", customer_controller.updateCustomer);
 CustomerRoutes.get("/get-customers", customer_controller.getCustomers);
 CustomerRoutes.get("/get-all-customers", customer_controller.getAllCustomers);
 CustomerRoutes.get("/get-customer-by-id", customer_controller.getCustomerById);
-CustomerRoutes.get(
-  "/get-customer-by-name",
-  customer_controller.getCustomerByName,
-);
 CustomerRoutes.get("/search-customers", customer_controller.searchCustomers);
 CustomerRoutes.get(
   "/get-customer-receipts",

@@ -143,7 +143,7 @@ onMounted(() => {
 @reference "@/index.css";
 
 #SideNav {
-  @apply fixed z-20 transition-all duration-300 ease-in-out text-(--text-dark) dark:text-(--text-light) bg-white dark:bg-slate-950 top-16 bottom-0 shadow;
+  @apply fixed z-20 transition-all duration-300 ease-in-out text-(--text-dark) dark:text-(--text-light) bg-white dark:bg-slate-950 top-16 bottom-0;
 }
 
 #SideNavOverlay {
@@ -156,7 +156,7 @@ onMounted(() => {
 }
 
 .sidebar-item-link {
-  @apply flex items-center rounded-lg border border-slate-200 dark:border-slate-800 my-1.5 font-medium transition ease-linear duration-200 hover:bg-(--secondary) text-(--text-dark) dark:text-(--text-light) dark:hover:bg-(--primary);
+  @apply flex items-center rounded-lg border border-slate-200 dark:border-slate-800 my-1.5 font-medium transition ease-linear duration-200 hover:bg-(--secondary)/80 text-(--text-dark) dark:text-(--text-light) dark:hover:bg-(--secondary);
 }
 
 .sidebar-item-text {

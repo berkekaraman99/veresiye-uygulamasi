@@ -5,9 +5,7 @@ import { QueryObject } from "../helpers/query_object";
 
 export class CustomerController {
   private readonly customer_repo: CustomerRepository = new CustomerRepository();
-  /**
-   *
-   */
+
   constructor(customer_repo: CustomerRepository) {
     this.customer_repo = customer_repo;
   }
@@ -84,25 +82,6 @@ export class CustomerController {
       const { customer_id } = req.query;
       const result = await this.customer_repo.getCustomerByIdAsync(
         customer_id as string,
-      );
-
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
-  };
-
-  getCustomerByName = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const { customer_name } = req.query;
-      const result = await this.customer_repo.getCustomerByNameAsync(
-        customer_name as string,
       );
 
       res

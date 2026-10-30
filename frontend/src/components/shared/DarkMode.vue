@@ -32,6 +32,6 @@ const themeText = computed(() => {
 @reference "@/index.css";
 
 .theme-change-btn {
-  @apply p-2 transition ease-linear duration-200 rounded-lg cursor-pointer border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-800;
+  @apply p-2 transition ease-linear duration-200 rounded-lg cursor-pointer border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800;
 }
 </style>

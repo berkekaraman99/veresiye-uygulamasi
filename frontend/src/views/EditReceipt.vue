@@ -63,7 +63,8 @@
               class="px-4 py-3 font-bold gradient-button"
               color="neutral"
               variant="soft"
-              :disabled="buttonDisabled"
+              :disabled="loading"
+              :loading="loading"
               type="submit"
             >
               Fatura Güncelle
@@ -76,10 +77,9 @@
 </template>
 
 <script setup lang="ts">
-import { ResponseStatus } from "@/constants/response_status_enum";
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAppToast } from "@/composables/useAppToast";
 import { useDuration } from "@/composables/useDuration";
@@ -95,7 +95,7 @@ const { shortTime } = useDuration();
 const props = defineProps<Props>();
 const router = useRouter();
 const receiptStore = useReceiptStore();
-const { statusCode, receipt } = storeToRefs(receiptStore);
+const { receipt } = storeToRefs(receiptStore);
 const customerName = ref("");
 
 const schema = object({
@@ -112,41 +112,44 @@ const initialState = {
   receipt_type: 0,
 };
 const state = ref({ ...initialState });
-
-const buttonDisabled = computed(() => {
-  return !!(
-    statusCode.value === 200 ||
-    state.value.price == "0" ||
-    state.value.price == ""
-  );
-});
+const loading = ref(false);
 
 //FUNCTIONS
 const updateReceipt = async () => {
-  await receiptStore.updateReceipt(state.value).then(() => {
-    if (statusCode.value === ResponseStatus.SUCCESS) {
+  try {
+    loading.value = true;
+    await receiptStore.updateReceipt(state.value).then(() => {
       toastSuccess({ title: "Fatura güncellendi!" });
       setTimeout(() => {
-        receiptStore.$patch({
-          statusCode: 0,
-        });
         router.push({ name: "home" });
       }, shortTime);
-    } else {
-      toastError({
-        title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
-      });
-    }
-  });
+    });
+  } catch {
+    toastError({
+      title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+    });
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(async () => {
-  await receiptStore.getReceiptById(props.receipt_id).then(() => {
-    state.value.receipt_id = receipt.value?.receipt_id ?? "";
-    customerName.value = receipt.value?.customer_name ?? "";
-    state.value.description = receipt.value?.description ?? "";
-    state.value.price = receipt.value?.price ?? "0";
-    state.value.receipt_type = receipt.value?.receipt_type ?? 0;
-  });
+  try {
+    await receiptStore.getReceiptById(props.receipt_id);
+    const r = receipt.value;
+    if (!r || r.receipt_id !== props.receipt_id) {
+      throw new Error("Dekont bulunamadı");
+    }
+
+    Object.assign(state.value, {
+      receipt_id: props.receipt_id,
+      description: r.description ?? "",
+      price: r.price,
+      receipt_type: r.receipt_type,
+    });
+  } catch {
+    toastError({ title: "Dekont yüklenemedi" });
+    router.back();
+  }
 });
 </script>

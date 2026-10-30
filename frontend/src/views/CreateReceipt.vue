@@ -28,29 +28,28 @@
               />
             </UFormField>
 
-            <UFormField
-              label="Müşteri Adı"
-              name="customer_name"
-              :required="true"
-            >
-              <UInput
+            <UFormField label="Müşteri Adı" name="customer_id" :required="true">
+              <UInputMenu
+                v-model="selectedCustomer"
+                v-model:search-term="searchTerm"
+                :items="searchedCustomers"
+                label-key="customer_name"
+                :loading="searching"
+                ignore-filter
+                placeholder="Müşteri adı yazın (en az 2 harf)"
                 class="w-full"
-                :ui="{ base: 'h-12 text-lg' }"
-                placeholder="Müşteri Adı"
-                v-model="customerName"
-                type="text"
-                list="customers"
-                @input="searchCustomer"
                 color="neutral"
-              />
+                :ui="{ base: 'h-12 text-lg' }"
+              >
+                <template #empty>
+                  {{
+                    searchTerm.trim().length < 2
+                      ? "Aramak için yazmaya başlayın"
+                      : "Müşteri bulunamadı"
+                  }}
+                </template>
+              </UInputMenu>
             </UFormField>
-            <datalist id="customers">
-              <option
-                v-for="customer in searchedCustomers"
-                :value="customer.customer_name"
-                :key="customer.customer_id"
-              ></option>
-            </datalist>
 
             <UFormField label="Fiyat" name="price" :required="true">
               <UInput
@@ -91,7 +90,7 @@
                 class="px-4 py-3 font-bold gradient-button"
                 color="neutral"
                 variant="soft"
-                :disabled="buttonDisabled"
+                :loading="loading"
                 type="submit"
               >
                 Fatura Oluştur
@@ -145,10 +144,10 @@ import { storeToRefs } from "pinia";
 import { computed, ref, onBeforeUnmount, watch } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
-import { ResponseStatus } from "@/constants/response_status_enum";
 import { useAppToast } from "@/composables/useAppToast";
-import { useDuration } from "@/composables/useDuration";
 import { object, string, number } from "yup";
+import { watchDebounced } from "@vueuse/core";
+import { type SearchedCustomer } from "@/models/searched_customer_model";
 
 interface Props {
   receipt_type?: number;
@@ -159,19 +158,17 @@ const props = withDefaults(defineProps<Props>(), {
   receipt_type: 0,
 });
 const { toastSuccess, toastError } = useAppToast();
-const { shortTime } = useDuration();
 const customerStore = useCustomerStore();
 const receiptStore = useReceiptStore();
-const { statusCode } = storeToRefs(receiptStore);
 const { searchedCustomers, customer } = storeToRefs(customerStore);
-const customerName = ref();
-const today = new Date().toISOString().slice(0, 16);
-let timer: ReturnType<typeof setTimeout> | null = null;
-let timer2: ReturnType<typeof setTimeout> | null = null;
+
+const selectedCustomer = ref<SearchedCustomer>();
+const searchTerm = ref("");
+const searching = ref(false);
 const isPopupHidden = ref(false);
 
 const schema = object({
-  customer_id: string(),
+  customer_id: string().required("Müşteri seçiniz"),
   price: string().required(),
   description: string(),
   created_at: string().required(),
@@ -182,22 +179,15 @@ const initialState = {
   customer_id: "",
   price: "0",
   description: "",
-  created_at: today,
+  created_at: new Date().toISOString().slice(0, 16),
   receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
 };
 const state = ref({ ...initialState });
+const loading = ref(false);
 
 //FUNCTIONS
 const receiptTypeReturn = computed(() => {
   return state.value.receipt_type === 0 ? "Ödeme Dekontu" : "Alacak Dekontu";
-});
-
-const buttonDisabled = computed(() => {
-  return !!(
-    statusCode.value === 200 ||
-    state.value.price == "0" ||
-    state.value.price == ""
-  );
 });
 
 const closePopup = () => {
@@ -205,55 +195,47 @@ const closePopup = () => {
 };
 
 const createReceipt = async () => {
-  if (customerName.value !== "") {
-    state.value.customer_id = searchedCustomers.value[0].customer_id;
-    const receipt_id = uuidv4();
-
+  try {
+    loading.value = true;
     await receiptStore
-      .createReceipt({
-        ...state.value,
-        receipt_id: receipt_id,
-      })
+      .createReceipt({ ...state.value, receipt_id: uuidv4() })
       .then(() => {
-        if (statusCode.value === ResponseStatus.SUCCESS) {
-          toastSuccess({ title: "Dekont oluşturuldu!" });
-          Object.assign(state.value, initialState);
-          customerName.value = undefined;
-          setTimeout(() => {
-            receiptStore.$patch({
-              statusCode: 0,
-            });
-          }, shortTime);
-        } else {
-          toastError({
-            title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
-          });
-        }
+        toastSuccess({ title: "Dekont oluşturuldu!" });
+        Object.assign(state.value, initialState);
+        selectedCustomer.value = undefined;
+        searchTerm.value = "";
       });
+  } catch {
+    toastError({
+      title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+    });
+  } finally {
+    loading.value = false;
   }
 };
 
-const getCustomerInfo = async () => {
-  await customerStore.getCustomerByName(customerName.value);
-};
+watchDebounced(
+  searchTerm,
+  async (text) => {
+    const q = text.trim();
+    if (q.length < 2) {
+      customerStore.$patch({ searchedCustomers: [] });
+      return;
+    }
+    searching.value = true;
+    try {
+      await customerStore.searchCustomers(q);
+    } finally {
+      searching.value = false;
+    }
+  },
+  { debounce: 300 },
+);
 
-const searchCustomer = async () => {
-  if (timer != null) {
-    clearTimeout(timer);
-  }
-  timer = setTimeout(async () => {
-    await customerStore.searchCustomers(customerName.value);
-  }, 500);
-};
-
-watch(customerName, () => {
-  if (timer2) {
-    clearTimeout(timer2);
-  }
-  let sleep = 500;
-  timer2 = setTimeout(() => {
-    getCustomerInfo();
-  }, sleep);
+watch(selectedCustomer, (c) => {
+  state.value.customer_id = c?.customer_id ?? "";
+  if (c) customerStore.getCustomerById(c.customer_id);
+  else customerStore.$patch({ customer: undefined });
 });
 
 onBeforeUnmount(() => {

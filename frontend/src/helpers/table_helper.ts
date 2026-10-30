@@ -1,6 +1,5 @@
-export const sortTable = (n: number, tableId: string) => {
-  let table: HTMLTableElement,
-    rows,
+export const sortTable = (n: number, table_id: string) => {
+  let rows,
     switching,
     i,
     x,
@@ -8,7 +7,9 @@ export const sortTable = (n: number, tableId: string) => {
     shouldSwitch,
     dir,
     switchcount = 0;
-  table = document.getElementById(tableId) as HTMLTableElement;
+  const table: HTMLTableElement = document.getElementById(
+    table_id,
+  ) as HTMLTableElement;
   switching = true;
   dir = "asc";
 
@@ -22,12 +23,24 @@ export const sortTable = (n: number, tableId: string) => {
       y = rows[i + 1].getElementsByTagName("TD")[n];
 
       if (dir == "asc") {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+        if (
+          x.textContent
+            ?.trim()
+            .toLowerCase()
+            .localeCompare(y.innerHTML.toLowerCase(), "tr", { numeric: true }) >
+          0
+        ) {
           shouldSwitch = true;
           break;
         }
       } else if (dir == "desc") {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+        if (
+          y.textContent
+            ?.trim()
+            .toLowerCase()
+            .localeCompare(x.innerHTML.toLowerCase(), "tr", { numeric: true }) >
+          0
+        ) {
           shouldSwitch = true;
           break;
         }

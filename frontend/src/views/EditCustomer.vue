@@ -53,7 +53,8 @@
               class="px-4 py-3 font-bold gradient-button"
               color="neutral"
               variant="soft"
-              :disabled="statusCode === 200"
+              :disabled="loading"
+              :loading="loading"
               type="submit"
             >
               Müşteri Güncelle
@@ -66,7 +67,6 @@
 </template>
 
 <script setup lang="ts">
-import { ResponseStatus } from "@/constants/response_status_enum";
 import { useCustomerStore } from "@/stores/customer";
 import { storeToRefs } from "pinia";
 import { onMounted, ref } from "vue";
@@ -84,7 +84,7 @@ const { shortTime } = useDuration();
 const props = defineProps<Props>();
 const router = useRouter();
 const customerStore = useCustomerStore();
-const { customer, statusCode } = storeToRefs(customerStore);
+const { customer } = storeToRefs(customerStore);
 
 const schema = object({
   customer_name: string().required("Müşteri adı gereklidir."),
@@ -98,35 +98,49 @@ const initialState = {
   phone_number: "",
 };
 const state = ref({ ...initialState });
+const loading = ref(false);
 
 //FUNCTIONS
 const updateCustomer = async () => {
-  if (state.value.customer_name !== "") {
-    await customerStore
-      .updateCustomer({ ...state.value, customer_id: props.customer_id })
-      .then(() => {
-        if (statusCode.value === ResponseStatus.SUCCESS) {
+  try {
+    loading.value = true;
+    if (state.value.customer_name.length >= 2) {
+      await customerStore
+        .updateCustomer({ ...state.value, customer_id: props.customer_id })
+        .then(() => {
           toastSuccess({ title: "Müşteri bilgileri güncellendi!" });
           setTimeout(() => {
-            customerStore.$patch({
-              statusCode: 0,
-            });
             router.push({ name: "customers" });
           }, shortTime);
-        } else {
-          toastError({
-            title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
-          });
-        }
-      });
+        });
+    }
+  } catch {
+    toastError({
+      title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+    });
+  } finally {
+    loading.value = false;
   }
 };
 
 onMounted(async () => {
-  await customerStore.getCustomerById(props.customer_id).then(() => {
-    state.value.customer_name = customer.value?.customer_name ?? "";
-    state.value.customer_address = customer.value?.customer_address ?? "";
-    state.value.phone_number = customer.value?.phone_number ?? "";
-  });
+  try {
+    await customerStore.getCustomerById(props.customer_id);
+
+    const c = customer.value;
+    if (!c || c.customer_id !== props.customer_id) {
+      throw new Error("Müşteri bulunamadı");
+    }
+
+    Object.assign(state.value, {
+      customer_id: props.customer_id,
+      customer_name: c.customer_name,
+      customer_address: c.customer_address ?? "",
+      phone_number: c.phone_number ?? "",
+    });
+  } catch {
+    toastError({ title: "Müşteri yüklenemedi" });
+    router.back();
+  }
 });
 </script>

@@ -7,7 +7,6 @@ export interface ICustomerRepository {
   getCustomersAsync(offset: number): any;
   getAllCustomersAsync(): any;
   getCustomerByIdAsync(customer_id: string): any;
-  getCustomerByNameAsync(customer_name: string): any;
   searchCustomersAsync(text: string): any;
   getCustomerReceiptsAsync(query: any): any;
   getLastCustomersAsync(): any;
