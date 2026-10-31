@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  # --- 1. SERVİS: MariaDB Veri Tabanı ---
+  mariadb:
+    image: mariadb:10.11 # Resmi MariaDB imajı
+    container_name: mariadb_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: supersecret
+      MYSQL_DATABASE: veresiyedb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: guclu_bir_sifre
+    ports:
+      - "3306:3306" # Bilgisayarınızdan DB'ye bağlanmak isterseniz (DBeaver, Navicat vb. için)
+    volumes:
+      - mariadb_data:/var/lib/mysql # Konteyner silinse bile verilerin kaybolmaması için kalıcı alan
+
+  # --- 2. SERVİS: Node.js (TypeScript) Backend ---
+  backend:
+    build:
+      context: ./ # Node.js projenizin ve Dockerfile'ınızın olduğu klasörün yolu
+      dockerfile: Dockerfile
+    container_name: node_backend_container
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # KRİTİK NOKTA: Host olarak 'localhost' değil, yukarıdaki servis adı olan 'mariadb' yazılır!
+      DB_HOST: mariadb
+      DB_USER: root
+      DB_PASSWORD: supersecret
+      DB_NAME: veresiyedb
+      DB_PORT: 3306
+    depends_on:
+      - mariadb # Backend'in MariaDB tamamen ayağa kalkmadan başlamasını engeller
+
+# Kalıcı veriler için volume tanımı
+volumes:
+  mariadb_data:

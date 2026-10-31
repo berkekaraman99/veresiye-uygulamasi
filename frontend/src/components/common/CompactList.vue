@@ -1,0 +1,143 @@
+<script setup lang="ts">
+import type { Customers } from "@/models/customers_model";
+import type { DropdownMenuItem } from "@nuxt/ui";
+import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
+import { useRouter } from "vue-router";
+
+const props = defineProps({
+  compactCustomers: {
+    type: Array<Customers>,
+    default: [],
+  },
+  width: {
+    type: Number,
+    required: true,
+  },
+});
+
+const emits = defineEmits(["removeCustomer"]);
+
+const router = useRouter();
+const visibleCustomers = ref<Array<Customers>>([]);
+const page = ref(1);
+const chunk = 50;
+const loadMoreRef = useTemplateRef("loadMoreRef");
+let observer: IntersectionObserver | undefined;
+const showLoadingText = ref(true);
+
+const loadMoreItems = () => {
+  const start = (page.value - 1) * chunk;
+  const end = page.value * chunk;
+  const customers = props.compactCustomers.slice(start, end);
+  if (customers.length === 0) {
+    showLoadingText.value = false;
+  }
+  visibleCustomers.value.push(...customers);
+  page.value++;
+};
+
+const menuItems = (customer: Customers): DropdownMenuItem[][] => [
+  [
+    {
+      label: "Müşteri Bilgileri",
+      icon: "fluent:person-32-regular",
+      onSelect: () =>
+        router.push({
+          name: "customer",
+          params: { customer_id: customer.customer_id },
+        }),
+    },
+    {
+      label: "Müşteri Güncelle",
+      icon: "fluent:edit-32-filled",
+      onSelect: () =>
+        router.push({
+          name: "edit-customer",
+          params: { customer_id: customer.customer_id },
+        }),
+    },
+  ],
+  [
+    {
+      label: "Müşteriyi Sil",
+      color: "error",
+      icon: "fluent:person-subtract-24-regular",
+      onSelect: () => emits("removeCustomer", customer),
+    },
+  ],
+];
+
+onMounted(() => {
+  loadMoreItems();
+  observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      loadMoreItems();
+    }
+  });
+  if (loadMoreRef.value) {
+    observer.observe(loadMoreRef.value);
+  }
+});
+
+onBeforeUnmount(() => {
+  if (observer && loadMoreRef.value) {
+    observer.unobserve(loadMoreRef.value);
+  }
+});
+</script>
+
+<template>
+  <div>
+    <div
+      class="flex items-center justify-between bg-linear-to-r from-(--primary) to-(--primary) text-(--text-light) py-3 px-4 mt-3 rounded-t-xl text-xs"
+    >
+      <div class="font-bold">Müşteri Adı</div>
+      <div class="font-bold">İşlemler</div>
+    </div>
+    <ul
+      class="bg-white dark:bg-slate-900 mb-3 rounded-b-xl h-150 overflow-y-auto"
+    >
+      <li
+        v-for="customer in visibleCustomers"
+        v-bind:key="customer.customer_id"
+        class="flex items-center justify-between text-sm py-2 px-4 hover:bg-slate-200 dark:hover:bg-slate-800"
+      >
+        <div>
+          {{ customer.customer_name }}
+        </div>
+        <div>
+          <UDropdownMenu
+            arrow
+            :content="{
+              align: 'end',
+              side: 'bottom',
+              sideOffset: 8,
+            }"
+            :items="menuItems(customer)"
+            :ui="{
+              content:
+                'w-48 bg-slate-50/50 dark:bg-slate-950/50 backdrop-blur-md',
+            }"
+          >
+            <UButton
+              :label="width > 640 ? 'Seçenekler' : undefined"
+              icon="fluent:chevron-down-32-filled"
+              color="neutral"
+              variant="soft"
+              class="gradient-button"
+            />
+          </UDropdownMenu>
+        </div>
+      </li>
+      <div
+        v-if="showLoadingText"
+        ref="loadMoreRef"
+        class="text-center py-4 text-gray-500"
+      >
+        Yükleniyor...
+      </div>
+    </ul>
+  </div>
+</template>
+
+<style scoped></style>

@@ -34,13 +34,13 @@
     }
   },
   "scripts": {
-    "client": "cd client && npm run dev",
-    "server": "cd server && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build-client": "npm run build-only --prefix client"
+    "frontend": "cd frontend && npm run dev",
+    "backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "build-client": "npm run build-only --prefix frontend"
   },
   "dependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^10.0.6"
   },
   "devDependencies": {
     "ts-node": "^10.9.2"
