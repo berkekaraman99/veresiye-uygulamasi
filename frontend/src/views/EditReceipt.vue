@@ -4,7 +4,7 @@
       class="col-span-12 sm:col-start-2 sm:col-span-10 md:col-span-8 md:col-start-3 lg:col-start-4 lg:col-span-6"
     >
       <div class="flex justify-center">
-        <page-header heading-text="Faturayı Düzenle" />
+        <page-header heading-text="Dekontu Düzenle" />
       </div>
       <div
         class="bg-white dark:bg-slate-900 dark:text-white border-2 border-slate-200 dark:border-slate-950 rounded-3xl shadow-lg px-4 py-8"
@@ -85,6 +85,7 @@ import { useRouter } from "vue-router";
 import { useAppToast } from "@/composables/useAppToast";
 import { useDuration } from "@/composables/useDuration";
 import { object, string, number } from "yup";
+import { getErrorMessage } from "@/utils/error";
 
 interface Props {
   receipt_id: string;
@@ -101,6 +102,7 @@ const customerName = computed(() => receipt.value?.customer_name ?? "");
 
 const schema = object({
   receipt_id: string().required(),
+  customer_id: string().required(),
   price: string().required(),
   description: string(),
   receipt_type: number().required(),
@@ -108,6 +110,7 @@ const schema = object({
 
 const initialState = {
   receipt_id: "",
+  customer_id: "",
   price: "0",
   description: "",
   receipt_type: 0,
@@ -120,15 +123,14 @@ const ready = ref(false);
 const updateReceipt = async () => {
   try {
     loading.value = true;
-    await receiptStore.updateReceipt(state.value).then(() => {
-      toastSuccess({ title: "Fatura güncellendi!" });
-      setTimeout(() => {
-        router.back();
-      }, shortTime);
-    });
-  } catch {
+    await receiptStore.updateReceipt(state.value);
+    toastSuccess({ title: "Fatura güncellendi!" });
+    setTimeout(() => {
+      router.back();
+    }, shortTime);
+  } catch (e) {
     toastError({
-      title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+      title: getErrorMessage(e),
     });
   } finally {
     loading.value = false;
@@ -145,6 +147,7 @@ onMounted(async () => {
 
     Object.assign(state.value, {
       receipt_id: props.receipt_id,
+      customer_id: r.customer_id,
       description: r.description ?? "",
       price: r.price,
       receipt_type: r.receipt_type,

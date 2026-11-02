@@ -36,7 +36,8 @@
         :to="{ name: 'create-customer' }"
       >
         <div class="create-btn">
-          <UIcon name="heroicons:user-plus-16-solid" class="size-8" />
+          <UIcon name="heroicons:user-plus-16-solid" class="size-6" />
+          <span class="create-btn-text">Müşteri Oluştur</span>
         </div>
       </RouterLink>
       <the-loading v-if="pageLoading"></the-loading>
@@ -170,7 +171,15 @@ onBeforeUnmount(() => {
 }
 
 .create-btn {
-  @apply w-14 h-14 rounded-full transition duration-300 hover:scale-110  ease-in-out p-3 flex items-center justify-center backdrop-blur-lg bg-(--secondary) hover:bg-(--secondary)/85  text-white;
+  @apply flex items-center h-12 rounded-full px-3 transition-all duration-300 ease-in-out hover:scale-105 text-white bg-(--secondary) hover:bg-(--secondary)/85 overflow-hidden;
+}
+
+.create-btn-text {
+  @apply text-sm max-w-0 opacity-0 whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out;
+}
+
+.create-btn:hover .create-btn-text {
+  @apply max-w-xs opacity-100 pl-2;
 }
 
 .customers-toggle {

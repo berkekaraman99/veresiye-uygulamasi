@@ -1,165 +1,81 @@
 import { db } from "../config/mariadb";
-import { ResponseStatus } from "../constants/response_status_enum";
-import { ICreateCustomer } from "../dtos/customer/create_customer_dto";
-import { IUpdateCustomer } from "../dtos/customer/update_customer_dto";
+import { CreateCustomerDto } from "../dtos/customer/create_customer_dto";
+import { UpdateCustomerDto } from "../dtos/customer/update_customer_dto";
 import { QueryObject } from "../helpers/query_object";
 import { ICustomerRepository } from "../interfaces/icustomer_repository";
-import { createCustomerValidator } from "../models/create_customer_validator";
+import { v4 as uuidv4 } from "uuid";
 
 export class CustomerRepository implements ICustomerRepository {
-  async createCustomerAsync(body: ICreateCustomer) {
-    try {
-      const { customer_name, customer_address, customer_id, phone_number } =
-        body;
-      const created_at = new Date().toISOString().slice(0, 16);
+  async createCustomerAsync(c: CreateCustomerDto) {
+    const customer_id = uuidv4();
+    const created_at = new Date().toISOString().slice(0, 16);
 
-      await createCustomerValidator
-        .validate({
-          customer_name,
-        })
-        .catch((_) => {
-          throw new Error("Validation Error");
-        });
-
-      const checkIsCustomerUnique = await db.query(
-        "SELECT * FROM customers WHERE customer_id = ?",
-        [customer_id],
-      );
-
-      if (checkIsCustomerUnique.length !== 0) {
-        return {
-          status: 200,
-          data: "Customer is already exists",
-          responseStatus: 1013,
-        };
-      }
-
-      await db.query(
-        "INSERT INTO customers (customer_id, customer_name, customer_address, created_at, phone_number) VALUES (?, ?, ?, ?, ?)",
-        [
-          customer_id,
-          customer_name,
-          customer_address,
-          created_at,
-          phone_number,
-        ],
-      );
-      return {
-        status: 200,
-        data: "Customer created successfully",
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    await db.query(
+      "INSERT INTO customers (customer_id, customer_name, customer_address, created_at, phone_number) VALUES (?, ?, ?, ?, ?)",
+      [
+        customer_id,
+        c.customer_name,
+        c.customer_address,
+        created_at,
+        c.phone_number,
+      ],
+    );
+    return c;
   }
 
   async deleteCustomerAsync(customer_id: string) {
-    try {
-      await db.query(
-        "UPDATE customers SET is_deleted = 1 WHERE customer_id = ?",
-        [customer_id],
-      );
+    await db.query(
+      "UPDATE customers SET is_deleted = 1 WHERE customer_id = ?",
+      [customer_id],
+    );
 
-      return {
-        status: 200,
-        data: "Customer deleted successfully!",
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    return "Customer deleted successfully!";
   }
 
-  async updateCustomerAsync(body: IUpdateCustomer) {
-    try {
-      const { customer_name, customer_address, phone_number, customer_id } =
-        body;
-      await db.query(
-        "UPDATE customers SET customer_name = ?, customer_address = ?, phone_number = ? WHERE customer_id = ?",
-        [customer_name, customer_address, phone_number, customer_id],
-      );
+  async updateCustomerAsync(c: UpdateCustomerDto) {
+    const updated_at = new Date().toISOString().slice(0, 16);
+    await db.query(
+      "UPDATE customers SET customer_name = ?, customer_address = ?, phone_number = ?, updated_at = ? WHERE customer_id = ?",
+      [
+        c.customer_name,
+        c.customer_address,
+        c.phone_number,
+        updated_at,
+        c.customer_id,
+      ],
+    );
 
-      return {
-        status: 200,
-        data: "Customer updated successfully!",
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    return "Customer updated successfully!";
   }
 
-  async getCustomersAsync(offset: number) {
-    try {
-      const pageOffset = offset;
+  async getCustomersAsync(offset: number, pLimit: number) {
+    const pageOffset = offset;
+    const pageLimit = pLimit;
 
-      const [customers, totalRows] = await Promise.all([
-        db.query(
-          `SELECT 
-            c.customer_id, 
-            c.customer_name, 
-            c.created_at, 
-            c.customer_address, 
-            SUM(CASE WHEN r.receipt_type = 1 AND r.is_deleted = 0 THEN r.price ELSE 0 END) - 
-            SUM(CASE WHEN r.receipt_type = 0 AND r.is_deleted = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
-        FROM 
-            customers AS c
-        LEFT JOIN 
-            receipts AS r 
-        ON 
-            c.customer_id = r.customer_id
-        WHERE 
-            c.is_deleted = 0
-        GROUP BY 
-            c.customer_id, c.customer_name, c.created_at, c.customer_address
-        ORDER BY 
-            c.customer_name
-        LIMIT 
-            15 
-        OFFSET 
-            ?`,
-          [pageOffset],
-        ),
-        db.query(
-          `SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0`,
-        ),
-      ]);
+    const [customers, totalRows] = await Promise.all([
+      db.query(
+        `SELECT c.customer_id, c.customer_name, c.created_at, c.customer_address,
+          COALESCE(SUM(CASE r.receipt_type WHEN 1 THEN r.price WHEN 0 THEN -r.price END), 0) AS net_bakiye
+          FROM (SELECT * FROM customers WHERE is_deleted = 0
+                ORDER BY customer_name LIMIT ? OFFSET ?) c
+          LEFT JOIN receipts r ON r.customer_id = c.customer_id AND r.is_deleted = 0
+          GROUP BY c.customer_id, c.customer_name, c.created_at, c.customer_address
+          ORDER BY c.customer_name;`,
+        [pageLimit, pageOffset],
+      ),
+      db.query(`SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0`),
+    ]);
 
-      const total = totalRows[0].total;
-      const totalPages = Math.ceil(total / 15);
+    const total = totalRows[0].total;
+    const totalPages = Math.ceil(total / 15);
 
-      return {
-        status: 200,
-        data: { customers, total, totalPages },
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    return { customers, total, totalPages };
   }
 
   async getAllCustomersAsync() {
-    try {
-      const [customers, totalRows] = await Promise.all([
-        db.query(
-          `
+    const [customers, totalRows] = await Promise.all([
+      db.query(
+        `
         SELECT 
             c.customer_id, 
             c.customer_name, 
@@ -178,154 +94,78 @@ export class CustomerRepository implements ICustomerRepository {
         ORDER BY 
             c.customer_name
       `,
-        ),
-        db.query(
-          "SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0",
-        ),
-      ]);
+      ),
+      db.query("SELECT COUNT(*) AS total FROM customers WHERE is_deleted = 0"),
+    ]);
 
-      const total = totalRows[0].total;
-      const totalPages = Math.ceil(total / 15);
+    const total = totalRows[0].total;
+    const totalPages = Math.ceil(total / 15);
 
-      return {
-        status: 200,
-        data: { customers, total, totalPages },
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    return { customers, total, totalPages };
   }
 
   async getCustomerByIdAsync(customer_id: string) {
-    try {
-      const customer = await db.query(
-        `
-      SELECT 
-        C.customer_id, 
-        C.customer_name, 
-        C.created_at, 
-        C.is_deleted, 
-        C.customer_address,
-        C.phone_number, 
-        SUM(CASE WHEN R.receipt_type = 1 AND R.is_deleted = 0 THEN price ELSE 0 END) - SUM(CASE WHEN R.receipt_type = 0 AND R.is_deleted = 0 THEN price ELSE 0 END) as "net_bakiye"
-      FROM 
-        customers AS C 
-      LEFT JOIN 
-        receipts AS R 
-      ON 
-        C.customer_id = R.customer_id 
-      WHERE 
-        C.customer_id = ?;`,
-        [customer_id],
-      );
+    const customer = await db.query(
+      `SELECT
+      C.customer_id,
+      C.customer_name,
+      C.created_at,
+      C.is_deleted,
+      C.customer_address,
+      C.phone_number,
+      COALESCE(
+        SUM(CASE R.receipt_type WHEN 1 THEN R.price WHEN 0 THEN -R.price END),
+        0
+      ) AS net_bakiye
+    FROM customers AS C
+    LEFT JOIN receipts AS R
+      ON R.customer_id = C.customer_id AND R.is_deleted = 0
+    WHERE C.customer_id = ?
+    GROUP BY C.customer_id`,
+      [customer_id],
+    );
 
-      return {
-        status: 200,
-        data: customer,
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    return customer[0];
   }
 
   async searchCustomersAsync(text: string) {
-    try {
-      const textQuery = `%${text}%`;
-      const customers = await db.query(
-        "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 8",
-        [textQuery],
-      );
+    const textQuery = `%${text}%`;
+    const customers = await db.query(
+      "SELECT * FROM customers WHERE customer_name LIKE ? AND is_deleted = 0 ORDER BY customer_name LIMIT 8",
+      [textQuery],
+    );
 
-      return {
-        status: 200,
-        data: customers,
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    return customers;
   }
   async getCustomerReceiptsAsync(query: QueryObject) {
-    try {
-      const { customer_id, offset } = query;
+    const { customer_id, offset } = query;
 
-      const [receipts, totalRows] = await Promise.all([
-        db.query(
-          `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? ORDER BY created_at ASC LIMIT 10 OFFSET ${offset}`,
-          [customer_id, offset],
-        ),
-        db.query(
-          `SELECT COUNT(*) AS total FROM receipts WHERE is_deleted = 0 AND customer_id = ?`,
-          [customer_id],
-        ),
-      ]);
+    const [receipts, totalRows] = await Promise.all([
+      db.query(
+        `SELECT receipt_id, description, price, receipt_type, created_at, updated_at FROM receipts WHERE is_deleted = 0 AND customer_id = ? ORDER BY created_at ASC LIMIT 10 OFFSET ${offset}`,
+        [customer_id, offset],
+      ),
+      db.query(
+        `SELECT COUNT(*) AS total FROM receipts WHERE is_deleted = 0 AND customer_id = ?`,
+        [customer_id],
+      ),
+    ]);
 
-      const total = totalRows[0].total;
-      const totalPages = Math.ceil(total / 10);
+    const total = totalRows[0].total;
+    const totalPages = Math.ceil(total / 10);
 
-      return {
-        status: 200,
-        data: { receipts, total, totalPages },
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    return { receipts, total, totalPages };
   }
   async getLastCustomersAsync() {
-    try {
-      const customers = await db.query(
-        `SELECT 
-            c.customer_id, 
-            c.customer_name, 
-            c.created_at, 
-            c.customer_address, 
-            SUM(CASE WHEN r.receipt_type = 1 AND r.is_deleted = 0 THEN r.price ELSE 0 END) - 
-            SUM(CASE WHEN r.receipt_type = 0 AND r.is_deleted = 0 THEN r.price ELSE 0 END) AS "net_bakiye"
-        FROM 
-            customers AS c
-        LEFT JOIN 
-            receipts AS r 
-        ON 
-            c.customer_id = r.customer_id
-        WHERE 
-            c.is_deleted = 0
-        GROUP BY 
-            c.customer_id, c.customer_name, c.created_at, c.customer_address
-        ORDER BY 
-            c.created_at DESC
-        LIMIT 
-            3;`,
-      );
-      return {
-        status: 200,
-        data: customers,
-        responseStatus: ResponseStatus.SUCCESS,
-      };
-    } catch (error: any) {
-      return {
-        status: 500,
-        data: error.message,
-        responseStatus: error.statusCode,
-      };
-    }
+    const customers = await db.query(
+      `SELECT c.customer_id, c.customer_name, c.created_at, c.customer_address,
+        COALESCE(SUM(CASE r.receipt_type WHEN 1 THEN r.price WHEN 0 THEN -r.price END), 0) AS net_bakiye
+          FROM (SELECT * FROM customers WHERE is_deleted = 0
+                ORDER BY customer_name LIMIT 3) c
+        LEFT JOIN receipts r ON r.customer_id = c.customer_id AND r.is_deleted = 0
+        GROUP BY c.customer_id, c.customer_name, c.created_at, c.customer_address
+        ORDER BY c.customer_name;`,
+    );
+    return customers;
   }
 }

@@ -1,4 +1,4 @@
-export interface ICreateCustomer {
+export interface CreateCustomerDto {
   customer_name: string;
   customer_address?: string;
   customer_id: string;

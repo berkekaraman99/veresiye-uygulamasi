@@ -1,10 +1,11 @@
-import { ICreateCustomer } from "../dtos/customer/create_customer_dto";
+import { CreateCustomerDto } from "../dtos/customer/create_customer_dto";
+import { UpdateCustomerDto } from "../dtos/customer/update_customer_dto";
 
 export interface ICustomerRepository {
-  createCustomerAsync(body: ICreateCustomer): any;
+  createCustomerAsync(body: CreateCustomerDto): any;
   deleteCustomerAsync(customer_id: string): any;
-  updateCustomerAsync(body: any): any;
-  getCustomersAsync(offset: number): any;
+  updateCustomerAsync(body: UpdateCustomerDto): any;
+  getCustomersAsync(offset: number, pLimit: number): any;
   getAllCustomersAsync(): any;
   getCustomerByIdAsync(customer_id: string): any;
   searchCustomersAsync(text: string): any;

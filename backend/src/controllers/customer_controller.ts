@@ -1,147 +1,97 @@
-import BaseResponse from "../utils/base_response";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { CustomerRepository } from "../repositories/customer_repository";
 import { QueryObject } from "../helpers/query_object";
+import { AppError } from "../utils/app_error";
+import { ResponseStatus } from "../constants/response_status_enum";
 
 export class CustomerController {
-  private readonly customer_repo: CustomerRepository = new CustomerRepository();
+  private readonly customer_repository: CustomerRepository =
+    new CustomerRepository();
 
   constructor(customer_repo: CustomerRepository) {
-    this.customer_repo = customer_repo;
+    this.customer_repository = customer_repo;
   }
 
   createCustomer = async (req: Request, res: Response) => {
-    try {
-      const result = await this.customer_repo.createCustomerAsync(req.body);
-
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
+    const customer = await this.customer_repository.createCustomerAsync(
+      req.body,
+    );
+    res.status(ResponseStatus.CREATED).json({ data: customer });
   };
 
-  deleteCustomer = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { customer_id } = req.body;
-      const result = await this.customer_repo.deleteCustomerAsync(customer_id);
+  deleteCustomer = async (req: Request, res: Response) => {
+    const { customer_id } = req.body;
+    await this.customer_repository.deleteCustomerAsync(customer_id);
 
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
+    res.status(ResponseStatus.NO_CONTENT).end();
   };
 
-  updateCustomer = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { customer_name, customer_address, customer_id } = req.body;
-      const result = await this.customer_repo.updateCustomerAsync({
-        customer_id,
-        customer_name,
-        customer_address,
-      });
-
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
+  updateCustomer = async (req: Request, res: Response) => {
+    const { customer_name, customer_address, customer_id, phone_number } =
+      req.body;
+    const result = await this.customer_repository.updateCustomerAsync({
+      customer_id,
+      customer_name,
+      customer_address,
+      phone_number,
+    });
+    res.status(ResponseStatus.SUCCESS).json({ data: result });
   };
 
-  getCustomers = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { offset } = req.query;
-      const result = await this.customer_repo.getCustomersAsync(Number(offset));
+  getCustomers = async (req: Request, res: Response) => {
+    const { offset, pLimit } = req.query;
+    const result = await this.customer_repository.getCustomersAsync(
+      Number(offset),
+      Number(pLimit),
+    );
 
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
+    res.status(ResponseStatus.SUCCESS).json({ data: result });
   };
 
-  getAllCustomers = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await this.customer_repo.getAllCustomersAsync();
+  getAllCustomers = async (req: Request, res: Response) => {
+    const result = await this.customer_repository.getAllCustomersAsync();
 
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
+    res.status(ResponseStatus.SUCCESS).json({ data: result });
   };
 
-  getCustomerById = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { customer_id } = req.query;
-      const result = await this.customer_repo.getCustomerByIdAsync(
-        customer_id as string,
-      );
+  getCustomerById = async (req: Request, res: Response) => {
+    // const { customer_id } = req.query;
+    const { customer_id } = res.locals.query as { customer_id: string };
+    const result = await this.customer_repository.getCustomerByIdAsync(
+      customer_id as string,
+    );
 
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
+    if (!result) {
+      throw new AppError(404, "Müşteri bulunamadı");
     }
+
+    res.status(ResponseStatus.SUCCESS).json({ data: result });
   };
 
-  searchCustomers = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { text } = req.query;
-      const result = await this.customer_repo.searchCustomersAsync(
-        text as string,
-      );
+  searchCustomers = async (req: Request, res: Response) => {
+    const { text } = req.query;
+    const result = await this.customer_repository.searchCustomersAsync(
+      text as string,
+    );
 
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
+    res.status(ResponseStatus.SUCCESS).json({ data: result });
   };
 
-  getCustomerReceipts = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const { customer_id, offset } = req.query;
-      const query_object: QueryObject = {
-        customer_id: customer_id as string,
-        offset: Number(offset),
-      };
-      const result =
-        await this.customer_repo.getCustomerReceiptsAsync(query_object);
+  getCustomerReceipts = async (req: Request, res: Response) => {
+    const { customer_id, offset } = req.query;
+    const query_object: QueryObject = {
+      customer_id: customer_id as string,
+      offset: Number(offset),
+    };
+    const result =
+      await this.customer_repository.getCustomerReceiptsAsync(query_object);
 
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
+    res.status(ResponseStatus.SUCCESS).json({ data: result });
   };
 
-  getLastCustomers = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
-    try {
-      const result = await this.customer_repo.getLastCustomersAsync();
+  getLastCustomers = async (req: Request, res: Response) => {
+    const result = await this.customer_repository.getLastCustomersAsync();
 
-      res
-        .status(result.status)
-        .json(BaseResponse.success(result.data, result.responseStatus));
-    } catch (error: any) {
-      res.status(500).json(BaseResponse.fail(error.message, error.statusCode));
-    }
+    res.status(ResponseStatus.SUCCESS).json({ data: result });
   };
 }

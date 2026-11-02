@@ -75,6 +75,7 @@ import { useRouter } from "vue-router";
 import { useAppToast } from "@/composables/useAppToast";
 import { useDuration } from "@/composables/useDuration";
 import { object, string } from "yup";
+import { getErrorMessage } from "@/utils/error";
 
 interface Props {
   customer_id: string;
@@ -107,18 +108,19 @@ const updateCustomer = async () => {
   try {
     loading.value = true;
     if (state.value.customer_name.length >= 2) {
-      await customerStore
-        .updateCustomer({ ...state.value, customer_id: props.customer_id })
-        .then(() => {
-          toastSuccess({ title: "Müşteri bilgileri güncellendi!" });
-          setTimeout(() => {
-            router.back();
-          }, shortTime);
-        });
+      await customerStore.updateCustomer({
+        ...state.value,
+        customer_id: props.customer_id,
+      });
+
+      toastSuccess({ title: "Müşteri bilgileri güncellendi!" });
+      setTimeout(() => {
+        router.back();
+      }, shortTime);
     }
-  } catch {
+  } catch (e) {
     toastError({
-      title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+      title: getErrorMessage(e),
     });
   } finally {
     loading.value = false;

@@ -27,7 +27,9 @@
                 </tr>
                 <tr>
                   <th class="px-2 py-2">Fatura Oluşturulma Tarihi:</th>
-                  <td class="px-2 py-2">{{ receipt?.created_at }}</td>
+                  <td class="px-2 py-2">
+                    {{ receipt?.created_at.slice(0, 10) }}
+                  </td>
                 </tr>
                 <tr v-if="receipt?.description !== ''">
                   <th class="px-2 py-2">Açıklama:</th>
@@ -45,6 +47,7 @@
             >
               <div class="create-btn">
                 <UIcon name="heroicons:pencil-solid" class="size-6" />
+                <span class="create-btn-text">Düzenle</span>
               </div>
             </RouterLink>
           </div>
@@ -80,10 +83,18 @@ th {
   text-align: end;
 }
 .create-btn-wrapper {
-  @apply absolute bottom-14 right-2/4 translate-x-2/4 translate-y-2/4 sm:right-4 sm:bottom-3 sm:translate-x-0 sm:translate-y-0 z-50;
+  @apply absolute bottom-0 right-2/4 translate-x-2/4 translate-y-2/4 sm:-right-4 sm:-bottom-3 sm:translate-x-0 sm:translate-y-0 z-50;
 }
 
 .create-btn {
-  @apply w-12 h-12 rounded-full p-2 transition duration-300 ease-in-out hover:scale-110 flex items-center justify-center text-white bg-(--secondary) hover:bg-(--secondary)/85;
+  @apply flex items-center h-12 rounded-full px-4 transition-all duration-300 ease-in-out hover:scale-105 text-white bg-(--secondary) hover:bg-(--secondary)/85 overflow-hidden;
+}
+
+.create-btn-text {
+  @apply text-sm max-w-0 opacity-0 whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out;
+}
+
+.create-btn:hover .create-btn-text {
+  @apply max-w-xs opacity-100 pl-2;
 }
 </style>

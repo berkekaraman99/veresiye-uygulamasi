@@ -1,4 +1,4 @@
-export interface IUpdateReceipt {
+export interface UpdateReceiptDto {
   receipt_id: string;
   price: number;
   description?: string;

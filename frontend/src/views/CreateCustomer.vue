@@ -68,10 +68,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
 import { useAppToast } from "@/composables/useAppToast";
 import { object, string } from "yup";
+import { getErrorMessage } from "@/utils/error";
 
 //STATES
 const { toastSuccess, toastError } = useAppToast();
@@ -96,21 +96,13 @@ const createCustomer = async () => {
   try {
     loading.value = true;
     if (state.value.customer_name.length >= 2) {
-      const customer_id = uuidv4();
-
-      await customerStore
-        .createCustomer({
-          ...state.value,
-          customer_id: customer_id,
-        })
-        .then(() => {
-          toastSuccess({ title: "Müşteri oluşturuldu!" });
-          Object.assign(state.value, initialState);
-        });
+      await customerStore.createCustomer(state.value);
+      toastSuccess({ title: "Müşteri oluşturuldu!" });
+      Object.assign(state.value, initialState);
     }
-  } catch {
+  } catch (e) {
     toastError({
-      title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+      title: getErrorMessage(e),
     });
   } finally {
     loading.value = false;

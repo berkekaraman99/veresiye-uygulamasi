@@ -39,6 +39,7 @@ export const useReceiptStore = defineStore("receipt", () => {
 
   const getReceiptReport = async () => {
     const res = await instance.get("/receipt/report");
+    console.log(res);
     report.value = res.data.data;
   };
 

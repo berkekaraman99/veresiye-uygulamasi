@@ -35,16 +35,15 @@ export const useCustomerStore = defineStore("customer", () => {
     await instance.post("/customer/update-customer", customer);
   };
 
-  const getCustomers = async (offset: number = 0) => {
+  const getCustomers = async (offset: number = 0, pageLimit: number = 15) => {
     const res = await instance.get("/customer/get-customers", {
-      params: { offset: offset },
+      params: { offset: offset, pLimit: pageLimit },
     });
     detailedCustomers.value = res.data.data.customers;
     customersPageCount.value = +res.data.data.totalPages;
   };
   const getAllCustomers = async () => {
     const res = await instance.get("/customer/get-all-customers");
-
     compactCustomers.value = res.data.data.customers;
     customersPageCount.value = res.data.data.totalPages;
   };
@@ -53,7 +52,7 @@ export const useCustomerStore = defineStore("customer", () => {
     const res = await instance.get("/customer/get-customer-by-id", {
       params: { customer_id: customer_id },
     });
-    customer.value = res.data.data[0];
+    customer.value = res.data.data;
   };
 
   const searchCustomers = async (searchValue: string) => {

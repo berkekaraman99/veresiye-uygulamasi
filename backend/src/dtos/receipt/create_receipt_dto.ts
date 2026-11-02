@@ -1,4 +1,4 @@
-export interface ICreateReceipt {
+export interface CreateReceiptDto {
   receipt_id: string;
   customer_id: string;
   created_at: string;

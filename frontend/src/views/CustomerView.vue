@@ -9,7 +9,7 @@
             <page-header heading-text="Müşteri Bilgileri" />
           </div>
           <div
-            class="p-4 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg"
+            class="p-4 relative bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-950 dark:text-white rounded-lg"
           >
             <table>
               <tbody>
@@ -23,7 +23,9 @@
                 </tr>
                 <tr>
                   <th class="px-2 py-2">Müşteri Eklenme Tarihi:</th>
-                  <td class="px-2 py-2">{{ customer?.created_at }}</td>
+                  <td class="px-2 py-2">
+                    {{ customer?.created_at.slice(0, 10) }}
+                  </td>
                 </tr>
                 <tr
                   v-if="
@@ -40,6 +42,15 @@
                 </tr>
               </tbody>
             </table>
+            <RouterLink
+              class="create-btn-wrapper"
+              :to="{ name: 'edit-customer' }"
+            >
+              <div class="create-btn">
+                <UIcon name="heroicons:pencil-solid" class="size-6" />
+                <span class="create-btn-text">Düzenle</span>
+              </div>
+            </RouterLink>
           </div>
         </div>
       </div>
@@ -256,5 +267,21 @@ onMounted(async () => {
 
 .paging-item {
   @apply relative cursor-pointer inline-flex items-center px-4 py-2 text-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 focus:z-20 focus:outline-offset-0;
+}
+
+.create-btn-wrapper {
+  @apply absolute bottom-0 right-2/4 translate-x-2/4 translate-y-2/4 sm:-right-4 sm:-bottom-3 sm:translate-x-0 sm:translate-y-0 z-50;
+}
+
+.create-btn {
+  @apply flex items-center h-12 rounded-full px-4 transition-all duration-300 ease-in-out hover:scale-105 text-white bg-(--secondary) hover:bg-(--secondary)/85 overflow-hidden;
+}
+
+.create-btn-text {
+  @apply text-sm max-w-0 opacity-0 whitespace-nowrap overflow-hidden transition-all duration-300 ease-in-out;
+}
+
+.create-btn:hover .create-btn-text {
+  @apply max-w-xs opacity-100 pl-2;
 }
 </style>

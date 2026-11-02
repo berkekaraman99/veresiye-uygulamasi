@@ -61,7 +61,7 @@
               />
             </UFormField>
 
-            <UFormField label="Tarih" name="date">
+            <!-- <UFormField label="Tarih" name="date">
               <UInput
                 class="w-full"
                 :ui="{ base: 'h-12 text-lg' }"
@@ -74,7 +74,7 @@
                 type="datetime-local"
                 color="neutral"
               />
-            </UFormField>
+            </UFormField> -->
 
             <UFormField label="Açıklama" name="description">
               <UTextarea
@@ -142,12 +142,12 @@
 import { useReceiptStore } from "@/stores/receipt";
 import { storeToRefs } from "pinia";
 import { computed, ref, onBeforeUnmount, watch } from "vue";
-import { v4 as uuidv4 } from "uuid";
 import { useCustomerStore } from "@/stores/customer";
 import { useAppToast } from "@/composables/useAppToast";
 import { object, string, number } from "yup";
 import { watchDebounced } from "@vueuse/core";
 import { type SearchedCustomer } from "@/models/searched_customer_model";
+import { getErrorMessage } from "@/utils/error";
 
 interface Props {
   receipt_type?: number;
@@ -171,7 +171,6 @@ const schema = object({
   customer_id: string().required("Müşteri seçiniz"),
   price: string().required(),
   description: string(),
-  created_at: string().required(),
   receipt_type: number().required(),
 });
 
@@ -179,7 +178,6 @@ const initialState = {
   customer_id: "",
   price: "0",
   description: "",
-  created_at: new Date().toISOString().slice(0, 16),
   receipt_type: isNaN(Number(props.receipt_type)) ? 0 : props.receipt_type,
 };
 const state = ref({ ...initialState });
@@ -197,17 +195,14 @@ const closePopup = () => {
 const createReceipt = async () => {
   try {
     loading.value = true;
-    await receiptStore
-      .createReceipt({ ...state.value, receipt_id: uuidv4() })
-      .then(() => {
-        toastSuccess({ title: "Dekont oluşturuldu!" });
-        Object.assign(state.value, initialState);
-        selectedCustomer.value = undefined;
-        searchTerm.value = "";
-      });
-  } catch {
+    await receiptStore.createReceipt(state.value);
+    toastSuccess({ title: "Dekont oluşturuldu!" });
+    Object.assign(state.value, initialState);
+    selectedCustomer.value = undefined;
+    searchTerm.value = "";
+  } catch (e) {
     toastError({
-      title: "Bir hata oluştu, lütfen daha sonra tekrar deneyiniz",
+      title: getErrorMessage(e),
     });
   } finally {
     loading.value = false;
