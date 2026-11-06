@@ -111,13 +111,19 @@ export class ReceiptRepository implements IReceiptRepository {
     colD.numFmt = "yyyy-mm-dd";
     colE.numFmt = "₺#,###.00";
 
-    for (let i = 0; i < report.length; i++) {
-      worksheet.addRow({
-        customer: report[i]["Müşteri"],
-        tarih: report[i]["Son Fatura Tarihi"].slice(0, 10),
-        bakiye: report[i]["Net Bakiye"],
-      });
-    }
+    report.forEach(
+      (item: {
+        Müşteri: string;
+        "Son Fatura Tarihi": Date;
+        "Net Bakiye": number;
+      }) => {
+        worksheet.addRow({
+          customer: item["Müşteri"],
+          tarih: item["Son Fatura Tarihi"],
+          bakiye: item["Net Bakiye"],
+        });
+      },
+    );
 
     cols.forEach((col) => {
       col.eachCell?.({ includeEmpty: false }, (cell, rowNumber) => {

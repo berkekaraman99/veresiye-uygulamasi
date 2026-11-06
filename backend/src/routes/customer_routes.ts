@@ -24,7 +24,7 @@ CustomerRoutes.post(
 );
 CustomerRoutes.post(
   "/delete-customer",
-  validate(deleteCustomerSchema, "query"),
+  validate(deleteCustomerSchema),
   asyncHandler(customer_controller.deleteCustomer),
 );
 CustomerRoutes.post(

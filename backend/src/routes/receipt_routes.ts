@@ -24,7 +24,7 @@ ReceiptRoutes.post(
 );
 ReceiptRoutes.post(
   "/delete-receipt",
-  validate(deleteReceiptSchema, "query"),
+  validate(deleteReceiptSchema),
   asyncHandler(receipt_controller.deleteReceipt),
 );
 ReceiptRoutes.post(
